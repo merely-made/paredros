@@ -52,6 +52,32 @@ in the wing with a concrete shape: **your character visits another player's
 settlement**, which is Hammerwatch's "bring your own hero" and, at world
 scale, the graft the lineage model already describes.
 
+### The settlement is assembled, not managed
+
+**Ruled 2026-07-30: the Ball × Pit model.** Hammerwatch supplies the rhythm;
+Ball × Pit supplies the *shape of the base*, and it is the better reference
+for what the settlement actually is.
+
+There, the base is a spatial assemblage you lay out: buildings produce
+resources and grant passive bonuses that carry into the run, each new
+character needs a residence built for them, characters move between
+structures and adjacency determines how much they collect, and rearranging
+costs nothing so the layout stays a live decision rather than a commitment.
+
+That is exactly the weight this vessel wants. It gives:
+
+- **A reason each companion is housed somewhere**, which makes the roster
+  spatial and legible without a job-priority grid.
+- **Assignment without command.** You decide where someone lives and what
+  they are near; you do not issue orders. That is the second-person line held
+  in the base layer, not just in the field.
+- **A base that is read at a glance**, so returning from an expedition means
+  seeing what changed rather than auditing a colony.
+
+The distinction from a colony sim is the whole point: **assemble, upgrade,
+and assign — not schedule, prioritise, and micromanage.** If a player is
+ever tuning a work-priority matrix, the vessel has drifted third person.
+
 ### Succession is the spine
 
 Dead is dead; lineage persists. When your character dies, a companion becomes

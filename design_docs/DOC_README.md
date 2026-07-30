@@ -25,7 +25,7 @@ any other index and is updated in the same session as any doc change.
 | --- | ---------- |
 | [DOC_POLICY.md](DOC_POLICY.md) | Documentation governance |
 | [PROJECT_DESCRIPTION.md](PROJECT_DESCRIPTION.md) | Product goals and pillars (maintainer-owned) |
-| [2026-07-30_paredros_founding_plan.md](2026-07-30_paredros_founding_plan.md) | Vessel 2's design and phases: second-person control with companions as peers, succession as the spine, the layered social-simulation recipe (with the five shipped approaches and why each caps out alone), three-layer identity, tone and expression, the Nemesis-patent constraint, what is genuinely new, and phases P0–P5 with done-conditions. |
+| [2026-07-30_paredros_founding_plan.md](2026-07-30_paredros_founding_plan.md) | Vessel 2's design and phases: second-person control with companions as peers, succession as the spine, expeditions against a settlement that keeps (the Heroes of Hammerwatch rhythm) with the Ball × Pit model for the base itself (assemble, upgrade, and house — never schedule and micromanage), the layered social-simulation recipe (with the five shipped approaches and why each caps out alone), three-layer identity, tone and expression, the Nemesis-patent constraint, what is genuinely new, and phases P0–P5 with done-conditions. |
 
 ## Archive
 
