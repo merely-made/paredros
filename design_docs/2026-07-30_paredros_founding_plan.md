@@ -22,8 +22,32 @@ civic use an **assessor seated beside a magistrate**. A colleague, not a
 servant. Colleagues also succeed to office.
 
 Scope, stated as a canary: **a single character with a simulated entourage.**
-The moment the player is issuing orders to a party, the game has drifted into
-third person, which is Isometry's lens, not this one.
+The care granularity here is the **individual** — particular others you know —
+and that is the thing that must not drift. Care that widens to a community you
+administer is Isometry's granularity, not this one.
+
+### Leverage without command
+
+**Permitted 2026-07-30** by the care-granularity relaxation (see
+`mesocosm/design_docs/2026-07-30_games_wing_founding.md` §1, which replaced a
+strict person-purity rule with a home-person rule). The earlier wording
+forbade the player any influence over a companion's conduct, which was too
+strict and left the deployment queue as the only lever. Two mechanics are now
+available, and both keep companions peers:
+
+- **Configure, don't command.** Standing behaviour negotiated *in advance*, in
+  the FFXII gambit shape: you agree how someone acts, you do not drive them in
+  the moment. The difference is the whole point — an agreement is something a
+  peer can also refuse, revise, or ignore under stress, which a command
+  cannot. Refusal is a legitimate outcome and a good source of character.
+- **Tag-in.** Temporarily *becoming* a companion, as Crystal Chronicles and
+  Gotcha Force allow. This is succession in miniature, and succession is
+  already the spine — becoming a companion for a fight is the same mechanic as
+  becoming one permanently, rehearsed.
+
+Still forbidden, and this is what the canary now watches: **real-time
+puppeteering of a party.** If the player is issuing moment-to-moment orders to
+several characters, care has widened to the squad and the vessel has drifted.
 
 ### Shape: expeditions and a settlement that keeps
 
@@ -75,8 +99,10 @@ That is exactly the weight this vessel wants. It gives:
   seeing what changed rather than auditing a colony.
 
 The distinction from a colony sim is the whole point: **assemble, upgrade,
-and assign — not schedule, prioritise, and micromanage.** If a player is
-ever tuning a work-priority matrix, the vessel has drifted third person.
+and assign — not schedule, prioritise, and micromanage.** If a player is ever
+tuning a work-priority matrix, care has widened from individuals to an
+administered population, which is Isometry's granularity rather than this
+vessel's.
 
 ### Succession is the spine
 

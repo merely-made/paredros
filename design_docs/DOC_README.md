@@ -15,9 +15,12 @@ any other index and is updated in the same session as any doc change.
   `mesocosm/design_docs/2026-07-30_games_wing_founding.md` and is cited, never
   copied. The three pipeline laws there govern anything crossing between
   games.
-- **Scope creep here is person drift.** Paredros is second person: one played
-  character among peers. Party control is third person and belongs to
-  Isometry.
+- **The invariant is care granularity, not person purity** (relaxed
+  2026-07-30; wing founding record §1). Paredros is care for **individuals**:
+  particular others you know. Drift means care widening to a squad you
+  administer, which is Isometry's granularity. Person may shift — tag-in is
+  permitted — provided second person stays home. Forbidden: real-time
+  puppeteering of a party.
 
 ## Active docs
 

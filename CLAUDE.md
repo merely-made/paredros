@@ -75,9 +75,14 @@ it here.
 
 ## Important Don'ts
 
-- **Do not make companions pilotable.** This is the scope canary. Party
-  control is third person and belongs to Isometry. Scope creep here is person
-  drift.
+- **Do not add real-time puppeteering of a party.** This is the scope canary,
+  narrowed 2026-07-30 when the wing replaced person purity with care
+  granularity (wing founding record §1). Paredros is care for **individuals**;
+  drift means care widening to a squad you administer, which is Isometry's
+  granularity. Permitted and encouraged: *configure, don't command* (standing
+  behaviour agreed in advance, gambit-shaped, which a peer may refuse) and
+  *tag-in* (temporarily becoming a companion, which is succession rehearsed).
+  Forbidden: moment-to-moment orders to several characters at once.
 - **Do not violate the three pipeline laws** (wing founding record §3). What
   crosses between games is choices under scarcity, not morphology;
   inheritance must be pointable; player history displaces procedural content
