@@ -166,8 +166,17 @@ the proof pair, not before.
   armillary supplies actors, chartulary supplies containment, and codicil's
   append-only log is the right shape for character history.
 - **The social hybrid above**, which no shipped game has assembled whole.
-- **Real-time embodied combat**, shared with Mesocosm's render and physics
-  lane rather than invented here.
+- **Real-time embodied combat.** Note that this vessel likely carries the
+  wing's heaviest renderer requirement (close camera, 3D), so it does *not*
+  simply inherit Mesocosm's lane — Mesocosm is proposed at 2.5D. Renderers are
+  per-vessel by rule; see
+  `mesocosm/design_docs/2026-07-30_engine_and_render_lane_landscape.md` §5.
+  A heavier engine (Fyrox ships the only Rust scene editor) is a live option
+  here precisely because it need not be shared.
+
+**Vocabulary guard:** *second person* describes agency — peers you address
+rather than units you command. It does not describe the camera, which may sit
+close. Never write "first-person Paredros"; say close camera.
 
 Deliberately parked: real-time co-op netcode. Single-player first, so
 prediction and rollback stay out of scope.
