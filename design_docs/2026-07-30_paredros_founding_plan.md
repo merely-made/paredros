@@ -25,6 +25,33 @@ Scope, stated as a canary: **a single character with a simulated entourage.**
 The moment the player is issuing orders to a party, the game has drifted into
 third person, which is Isometry's lens, not this one.
 
+### Shape: expeditions and a settlement that keeps
+
+**Ruled 2026-07-30: lean Heroes of Hammerwatch-ward.** Not a continuous
+colony simulation but **runs out and back, against a settlement that
+persists and improves from what you bring home.** Hammerwatch's structure is
+the reference: a town that upgrades from materials found on runs, heroes who
+persist and level between them, and co-op where you bring your own character
+into a friend's game.
+
+This resolves a real tension in the concept. A full colony sim is heavy,
+wants a commander's attention, and would have dragged this vessel toward
+third person — the exact drift the canary above forbids. Expedition-and-return
+keeps the player embodied in one character throughout, while still letting the
+settlement be the thing that accumulates.
+
+It also puts the wing in one rhythm without making the games alike: Mesocosm
+runs generations, Paredros runs expeditions, Isometry runs campaigns. And it
+delivers the sortie-and-return through-line that sits under half the
+influence set (Crystal Chronicles' caravan year, PSO's Pioneer 2, the
+Avenger, the Super Destroyer), where the return trip is where the reward
+actually lands.
+
+The co-op lane falls out of the same reference and is the first co-op design
+in the wing with a concrete shape: **your character visits another player's
+settlement**, which is Hammerwatch's "bring your own hero" and, at world
+scale, the graft the lineage model already describes.
+
 ### Succession is the spine
 
 Dead is dead; lineage persists. When your character dies, a companion becomes
@@ -107,10 +134,11 @@ the proof pair, not before.
 
 ## 2. What is genuinely new here
 
-- **Colony and production simulation.** Needs, jobs, stockpiles, production
-  queues. Nothing in the stack does this today, though armillary supplies
-  actors, chartulary supplies containment, and codicil's append-only log is
-  the right shape for character history.
+- **Settlement simulation at expedition scale.** Needs, jobs, stockpiles, and
+  production, bounded to what a returning character can read rather than a
+  colony manager's dashboard. Nothing in the stack does this today, though
+  armillary supplies actors, chartulary supplies containment, and codicil's
+  append-only log is the right shape for character history.
 - **The social hybrid above**, which no shipped game has assembled whole.
 - **Real-time embodied combat**, shared with Mesocosm's render and physics
   lane rather than invented here.
@@ -150,11 +178,14 @@ legibility surface that makes them visible.
 **Done when** a player can explain why two characters are close, from what
 the game showed them.
 
-### P4 — The settlement
-Production, jobs, and stockpiles feeding the deployment queue.
+### P4 — The settlement that keeps
+Expedition-and-return: what you bring home upgrades the settlement, and the
+settlement's output feeds the deployment queue. Production and jobs at the
+scale a returning character can read, not a colony manager's dashboard.
 
 **Done when** the settlement's output visibly changes what the played
-character can attempt.
+character can attempt, and a player chooses a run for what it will bring
+back rather than for the fight.
 
 ### P5 — Inheritance
 Accept Mesocosm critters and RNG critters through the same slot; export the
