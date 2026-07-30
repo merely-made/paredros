@@ -1,0 +1,177 @@
+# Paredros: Founding Plan
+
+**Status: plan, 2026-07-30. Nothing implemented.** Vessel 2 of the games
+wing. Shared architecture, the three pipeline laws, and the wing vocabulary
+live in the wing founding record at
+`mesocosm/design_docs/2026-07-30_games_wing_founding.md` (sibling repo; cited
+by path because relative links do not cross repos). They are not repeated
+here.
+
+---
+
+## 1. The game
+
+**Second person. I live with you.** You play one character among companions
+who are peers. You can address them, persuade them, equip them, and help
+them. You cannot pilot them. They outlive you, and when you die one of them
+becomes the character you play.
+
+A paredros is the one who sits beside you: the Greek Magical Papyri's
+acquired companion, and — the sense that decides the design — in classical
+civic use an **assessor seated beside a magistrate**. A colleague, not a
+servant. Colleagues also succeed to office.
+
+Scope, stated as a canary: **a single character with a simulated entourage.**
+The moment the player is issuing orders to a party, the game has drifted into
+third person, which is Isometry's lens, not this one.
+
+### Succession is the spine
+
+Dead is dead; lineage persists. When your character dies, a companion becomes
+the played one. This is why the roster must be people rather than equipment:
+the entourage is your cast of future protagonists. You care about them partly
+because you will *be* one.
+
+Descent requires more than a rebuild. A line is carried by offspring or by a
+tended continuation. Impact on the settlement without anyone carrying the
+line is not descent; it is persistence as **tulpa**. Fili records continuity
+of line; tulpa records what memory keeps.
+
+### The social layer is the base layer
+
+The player controls one character, so the rest of the roster running a social
+simulation is what generates the settlement's life. This is the Crusader
+Kings stance — one avatar, a court that simulates around you — pointed at a
+workshop.
+
+It also sidesteps the failure that kills most social simulations: they die on
+contact with combat, because companions driven by feelings play badly. Here
+the social layer never has to make anyone competent in a fight. It has to
+make the settlement alive and decide who is in the deployment queue.
+
+**Architecture: a layered hybrid.** Research on 2026-07-30 found five
+shipped approaches, each of which caps out alone — opinion ledgers (RimWorld
+vanilla; the Psychology mod's existence marks the ceiling), needs and
+advertisement autonomy (The Sims: generates activity, never drama), trait
+vectors with event accretion (Dwarf Fortress: real depth, illegible without
+Legends-mode tooling), rule-based social exchanges (Comme il Faut, Prom Week,
+Ensemble, Versu: richest micro-drama ever shipped, never scaled past a cast
+of about eighteen), and belief/gossip propagation (Talk of the Town, Shadows
+of Doubt, Norland: the underused frontier). The recipe:
+
+- a relationship graph plus an append-only deed log (memories are views over
+  the log; an emblem is a distinguished entry)
+- Sims-style off-duty autonomy for texture
+- a small exchange library fired by a storyteller-cadence director, so drama
+  is scheduled rather than simulated into soup
+- a belief layer, where characters may act on false beliefs and gossip
+  propagates
+- **a legibility surface built on day one**, because Dwarf Fortress depth
+  nobody notices reads as procedural noise
+
+Bonds carry mechanical weight: hidden compatibility, cohesion from shared
+deployments, and bond levels unlocking paired actions — the Crystal
+Chronicles spell-fusion shape, expressed on the deployment queue. The Darkest
+Dungeon 2 caution applies: relationship drift the player cannot influence
+reads as random punishment, so the player must hold levers.
+
+**Legal note:** the Nemesis system (procedurally generated rivals with
+promotion hierarchies) is patented to August 2036. Generic grudges and
+remembered encounters are fine and have Dwarf Fortress prior art; the
+rival-hierarchy-promotion machinery is what to design around.
+
+### Identity in three layers
+
+- **Chassis** — parts and gear, swapped and lost freely
+- **Skills** — use-based, accrued to the mind, surviving reassembly, so limb
+  loss never costs skill (the Kenshi rule)
+- **Quirks and emblems** — event-granted only, never purchasable
+
+Bonds are the fourth thing and are not owned by any of the three.
+
+### Expression and tone
+
+Nonverbal, or Tomodachi Life-style quirk vignettes; gibberish voice is fine.
+RimWorld vanilla in tone: sincere, affectionate, mortal. Dark events may
+happen; the organ-theft register does not.
+
+### Where the world comes from
+
+Playable on RNG worlds, always (Law C). A world inherited from Mesocosm
+displaces the procedural one; it never gates it. Whether Paredros reuses
+Isometry's typed worldgen or grows its own is deliberately undecided — the
+answer falls out of the world-noun profile extraction, which happens after
+the proof pair, not before.
+
+---
+
+## 2. What is genuinely new here
+
+- **Colony and production simulation.** Needs, jobs, stockpiles, production
+  queues. Nothing in the stack does this today, though armillary supplies
+  actors, chartulary supplies containment, and codicil's append-only log is
+  the right shape for character history.
+- **The social hybrid above**, which no shipped game has assembled whole.
+- **Real-time embodied combat**, shared with Mesocosm's render and physics
+  lane rather than invented here.
+
+Deliberately parked: real-time co-op netcode. Single-player first, so
+prediction and rollback stay out of scope.
+
+---
+
+## 3. Phases
+
+Done-conditions, not estimates.
+
+### P0 — One character, one place
+Embodied second-person control in a settlement. No companions yet.
+
+**Done when** moving and working in the space is worth doing for its own
+sake.
+
+### P1 — Companions as peers
+Two or three companions with autonomy, addressable and helpable, never
+pilotable.
+
+**Done when** a playtester asks a companion for something rather than
+reaching for a command menu.
+
+### P2 — Succession
+Death, and a companion becomes the played character.
+
+**Done when** the first succession lands and the player minds who they
+became.
+
+### P3 — The deed log and bonds
+Relationship graph, append-only deeds, bonds with mechanical weight, and the
+legibility surface that makes them visible.
+
+**Done when** a player can explain why two characters are close, from what
+the game showed them.
+
+### P4 — The settlement
+Production, jobs, and stockpiles feeding the deployment queue.
+
+**Done when** the settlement's output visibly changes what the played
+character can attempt.
+
+### P5 — Inheritance
+Accept Mesocosm critters and RNG critters through the same slot; export the
+settlement toward Isometry campaign shape.
+
+**Done when** neither import is distinguishable structurally, and a dead
+companion appears as a named figure in an Isometry campaign.
+
+---
+
+## 4. Findings
+
+*Verified facts discovered during the work, dated, with references. Empty at
+founding.*
+
+---
+
+## 5. Progress
+
+- **2026-07-30**: repo founded, name reserved, design recorded. No code.

@@ -1,0 +1,17 @@
+[package]
+name = "paredros"
+version = "0.0.1"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+description = "Name reservation. Paredros is a second-person action RPG: you play one character among companions who are peers, who can outlive you, and who can take your place."
+repository = "https://github.com/merely-made/paredros"
+readme = "README.md"
+keywords = ["game", "rpg", "colony", "companions", "simulation"]
+categories = ["games"]
+exclude = ["design_docs/"]
+
+# Own workspace root. Members arrive when the first real crate splits out;
+# until then the reservation package is the only member.
+[workspace]
+
+[dependencies]
