@@ -227,6 +227,15 @@ wire it is one stable subject with independently versioned profile references.
 When portable, those typed profiles remain engrams carried alone or together
 inside a `mere.pack/v1` bundle.
 
+**That composition was given its semantics on 2026-07-31**, and it settles
+this game's unit word. Each layer adds exactly one thing: a **borg** is a
+critter plus a *name*, earned incidentally by playing Mesocosm; a
+**character** is a borg plus a *faction*, made by playing Paredros. Nothing
+converts and nothing is re-represented, which is why the three-layer identity
+above can stay facets rather than nested copies. Ruling and consequences in
+the wing founding record §1 (`mesocosm/design_docs/`); the open word-clearance
+question for "borg" is that record's open question 3.
+
 ### Expression and tone
 
 Nonverbal, or Tomodachi Life-style quirk vignettes; gibberish voice is fine.
