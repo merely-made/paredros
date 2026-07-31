@@ -73,6 +73,17 @@ it here.
 - Prefer runtime verification over extended static code tracing. If runtime
   diagnostics are blocked, surface that blocker early.
 
+## Licensing Boundary
+
+- Game code and repository documentation are MPL-2.0.
+- A separately identified reusable library crate may use MIT OR Apache-2.0
+  only after its reusable boundary is real. State that license in its own
+  manifest; the presence of the permissive license texts does not
+  dual-license MPL game code.
+- Original game assets are CC BY-SA 4.0 and require an attribution entry.
+  Imported assets retain their own licenses and must be recorded explicitly.
+- See `LICENSES.md`. Do not blur code, library, and asset grants.
+
 ## Important Don'ts
 
 - **Do not add real-time puppeteering of a party.** This is the scope canary,
@@ -97,7 +108,10 @@ it here.
 - **Do not let relationship drift run without player levers** (the Darkest
   Dungeon 2 lesson): drift the player cannot influence reads as random
   punishment.
-- Do not add rollback netcode or CRDTs. Single-player first; the interop
-  model is additive facts plus deferred interpretation.
+- Do not add rollback netcode or a universal CRDT world state speculatively.
+  Single-player action comes first, but signed multi-writer world and
+  settlement authoring remains allowed. Additive operations preserve
+  concurrent claims; each collaborative domain must name its materializer,
+  conflict UI, and any true CRDT it actually needs.
 - Do not add features beyond the active plan's current target without
   surfacing the scope change first.

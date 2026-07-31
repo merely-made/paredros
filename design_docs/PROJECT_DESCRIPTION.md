@@ -1,15 +1,17 @@
 # Paredros — Project Description
 
-> **Draft, 2026-07-30.** Written at founding so the repo has a description.
-> Per DOC_POLICY §6 this file is maintainer-owned from here on; it is Mark's
-> to rewrite, and assistants should not edit it without instruction.
+> **Drafted 2026-07-30; revised by instruction 2026-07-31.** Per DOC_POLICY
+> §6 this file is maintainer-owned; assistants should not edit it without
+> instruction.
 
 ## What it is
 
 Paredros is a second-person action RPG. You play one character among
 companions who are peers: you can address them, persuade them, equip them,
-and help them, but you cannot pilot them. They outlive you. When you die, one
-of them becomes the character you play.
+and help them without puppeteering them as a party. At bounded transitions
+you may tag into another companion and live as them while the character you
+left resumes their own agency. They may outlive you. When you die, one of
+them becomes the character you play.
 
 A paredros is the one who sits beside you — in the Greek Magical Papyri an
 acquired companion, and in classical civic use an assessor seated beside a
@@ -18,7 +20,8 @@ magistrate. A colleague, not a servant. Colleagues also succeed to office.
 ## Pillars
 
 1. **I live with you.** The relationship is second person: peers you address,
-   never units you command.
+   never units you command. A change of viewpoint does not erase the
+   relationship between particular people.
 2. **Succession is the spine.** Dead is dead, and the entourage is your cast
    of future protagonists. You care about them partly because you will be one.
 3. **The social layer is the base layer.** You control one character, so the

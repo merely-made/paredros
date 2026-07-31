@@ -13,8 +13,9 @@ here.
 
 **Second person. I live with you.** You play one character among companions
 who are peers. You can address them, persuade them, equip them, and help
-them. You cannot pilot them. They outlive you, and when you die one of them
-becomes the character you play.
+them. You do not command them as a party; bounded tag-in lets you become
+another companion rather than puppeteer them from outside. They outlive you,
+and when you die one of them becomes the character you play.
 
 A paredros is the one who sits beside you: the Greek Magical Papyri's
 acquired companion, and — the sense that decides the design — in classical
@@ -48,6 +49,32 @@ available, and both keep companions peers:
 Still forbidden, and this is what the canary now watches: **real-time
 puppeteering of a party.** If the player is issuing moment-to-moment orders to
 several characters, care has widened to the squad and the vessel has drifted.
+
+### Offers become standing agreements
+
+**Ruled 2026-07-31.** Affinities, personality, capability, trust, history,
+and relationships determine what another character is willing to do and
+whether persuasion, trade, intimidation, combat, or alliance has a plausible
+path. The player should be able to understand that path from the relationship
+surface before committing to it.
+
+Autonomy does not mean turning every routine assignment into a negotiation
+minigame. Offers have confidence bands:
+
+- **Unfamiliar or costly:** a real proposal, with terms, alternatives, and a
+  meaningful chance of refusal.
+- **Established cooperation:** a short confirmation whose likely answer and
+  relevant concern are visible.
+- **Standing agreement:** routine work inside a trusted role is practically
+  guaranteed and may be assigned directly. The agreement itself was earned or
+  negotiated earlier.
+
+A companion can still break a standing agreement when its premises change:
+danger exceeds what was agreed, the work conflicts with a stronger bond or
+need, capability is lost, trust collapses, or the settlement asks too much.
+Routine exceptions should be rare and legible. The design target is the ease
+of “assign this trusted smith to the forge” with the social truth of “we
+already agreed that this is their role.”
 
 ### Shape: expeditions and a settlement that keeps
 
@@ -103,6 +130,30 @@ and assign — not schedule, prioritise, and micromanage.** If a player is ever
 tuning a work-priority matrix, care has widened from individuals to an
 administered population, which is Isometry's granularity rather than this
 vessel's.
+
+### The lineage of a place
+
+**Ruled 2026-07-31.** The base grows from camp to settlement to city, and its
+buildings are analogous to capability mutations in a body. A forge permits
+new making, a granary changes what scarcity means, a shrine changes which
+deeds are remembered, a road changes who can arrive, and a wall changes the
+place's relationship to its neighbors. Each addition has provenance,
+maintenance, dependencies, beneficiaries, and foregone alternatives.
+
+Buildings alone do not create culture. Culture accumulates from the meeting
+of a facility and the biographies of the people who inhabit it: who built
+the forge, what crisis it answered, whose apprenticeship it enabled, what
+material it depends upon, and which neighbors it armed or displaced.
+Repeated place-level choices under scarcity become customs, institutions,
+and eventually faction ethos. This is **place lineage**: continuity of a
+settlement through physical capability, remembered deeds, and changing
+inhabitants.
+
+The arc may reach tribe, city, or nation and reorder the surrounding world.
+Paredros still presents that growth through known individuals, homes,
+workplaces, expeditions, and agreements rather than a sovereign's population
+spreadsheet. At the point the player primarily administers factions as
+pieces, the accumulated place becomes an Isometry campaign subject.
 
 ### Succession is the spine
 
@@ -168,6 +219,14 @@ rival-hierarchy-promotion machinery is what to design around.
 
 Bonds are the fourth thing and are not owned by any of the three.
 
+The wing-level composition rule keeps these as profile facets rather than
+nested copies. A Paredros character may reference a Mesocosm critter/body
+profile, then add continuity of person, skills, affinities, trust, history,
+and relationships. Conceptually this is `character(borg(critter))`; on the
+wire it is one stable subject with independently versioned profile references.
+When portable, those typed profiles remain engrams carried alone or together
+inside a `mere.pack/v1` bundle.
+
 ### Expression and tone
 
 Nonverbal, or Tomodachi Life-style quirk vignettes; gibberish voice is fine.
@@ -221,10 +280,12 @@ sake.
 
 ### P1 — Companions as peers
 Two or three companions with autonomy, addressable and helpable, never
-pilotable.
+commanded as a party. Offers, confidence bands, and one standing agreement
+make routine cooperation easy without erasing refusal.
 
-**Done when** a playtester asks a companion for something rather than
-reaching for a command menu.
+**Done when** a playtester asks an unfamiliar companion for something, assigns
+a trusted companion within an existing agreement without friction, and can
+explain why each interaction had a different weight.
 
 ### P2 — Succession
 Death, and a companion becomes the played character.
@@ -246,7 +307,8 @@ scale a returning character can read, not a colony manager's dashboard.
 
 **Done when** the settlement's output visibly changes what the played
 character can attempt, and a player chooses a run for what it will bring
-back rather than for the fight.
+back rather than for the fight; one building's history and inhabitants also
+make its effect recognisably particular to this place.
 
 ### P5 — Inheritance
 Accept Mesocosm critters and RNG critters through the same slot; export the
@@ -259,11 +321,22 @@ companion appears as a named figure in an Isometry campaign.
 
 ## 4. Findings
 
-*Verified facts discovered during the work, dated, with references. Empty at
-founding.*
+*Verified facts discovered during the work, dated, with references.*
+
+- **2026-07-31**: Isometry already proves that campaign ownership can be
+  signed and multi-writer while live tactics retain a scoped sequencer
+  (`isometry/design_docs/2026-07-09_shared_authority_and_collaborative_building_plan.md`).
+  Paredros therefore does not need to choose between collaborative settlement
+  authorship and ordered real-time action; they are separate domains.
 
 ---
 
 ## 5. Progress
 
 - **2026-07-30**: repo founded, name reserved, design recorded. No code.
+- **2026-07-31**: added offer confidence bands and standing agreements,
+  place lineage from camp to city/faction, and layered character/body
+  profiles carried as engrams.
+- **2026-07-31**: adopted the wing license split: MPL-2.0 game code and
+  repository documentation, MIT OR Apache-2.0 for separately identified
+  reusable library crates, and CC BY-SA 4.0 for original assets.

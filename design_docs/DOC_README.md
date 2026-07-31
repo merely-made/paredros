@@ -27,8 +27,8 @@ any other index and is updated in the same session as any doc change.
 | Doc | What it is |
 | --- | ---------- |
 | [DOC_POLICY.md](DOC_POLICY.md) | Documentation governance |
-| [PROJECT_DESCRIPTION.md](PROJECT_DESCRIPTION.md) | Product goals and pillars (maintainer-owned) |
-| [2026-07-30_paredros_founding_plan.md](2026-07-30_paredros_founding_plan.md) | Vessel 2's design and phases: second-person control with companions as peers, succession as the spine, expeditions against a settlement that keeps (the Heroes of Hammerwatch rhythm) with the Ball × Pit model for the base itself (assemble, upgrade, and house — never schedule and micromanage), the layered social-simulation recipe (with the five shipped approaches and why each caps out alone), three-layer identity, tone and expression, the Nemesis-patent constraint, what is genuinely new, and phases P0–P5 with done-conditions. |
+| [PROJECT_DESCRIPTION.md](PROJECT_DESCRIPTION.md) | Product goals and pillars (maintainer-owned): companions retain agency, with bounded tag-in allowed without turning the entourage into a puppeteered party. |
+| [2026-07-30_paredros_founding_plan.md](2026-07-30_paredros_founding_plan.md) | Vessel 2's design and phases: companions as peers, offers becoming low-friction standing agreements as trust grows, succession, Heroes of Hammerwatch expeditions, a Ball × Pit/RimWorld base assembled from buildings and named inhabitants, place lineage from camp through city and faction, the layered social simulation, composable critter/body/character engrams, the wing license split, tone, the Nemesis-patent constraint, and P0–P5 done-conditions. |
 
 ## Archive
 
