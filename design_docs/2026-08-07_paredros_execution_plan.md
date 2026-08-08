@@ -1,7 +1,8 @@
 # Paredros Execution Plan (2026-08-07)
 
 **Status: in progress (2026-08-08).** S0 landed; S1 landed with its headed
-judgment open; S2 is next. The
+judgment open; S2 landed the same day, headed judgment likewise open; S3,
+the sortie, is next and is the wing's ruled extraction trigger. The
 [founding plan](2026-07-30_paredros_founding_plan.md)
 remains the charter: its rulings (agreements as the interface, tag-in as
 rehearsed succession, the puppeteering canary, settlement at
@@ -194,7 +195,7 @@ as lines and is the surface to judge, but nothing has been put in front of
 a player and no in-game presentation exists. That half of the
 done-condition stays open, to be closed by S2 or by a headed session.
 
-### S2 — The negotiated home
+### S2 — The negotiated home (landed 2026-08-08, headed judgment open)
 
 Offer someone housing and work. They accept, refuse, or counteroffer,
 from an intelligible history. This is the settlement tested as **peer
@@ -203,6 +204,40 @@ agency** before it is tested as production.
 **Done when:** at least one refusal and one counteroffer occur for
 reasons the player can trace; an accepted agreement changes where someone
 lives and what they do daily.
+
+**What landed.** `settlement.rs` in `paredros-social`: dwellings,
+tenancies, and the one rule that carries the gate — **residence is
+derived, never bookkept**. A tenancy records dwelling, tenant, the
+agreement that put them there, and when; it is current exactly while that
+agreement stands. `offer_home` weighs the ask like any other offer and
+creates a tenancy only on formation, so a home nobody agreed to cannot
+exist; ending the agreement *is* moving out, with no second copy of
+"who lives where" to fall out of step (`moving_out_is_the_agreement_ending`
+ends the arrangement through `Society` alone and reads the move-out off
+the settlement). The daily round derives the same way: home from the
+current tenancy, work from the agreement under it, so an accepted
+agreement is structurally the one thing that changes where a peer lives
+and what they do daily.
+
+The settling scene (`settling.rs`) continues S1's story: same four
+people, same deeds, asks differing by person because the work does. Bram
+takes the gatehouse and the bounds. Odris is offered the night watch, the
+one craft he alone holds at a grade he exactly meets, and refuses at the
+trust gate citing the abandonment: capability is provably not the reason.
+Sela is asked past the danger she would carry, counteroffers, and the
+arrangement that forms is her terms with the ward's danger held inside
+the cap she named; her daily round is the bargained work, not the work
+first asked, which is the counteroffer having mattered
+(`an_accepted_agreement_changes_where_someone_lives_and_what_they_do`).
+A dwelling under a standing tenancy refuses a second offer before anyone
+weighs anything; a vacated one can be offered again. Settlement hash
+`0x4087f839d497324a` over 12 deeds and 2 tenancies, dated not pinned.
+
+**Open: the headed judgment**, as S1's. `cargo run -p paredros-social
+--bin home` prints the answers with premises and the resulting daily
+rounds; nothing has been put in front of a player. What a dwelling
+yields, who may offer on the settlement's behalf, and any production are
+S5's questions, deliberately absent.
 
 ### S3 — One sortie and return (the joint receipt)
 
@@ -264,6 +299,24 @@ Isometry as an artifact. Shapes become relics; values become factions.
 
 ## Findings
 
+- **2026-08-08 (S2):** residence wanted to be a store and is a derivation
+  instead. The first sketch had `offer_home` writing a tenancy and an
+  `end_tenancy` closing it, which would have made the settlement a second
+  copy of agreement state with a synchronization duty. Deriving currency
+  from the agreement (`a tenancy is current while its agreement stands`)
+  deleted the duty: ending the arrangement through `Society` alone moves
+  the tenant out, and `moving_out_is_the_agreement_ending` exists to keep
+  it that way. Same shape as standing folded from the deed log.
+- **2026-08-08 (S2):** the settlement lives in `paredros-social` as a
+  module, not a crate. It is willingness-adjacent state (what agreements
+  change) with no combat surface, so the two-owners wall is not in play;
+  a module is the default until an enforced boundary is needed. S5 may
+  revisit when production arrives.
+- **2026-08-08 (S2):** dwellings are founded, not negotiated: `found` is
+  a world act that moves nobody's standing, and nothing gates who may
+  offer a dwelling on the settlement's behalf. That permission question
+  is deliberately S5's, recorded here so its absence reads as a decision
+  rather than an oversight.
 - **2026-08-08 (S1):** the two-owners rule is a dependency fact, and that
   decided a crate boundary. `SubjectId` cannot live in either owner: if it
   lived in the willingness crate, the combat owner would have to depend on
@@ -324,6 +377,13 @@ Isometry as an artifact. Shapes become relics; values become factions.
 
 ## Progress
 
+- **2026-08-08:** S2 landed with its headed judgment open. `settlement.rs`
+  and the settling scene join `paredros-social`: homes offered with daily
+  work, answered from history, and residence plus the daily round derived
+  from agreement state so an accepted agreement is the one thing that
+  changes where a peer lives and what they do. 42 tests green across the
+  workspace, clippy clean. Receipt and the open half in the S2 section
+  above; three findings recorded.
 - **2026-08-08:** S1 landed with its headed judgment open.
   `crates/paredros-social` is the willingness owner (deeds, standing,
   confidence, refusal, standing agreements, premises) and

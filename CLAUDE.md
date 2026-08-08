@@ -29,7 +29,10 @@ a headed run presenting netrender's composed master with a renderling room
 in it. `crates/paredros-social` is the S1 willingness owner landed the same
 day: deeds, standing, confidence, refusal, standing agreements, and the
 premises behind every answer, with the refusal scene as an executable
-receipt. `crates/paredros-identity` holds the identity facts both owners
+receipt. S2 (landed 2026-08-08) added the settlement in peer-agency form
+to the same crate: homes offered with daily work, residence and the
+daily round derived from agreement state, so moving out is the agreement
+ending. `crates/paredros-identity` holds the identity facts both owners
 share and neither may own. The executable plan is
 `design_docs/2026-08-07_paredros_execution_plan.md` (S0-S6); the founding
 plan remains the charter with its phase section superseded.

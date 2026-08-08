@@ -24,6 +24,12 @@
 //! - [`Agreement`], with formation, exercise, renegotiation, and ending, each
 //!   transition recorded as a deed.
 //!
+//! S2 adds the settlement in its peer-agency form: [`Settlement`], where a
+//! tenancy exists only because an agreement formed, and where someone lives is
+//! derived from that agreement's state, so moving out *is* the arrangement
+//! ending. An accepted agreement is the one thing that changes where a peer
+//! lives and what they do daily.
+//!
 //! **Nothing here commands anyone.** There is no call that makes a companion
 //! act. Offers are put; answers come back; a standing agreement makes routine
 //! work routine without making it compulsory, and a holder whose premises have
@@ -37,6 +43,8 @@ pub mod offer;
 pub mod relation;
 pub mod response;
 pub mod scene;
+pub mod settlement;
+pub mod settling;
 pub mod society;
 pub mod willing;
 
@@ -48,4 +56,5 @@ pub use deed::{Deed, DeedId, DeedKind, DeedLog};
 pub use offer::{Offer, Terms, Work};
 pub use relation::{Relations, Standing};
 pub use response::{Premise, Response, Ruling, RulingKind, Verdict, cited_deeds};
+pub use settlement::{DailyRound, Dwelling, DwellingId, SettleError, Settlement, Tenancy};
 pub use society::{SocialError, Society};

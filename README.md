@@ -36,7 +36,7 @@ exercised, renegotiated, and ended. `cargo run -p paredros-social --bin
 refusal` prints the scene.
 
 - [Project description](design_docs/PROJECT_DESCRIPTION.md)
-- [Execution plan](design_docs/2026-08-07_paredros_execution_plan.md) — gates S0-S6, S0 and S1 landed
+- [Execution plan](design_docs/2026-08-07_paredros_execution_plan.md) — gates S0-S6; S0, S1, and S2 landed
 - [Founding plan](design_docs/2026-07-30_paredros_founding_plan.md) — design and phases P0–P5, phase section superseded
 - Wing-level architecture: `mesocosm/design_docs/2026-07-30_games_wing_founding.md` (sibling repo)
 
