@@ -14,10 +14,17 @@ because the entourage does.
 
 Vessel 2 of a three-game wing — Mesocosm (first person), Paredros (second
 person), Isometry (third person) — that shares a world substrate, a lineage
-model, and a trust plane, but no engine, genre, or schedule.
+model, and a trust plane. Sharing engine organs is encouraged where the
+organ stays verb-neutral (ruled 2026-08-05, wing founding record §1); the
+vessels still do not share a genre, a schedule, or their verbs. The wing's
+question, ruled 2026-08-07: **continuity under transformation** — here,
+whether a community remains itself as control, bodies, and generations
+change.
 
 **Pre-implementation.** The repo currently holds a name reservation and
-design docs. There is no game code yet.
+design docs. There is no game code yet. The executable plan is
+`design_docs/2026-08-07_paredros_execution_plan.md` (S0-S6); the founding
+plan remains the charter with its phase section superseded.
 
 See `design_docs/PROJECT_DESCRIPTION.md` for the product description,
 `design_docs/DOC_README.md` for the doc index, and the wing-level
