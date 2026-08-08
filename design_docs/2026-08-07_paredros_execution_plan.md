@@ -142,6 +142,12 @@ Isometry as an artifact. Shapes become relics; values become factions.
   durable facts, projections) is **anticipated, not extracted**: Paredros
   implements its own transition layer concretely, and extraction waits
   for the third sovereign proof per the general model's evaluator rule.
+- **R4 lives here now** (inherited 2026-08-07 from Mesocosm's archived
+  body-pipeline plan): the extraction review — what, if anything, becomes
+  a shared runtime crate, with Paredros as the second consumer or not at
+  all — fires **after S3**, the sortie being the wing's ruled extraction
+  trigger. Done when the seam is either extracted with two consumers
+  named, or explicitly declined in writing.
 
 ## Findings
 
