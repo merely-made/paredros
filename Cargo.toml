@@ -10,11 +10,26 @@ keywords = ["game", "rpg", "colony", "companions", "simulation"]
 categories = ["games"]
 exclude = ["design_docs/"]
 
-# Own workspace root. Members arrive when the first real crate splits out;
-# until then the reservation package is the only member.
+# Own workspace root. The reservation package plus the crates that have split
+# out so far.
 #
 # Game and application crates use MPL-2.0. A genuinely reusable library may
 # declare MIT OR Apache-2.0 in its own manifest after its boundary is proven.
 [workspace]
+members = ["crates/paredros-room"]
+
+# renderling is a rust-gpu consumer: it wants the shader toolchain's spirv-std
+# and the crabslab fork the local renderling checkout is built against. Without
+# these three the tenant renderer does not resolve. Same set the mesocosm-side
+# device-unity probe used.
+[patch.crates-io]
+spirv-std = { git = "https://github.com/rust-gpu/rust-gpu.git", rev = "05b34493ce661dccd6694cf58afc13e3c8f7a7e0" }
+craballoc = { path = "../../crates/crabslab/crates/craballoc" }
+crabslab = { path = "../../crates/crabslab/crates/crabslab" }
+
+# The probe builds a lot of shader and rasterizer code. Unoptimized debug
+# builds render a frame slowly enough to misread as a hang.
+[profile.dev]
+opt-level = 1
 
 [dependencies]

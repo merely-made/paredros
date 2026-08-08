@@ -1,0 +1,29 @@
+[package]
+name = "paredros-room"
+version = "0.0.1"
+edition = "2024"
+license = "MPL-2.0"
+description = "S0, the room probe: one body, one room, a close camera, a fixed input trace, and a rendered receipt."
+repository = "https://github.com/merely-made/paredros"
+publish = false
+
+# Path deps rather than git, because the probe's whole point is to consume the
+# sibling crates as they stand on this machine: mesocosm's near-tier
+# kinematics, netrender's frame, and the local renderling fork (which has no
+# published home). Revisit when the probe grows into a shipped target.
+[dependencies]
+mesocosm-core = { version = "0.0.1", path = "../../../mesocosm/crates/mesocosm-core" }
+mesocosm-mesh = { version = "0.0.1", path = "../../../mesocosm/crates/mesocosm-mesh" }
+mesocosm-render = { version = "0.0.1", path = "../../../mesocosm/crates/mesocosm-render" }
+netrender = { path = "../../../netrender/netrender" }
+renderling = { path = "../../../../crates/renderling/crates/renderling" }
+wgpu = { version = "29", default-features = false, features = [
+    "dx12",
+    "vulkan",
+    "metal",
+    "wgsl",
+] }
+winit = "0.30"
+pollster = "0.4"
+png = "0.17"
+serde = { version = "1", default-features = false, features = ["derive", "alloc"] }

@@ -21,8 +21,12 @@ question, ruled 2026-08-07: **continuity under transformation** — here,
 whether a community remains itself as control, bodies, and generations
 change.
 
-**Pre-implementation.** The repo currently holds a name reservation and
-design docs. There is no game code yet. The executable plan is
+**Early implementation.** The repo holds the name-reservation package, the
+design docs, and `crates/paredros-room`, the S0 room probe landed
+2026-08-08: one room carved into a grown mesocosm hillside, one body under
+near-tier kinematics, a fixed input trace with save/reload/replay, and a
+headed run presenting netrender's composed master with a renderling room in
+it. The executable plan is
 `design_docs/2026-08-07_paredros_execution_plan.md` (S0-S6); the founding
 plan remains the charter with its phase section superseded.
 

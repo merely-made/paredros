@@ -24,11 +24,15 @@ magistrate. A colleague, not a servant. Colleagues also succeed to office.
 
 ## Status
 
-**Pre-implementation.** This repository holds a name reservation and the
-design record. There is no game code yet.
+**Early implementation.** The first gate landed 2026-08-08:
+`crates/paredros-room` walks one body around one room carved into a grown
+world, replays a fixed input trace to a matching state hash across a save
+and reload, and draws the room through the shared renderer stack. Nothing
+social exists yet.
 
 - [Project description](design_docs/PROJECT_DESCRIPTION.md)
-- [Founding plan](design_docs/2026-07-30_paredros_founding_plan.md) — design and phases P0–P5
+- [Execution plan](design_docs/2026-08-07_paredros_execution_plan.md) — gates S0-S6, S0 landed
+- [Founding plan](design_docs/2026-07-30_paredros_founding_plan.md) — design and phases P0–P5, phase section superseded
 - Wing-level architecture: `mesocosm/design_docs/2026-07-30_games_wing_founding.md` (sibling repo)
 
 ## License

@@ -1,6 +1,7 @@
 # Paredros Execution Plan (2026-08-07)
 
-**Status: plan.** The [founding plan](2026-07-30_paredros_founding_plan.md)
+**Status: in progress (2026-08-08).** S0 landed; S1 is next. The
+[founding plan](2026-07-30_paredros_founding_plan.md)
 remains the charter: its rulings (agreements as the interface, tag-in as
 rehearsed succession, the puppeteering canary, settlement at
 returning-character scale) all bind here. Its phase section is superseded
@@ -57,7 +58,7 @@ are; it never becomes issuing orders to several characters.
 
 ## 3. Gates
 
-### S0 — The room probe
+### S0 — The room probe (landed 2026-08-08)
 
 One body, one room, close camera, fixed input trace. The renderling
 tenant renders on netrender's device per the cohesion contract
@@ -68,6 +69,55 @@ replay, state hash.
 **Done when:** the same input trace replays to the same hash across
 save/reload; a headed screenshot receipt exists; frame spans are recorded
 beside netrender's.
+
+**Done when, 2026-08-08.** All three hold. The probe is
+`crates/paredros-room` (lib plus `src/bin/room.rs`), the repo's first
+game code.
+
+Determinism: a 64-tick const trace of per-tick headings drives one body
+through `near::step` over `Ground`. Two straight runs produce the same
+position log; a save taken at tick 32, restored into a freshly grown
+world and run to the end, produces the same log, the same final position
+`[39, 2, -39]`, and the same hash. Position-log hash
+`0x27a905731c6bfc61`, ground hash `0x728a7687af5408a9`, both FNV-1a
+(`mesocosm_core::snapshot::hash_bytes`) over postcard bytes. The save
+carries the seed and the ground hash rather than the world, and a restore
+that regrows a different ground is refused (`ProbeError::GroundDiverged`)
+instead of replayed over. Proven by `tests/replay.rs`; 13 tests green,
+`cargo clippy --workspace --all-targets -- -D warnings` clean. The hashes
+are dated against mesocosm as of this entry, not pinned in an assertion:
+they witness a replay, and relief changes upstream are allowed to move
+them.
+
+Picture: `ROOM_TRACE=1 cargo run -p paredros-room --bin room` opens a
+winit window presenting netrender's composed master, which is the
+renderling room composited at scene-op boundary 0 with a vello chrome bar
+over it, both on one device. It drives itself from the trace, captures,
+and exits. Receipt at `Code/testing/paredros/s0_room.png`, 1280x720, 243
+distinct colours, checked in the capture path so a blank frame fails
+rather than writing a file.
+
+Frame spans, this machine: `probe_frame` 14 to 21 ms wall (tick, re-shade,
+tenant draw, compose, present) against netrender's own `total` of 1.7 to
+2.1 ms, of which `vello_render` 1.5 to 1.9 ms, `master_compose` 70 to
+85 µs, `dirty_tile_rebuild` 65 to 85 µs, `tile_invalidate` 48 to 58 µs.
+The probe's span
+dominates because it re-uploads the room's 2,834 triangles every frame to
+move the torch; that is the first thing to fix when a frame budget
+matters.
+
+The room: `Places::grown(4242, 4, 64)` and `Ground::grow`, then one
+`carve` at `[35, 6, -35]` into the first hillside a deterministic outward
+ring scan finds with enough overburden to keep a floor, walls, and a
+roof. Nine voxels cubed. Nothing about the terrain is Paredros's.
+
+Two deliberate choices are ours and worth naming. The camera backs off
+*toward the middle of the room* rather than straight behind the heading:
+an over-the-shoulder rig in a nine-voxel chamber puts the eye inside a
+wall the moment the body reaches a corner, which the trace does eight
+times. And the tenant applies a torch falloff from the eye per vertex,
+because greedy meshing turns a wall into one quad and one quad of one
+colour has no near side.
 
 ### S1 — Three companions, with reasons (the refusal scene)
 
@@ -151,10 +201,39 @@ Isometry as an artifact. Shapes become relics; values become factions.
 
 ## Findings
 
-- (2026-08-07: founded; none yet.)
+- **2026-08-08 (S0):** the stop rule holds in practice. The room probe
+  writes no terrain, no kinematics, and no mesher: `Places::grown`,
+  `Ground::grow`, `Ground::carve`, `near::step`, `Ground::stands`, and
+  `mesh_volume` are all consumed as they stand. What Paredros wrote is
+  the room's siting rule, the trace, the camera, and the save
+  discipline.
+- **2026-08-08 (S0):** `near::step` refuses a blocked move rather than
+  sliding along a full-height wall, so a body in a sealed chamber holds
+  position at the wall. The trace relies on this, and
+  `probe::tests::the_trace_ends_pressed_against_walls` asserts it, so a
+  kinematics change upstream that starts letting bodies through walls
+  fails here loudly.
+- **2026-08-08 (S0):** the execution plan cited a hillside-hunt
+  reference at `mesocosm-core/src/places/hunt.rs` (test `the_chase`)
+  that does not exist. The nearest real stage-scans are
+  `places/near.rs::tests::a_stance` and
+  `places/bricks.rs::tests::hills_block_sight_and_tunnels_grant_it`;
+  this probe's hunt is modelled on those.
+- **2026-08-08 (S0):** the probe's crate uses path dependencies on
+  mesocosm, netrender, and the local renderling fork, against the
+  workspace convention of branch-tracked git deps. The fork has no
+  published home, and S0 exists to consume all three exactly as they
+  stand on the machine. Revisit when the probe grows into a shipped
+  target.
 
 ## Progress
 
+- **2026-08-08:** S0 landed. `crates/paredros-room` is the first game
+  code in the repo: a room carved into a grown hillside, one body under
+  `near::step`, a 64-tick fixed trace, save/reload/replay to a matching
+  position-log hash, and a headed winit run presenting netrender's
+  composed master with the renderling room inside it. Receipt, hashes,
+  and frame spans recorded in the S0 section above.
 - **2026-08-07:** founded from the audit (old phase order could not test
   the premise; no action-RPG slice existed; identity facts were missing)
   and Mark's synthesis ruling (the sortie as the wing's extraction
