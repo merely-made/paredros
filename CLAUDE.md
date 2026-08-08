@@ -32,7 +32,11 @@ premises behind every answer, with the refusal scene as an executable
 receipt. S2 (landed 2026-08-08) added the settlement in peer-agency form
 to the same crate: homes offered with daily work, residence and the
 daily round derived from agreement state, so moving out is the agreement
-ending. `crates/paredros-identity` holds the identity facts both owners
+ending. `crates/paredros-sortie` is S3's joint receipt (sim half landed
+2026-08-08): the one crate reading both owners, with negotiated
+participation, terrain falls as body-revision wounds, the pact-governed
+tag-in, the dig rule, and sortie deeds that explain later answers.
+`crates/paredros-identity` holds the identity facts both owners
 share and neither may own. The executable plan is
 `design_docs/2026-08-07_paredros_execution_plan.md` (S0-S6); the founding
 plan remains the charter with its phase section superseded.

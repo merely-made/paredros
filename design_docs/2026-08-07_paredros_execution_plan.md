@@ -1,8 +1,10 @@
 # Paredros Execution Plan (2026-08-07)
 
 **Status: in progress (2026-08-08).** S0 landed; S1 landed with its headed
-judgment open; S2 landed the same day, headed judgment likewise open; S3,
-the sortie, is next and is the wing's ruled extraction trigger. The
+judgment open; S2 landed the same day, headed judgment likewise open; S3's
+sim half landed the same day (headed real-time action open), which **arms
+R4**: the extraction review now owes its written decision. S4 is next in
+the gate line. The
 [founding plan](2026-07-30_paredros_founding_plan.md)
 remains the charter: its rulings (agreements as the interface, tag-in as
 rehearsed succession, the puppeteering canary, settlement at
@@ -239,7 +241,7 @@ rounds; nothing has been put in front of a player. What a dwelling
 yields, who may offer on the settlement's behalf, and any production are
 S5's questions, deliberately absent.
 
-### S3 — One sortie and return (the joint receipt)
+### S3 — One sortie and return (sim half landed 2026-08-08, headed real-time action open)
 
 A bounded expedition: companions negotiate participation under standing
 agreements; real-time embodied action for the played subject with
@@ -252,6 +254,49 @@ tag-in occurs mid-action under a pre-agreed condition; an injury
 persists as a body fact; one post-sortie offer or refusal is explained
 by a deed from the sortie; and the canary holds (no moment-to-moment
 multi-character orders anywhere).
+
+**What landed.** `crates/paredros-sortie`, the one crate allowed to read
+both owners. The scene is continuity all the way down: S0's seed and
+hillside, S2's settled society, departure from the surface above the
+carved chamber. At the muster Bram's scouting is negotiated fresh (a
+bounded expedition is nobody's daily round) and formed as an agreement
+that is exercised by the march and ended `WorkDone` at the return; Sela's
+part rides her standing settlement agreement, which also carries the
+tag-in pact — "a standing agreement governs tag-in" as data:
+`Pact { under, successor }`, firing only while the agreement stands.
+
+The world itself is the hazard. Marching the calibrated heading, Aud and
+Bram take a six-voxel scarp the near tier only descends as a forced
+drop; both are wounded (the law is uniform), only Aud downs (downing is
+a control fact, the thing the pact watches). The pact fires one tick
+later, the player becomes Sela, walks four ticks to the ledge, tends
+from above (`PerformedUnderAgreement` + `StoodBy`, both deeds), tags
+out. The salvage is taken in the trench — and the trench, like every
+pocket this terrain drops a walker into, cannot be re-climbed at a
+one-voxel lift, so the party **digs**: when the played body makes no
+progress for four ticks it carves a head-height notch toward its goal
+(mesocosm's own verb, consumed) and climbs into it. 35 voxels hewn come
+home with the salvage. Home again, Aud shares with both companions, and
+the expedition agreement closes.
+
+Every done-condition is a test in `tests/sortie.rs`: replay to hash
+`0x3b7446a25215a0bb` (70 ticks, dated not pinned); tag-in strictly
+inside the action with a rescue that takes real ticks; the wound as
+`BodyRevisionId(1)` worn in the facets after the run; and the payoff —
+the ask S2 saw counteroffered (danger 4 against the 3 Sela would carry)
+is put again post-sortie and **accepted**, the premises citing the walk-
+home share by deed id: one sortie deed is exactly the margin. The canary
+receipt runs the grudged variant: Aud abandons Bram on the eve, Bram
+refuses, the sortie completes without a scout, and his trail row never
+moves. `Sortie::advance` takes no input at all.
+
+**Open: headed real-time action.** The sim march is goal-seeking from
+recorded configuration, which is what makes the receipt a replay; the
+played subject under live input, presented, is the headed half —
+`cargo run -p paredros-sortie --bin sortie` prints the judgment surface
+until then. **R4 is hereby armed**: the extraction review owes its
+written decision (extract with two consumers named, or decline in
+writing) as its own deliberate pass.
 
 ### S4 — Death and succession
 
@@ -299,6 +344,41 @@ Isometry as an artifact. Shapes become relics; values become factions.
 
 ## Findings
 
+- **2026-08-08 (S3):** the wound threshold is Paredros's own constant
+  (`SAFE_FALL = 4`), not an import: the near tier keeps `COMFORT_DROP`
+  private, and the ruling is independent anyway — falls hurt here even if
+  the walker's willingness to take them changed upstream. If mesocosm
+  ever exports the constant, tying them is a decision, not a cleanup.
+- **2026-08-08 (S3):** only the home body downs; wounds are uniform.
+  Downing is a control fact — it is what the pact watches for — and a
+  tagged-in successor or a companion grits through the same wound,
+  because two downed bodies at a cliff base with the healer among them is
+  a deadlock, not a story. S4 (death) will have to revisit what a
+  companion's fall can mean.
+- **2026-08-08 (S3):** the grown terrain's pockets are one-way at a
+  one-voxel climb, everywhere the survey looked: what a walker descends
+  past comfort it can never re-climb. The dig rule (stuck four ticks →
+  carve a head-height notch toward the goal and climb in) turned that
+  from a scripted-detour problem into a law: the sortie cannot strand,
+  the verb is mesocosm's `carve` consumed as-is, and the hewn rock comes
+  home with the salvage. This is also the first time Paredros *writes*
+  the world rather than reading it.
+- **2026-08-08 (S3):** the sim march is goal-seeking (waypoints and
+  parts), not per-tick input, so determinism is structural and the
+  replay receipt is exact; "real-time embodied action" is deliberately
+  the headed half's burden. The calibration survey (`tests/calibrate.rs`,
+  ignored) is kept: `SITE_OFFSET` and `WAY_OFFSETS` are facts about
+  seed 4242's terrain, chosen from a printed table, and a regrown world
+  that stops having that scarp fails the receipts loudly.
+- **2026-08-08 (S3):** `Wound` lives in `paredros-sortie` for now. The
+  combat/movement owner is its natural home, but which crate that *is*
+  (the room probe grown up, or an extracted seam) is exactly R4's
+  question, so the type waits where the joint receipt made it.
+- **2026-08-08 (S3):** depending on `paredros-room` brings the render
+  stack into the sim crate's build tree unused. Accepted for now — the
+  room is the world's owner and S0's path-dep posture was already ruled —
+  but a headless split of the room crate is available if it starts to
+  cost.
 - **2026-08-08 (S2):** residence wanted to be a store and is a derivation
   instead. The first sketch had `offer_home` writing a tenancy and an
   `end_tenancy` closing it, which would have made the settlement a second
@@ -377,6 +457,14 @@ Isometry as an artifact. Shapes become relics; values become factions.
 
 ## Progress
 
+- **2026-08-08:** S3's sim half landed; headed real-time action open;
+  R4 armed. `crates/paredros-sortie` joins the workspace as the one
+  crate reading both owners: negotiated participation, agreement-driven
+  companion parts, the terrain's own falls as wounds (body-revision
+  facts), the pact-governed tag-in, the dig rule, and the sortie deed
+  that flips a post-sortie answer with its premises citing it. 48 tests
+  green across the workspace, clippy clean. Receipt hashes and the open
+  half in the S3 section; six findings recorded.
 - **2026-08-08:** S2 landed with its headed judgment open. `settlement.rs`
   and the settling scene join `paredros-social`: homes offered with daily
   work, answered from history, and residence plus the daily round derived

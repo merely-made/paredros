@@ -16,7 +16,12 @@ exclude = ["design_docs/"]
 # Game and application crates use MPL-2.0. A genuinely reusable library may
 # declare MIT OR Apache-2.0 in its own manifest after its boundary is proven.
 [workspace]
-members = ["crates/paredros-identity", "crates/paredros-room", "crates/paredros-social"]
+members = [
+    "crates/paredros-identity",
+    "crates/paredros-room",
+    "crates/paredros-social",
+    "crates/paredros-sortie",
+]
 
 # renderling is a rust-gpu consumer: it wants the shader toolchain's spirv-std
 # and the crabslab fork the local renderling checkout is built against. Without
