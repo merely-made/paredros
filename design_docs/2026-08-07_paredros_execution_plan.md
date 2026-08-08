@@ -1,6 +1,7 @@
 # Paredros Execution Plan (2026-08-07)
 
-**Status: in progress (2026-08-08).** S0 landed; S1 is next. The
+**Status: in progress (2026-08-08).** S0 landed; S1 landed with its headed
+judgment open; S2 is next. The
 [founding plan](2026-07-30_paredros_founding_plan.md)
 remains the charter: its rulings (agreements as the interface, tag-in as
 rehearsed succession, the puppeteering canary, settlement at
@@ -119,9 +120,10 @@ times. And the tenant applies a torch falloff from the eye per vertex,
 because greedy meshing turns a wall into one quad and one quad of one
 colour has no near side.
 
-### S1 — Three companions, with reasons (the refusal scene)
+### S1 — The refusal scene (landed 2026-08-08, headed judgment open)
 
-Three companions receive the same offer and respond differently, and
+Three companions, with reasons. They receive the same offer and respond
+differently, and
 **every response exposes its premises**. This requires the minimal forms,
 present from the start: a deed log (append-only), a relationship fact,
 confidence, refusal, and the explanation surface. Minimal is fine;
@@ -130,6 +132,67 @@ absent is not — that was the old P1's flaw.
 **Done when:** a playtester can say why each of the three answered as
 they did, from what the game showed them; and one standing agreement is
 formed, exercised, and renegotiated or terminated, all legibly.
+
+**Done when, 2026-08-08: the machine-checkable half holds. The headed
+judgment is open.** The scene is `crates/paredros-social` (lib,
+`src/bin/refusal.rs`, `tests/refusal.rs`); the §1 identity facts are
+`crates/paredros-identity`. 33 tests green across the workspace,
+`cargo clippy --workspace --all-targets -- -D warnings` clean.
+
+Aud puts the same offer to three people at tick 8: scout ahead, grade 3,
+danger 4, share 2, up to danger 5. Three answers, and the premises say
+why. Aud, Bram, Odris and Sela are fixture names for this scene, not
+lore.
+
+- **Bram accepts.** Aud stood by him at ticks 1 and 2, which is trust 6
+  and liking 4. Scouting asks grade 3 and he holds 4. Danger 4 asks trust
+  4 and he holds 6; he would bear 5 for her.
+- **Odris refuses.** Aud shared with him at tick 3 and left him at tick 4,
+  which is trust -4 against the 4 that danger asks. He is the *best* scout
+  of the three, grade 5 against the 3 asked, and refuses anyway. The model
+  does not confuse capability with willingness, and
+  `the_one_who_refuses_is_the_most_capable_of_the_three` fails if it ever
+  starts to.
+- **Sela counteroffers**, at share 3 and a danger cap of 3. Three deeds
+  (shared, shared, stood by) put her at trust 5 and liking 6, so the ask
+  is fine. She is the most careful of the three, and danger 4 is past the
+  3 she would carry for anyone. Her answer is the terms she would take
+  instead.
+
+The premises are data rather than prose. The test asserts that the three
+cited deed sets are non-empty, pairwise disjoint, and made only of deeds
+Aud actually did to that person; that the deciding gate is stated; and
+that gates never reached are never claimed (Odris stops at trust, so no
+danger premise appears in his answer).
+
+The agreement, whole, with the one who accepted. Formed at tick 9 on the
+offered terms, after the weighing runs again, so an arrangement nobody
+would accept cannot be created. Exercised at tick 10 and performed with no
+renegotiation. Renegotiated at tick 11, Bram's proposal, down to share 3
+and a danger cap of 3. Asked again at tick 12 at danger 4 and answered
+`OutsideTerms`, which is the changed term biting. Ended at tick 13 for
+`WorkDone`, with Aud's standing toward Bram and the reason both in the
+premises. All four transitions are deeds in the log, and the test walks
+the agreement's own history back to each one.
+
+The canary, as a test: `a_standing_agreement_is_not_a_command` forms the
+arrangement, records Aud abandoning Bram, and then asks under it. Bram
+declines and names the deed that changed. Nothing in the crate can make
+anyone act; offers are put and answers come back.
+
+Determinism: building the scene twice and running both the offers and the
+whole lifecycle gives equal answers, equal rulings, and equal societies.
+Society hash `0x49860851d09fdd84` over 14 deeds, FNV-1a
+(`mesocosm_core::snapshot::hash_bytes`) over postcard bytes. Dated here
+rather than pinned in an assertion, as S0's are; what the test asserts is
+that two runs agree.
+
+**Open: the headed judgment.** Whether a playtester can say why each of
+the three answered, from what the game showed them, is not a thing a test
+settles. `cargo run -p paredros-social --bin refusal` prints the premises
+as lines and is the surface to judge, but nothing has been put in front of
+a player and no in-game presentation exists. That half of the
+done-condition stays open, to be closed by S2 or by a headed session.
 
 ### S2 — The negotiated home
 
@@ -201,6 +264,39 @@ Isometry as an artifact. Shapes become relics; values become factions.
 
 ## Findings
 
+- **2026-08-08 (S1):** the two-owners rule is a dependency fact, and that
+  decided a crate boundary. `SubjectId` cannot live in either owner: if it
+  lived in the willingness crate, the combat owner would have to depend on
+  willingness to name a person, which is the wall breached from the other
+  side. `crates/paredros-identity` is therefore a foundation crate that
+  knows about neither, holding `SubjectId`, `BodyRevisionId`, `FactionId`,
+  `OfficeId`, `Tick`, the facet stores, and the control pointer. It is the
+  one place the four facts are named.
+- **2026-08-08 (S1):** storing standing would have made the explanation
+  surface a second job. Folding it out of the deed log on each call made
+  the surface honest for free: a `Standing` carries the ids of the deeds
+  that produced it, so a premise can only ever cite entries that exist.
+  The test asserts on ids resolved back through the log, so a rule that
+  kept answering correctly while inventing its reasons would fail.
+- **2026-08-08 (S1):** refusing weighs (0, 0) in the deed table. That is a
+  ruling rather than an omission: refusal is a legitimate answer in this
+  vessel, so it costs the refuser nothing, and
+  `a_refusal_is_an_outcome_and_costs_the_refuser_nothing` pins it.
+- **2026-08-08 (S1):** the played character is admitted to the society the
+  same way anyone else is, because succession means the distinction is
+  temporary. There is no second record shape for the one being played, and
+  the willingness rule never asks who the player is.
+- **2026-08-08 (S1):** `paredros-social` takes a **dev**-dependency on
+  `mesocosm-core`, for `snapshot::encode` and `hash_bytes` and nothing
+  else. Judgment call, recorded because it brushes two rules at once: the
+  stop rule forbids growing an organ Mesocosm already owns, so the replay
+  receipt consumes the wing's hash rather than writing a second FNV-1a,
+  and the shipped dependency list of the willingness owner still contains
+  only `serde` and `paredros-identity`.
+- **2026-08-08 (S1):** §1's controlled-subject session state landed and S1
+  does not use it. `Control` is tested on its own (tag-in, tag-out,
+  succession, replay from intents) and waits for S3 and S4. Recorded so it
+  is not rediscovered as missing.
 - **2026-08-08 (S0):** the stop rule holds in practice. The room probe
   writes no terrain, no kinematics, and no mesher: `Places::grown`,
   `Ground::grow`, `Ground::carve`, `near::step`, `Ground::stands`, and
@@ -228,6 +324,15 @@ Isometry as an artifact. Shapes become relics; values become factions.
 
 ## Progress
 
+- **2026-08-08:** S1 landed with its headed judgment open.
+  `crates/paredros-social` is the willingness owner (deeds, standing,
+  confidence, refusal, standing agreements, premises) and
+  `crates/paredros-identity` is the foundation both owners share. Three
+  companions answer one offer three ways with their reasons attached, and
+  one standing agreement is formed, exercised, renegotiated, and ended
+  with every transition in the deed log. 33 tests green across the
+  workspace, clippy clean. Scene, premises, agreement receipt, and the
+  open half recorded in the S1 section above.
 - **2026-08-08:** S0 landed. `crates/paredros-room` is the first game
   code in the repo: a room carved into a grown hillside, one body under
   `near::step`, a 64-tick fixed trace, save/reload/replay to a matching

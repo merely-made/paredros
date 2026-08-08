@@ -1,0 +1,14 @@
+[package]
+name = "paredros-identity"
+version = "0.0.1"
+edition = "2024"
+license = "MPL-2.0"
+description = "The identity prerequisites: the continuing person, the body worn, the roles held, and who the player is currently being."
+repository = "https://github.com/merely-made/paredros"
+publish = false
+
+# Deliberately dependency-free apart from serde. Both of the game's owners
+# (social willingness, combat execution) need to name a person; neither should
+# have to depend on the other to do it.
+[dependencies]
+serde = { version = "1", default-features = false, features = ["derive", "alloc"] }

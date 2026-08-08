@@ -22,11 +22,15 @@ whether a community remains itself as control, bodies, and generations
 change.
 
 **Early implementation.** The repo holds the name-reservation package, the
-design docs, and `crates/paredros-room`, the S0 room probe landed
-2026-08-08: one room carved into a grown mesocosm hillside, one body under
-near-tier kinematics, a fixed input trace with save/reload/replay, and a
-headed run presenting netrender's composed master with a renderling room in
-it. The executable plan is
+design docs, and three crates. `crates/paredros-room` is the S0 room probe
+landed 2026-08-08: one room carved into a grown mesocosm hillside, one body
+under near-tier kinematics, a fixed input trace with save/reload/replay, and
+a headed run presenting netrender's composed master with a renderling room
+in it. `crates/paredros-social` is the S1 willingness owner landed the same
+day: deeds, standing, confidence, refusal, standing agreements, and the
+premises behind every answer, with the refusal scene as an executable
+receipt. `crates/paredros-identity` holds the identity facts both owners
+share and neither may own. The executable plan is
 `design_docs/2026-08-07_paredros_execution_plan.md` (S0-S6); the founding
 plan remains the charter with its phase section superseded.
 
