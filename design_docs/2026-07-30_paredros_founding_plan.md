@@ -279,6 +279,12 @@ prediction and rollback stay out of scope.
 
 ## 3. Phases
 
+**Superseded 2026-08-07** by the
+[execution plan](2026-08-07_paredros_execution_plan.md), on the audit
+finding that this order could not test the premise (offers before deeds
+and explanation; succession before either). The charter rulings above are
+untouched and bind the successor. Preserved below as founding history.
+
 Done-conditions, not estimates.
 
 ### P0 — One character, one place
