@@ -90,7 +90,10 @@ fn a_tag_in_occurs_mid_action_under_the_pact() {
     // Mid-action: after departure, before the return, and the rescue was a
     // walk rather than a reach from where she stood.
     assert!(tick_of(invoked).0 > scene::DEPART.0);
-    assert!(tagged_out.0 > tagged_in.0.0, "the rescue took no time at all");
+    assert!(
+        tagged_out.0 > tagged_in.0.0,
+        "the rescue took no time at all"
+    );
     assert!(tagged_out.0 < returned.0);
     assert_eq!(tagged_in.1, SELA);
 
@@ -111,12 +114,9 @@ fn a_tag_in_occurs_mid_action_under_the_pact() {
     assert!(deeds.deeds().iter().any(|deed| deed.doer == SELA
         && deed.toward == Some(AUD)
         && matches!(deed.kind, DeedKind::PerformedUnderAgreement(_))));
-    assert!(
-        deeds
-            .deeds()
-            .iter()
-            .any(|deed| deed.doer == SELA && deed.toward == Some(AUD) && deed.kind == DeedKind::StoodBy)
-    );
+    assert!(deeds.deeds().iter().any(|deed| deed.doer == SELA
+        && deed.toward == Some(AUD)
+        && deed.kind == DeedKind::StoodBy));
 }
 
 #[test]
@@ -201,10 +201,11 @@ fn a_refusal_stands_and_nobody_is_ordered() {
         .find(|answer| answer.by == BRAM)
         .expect("Bram was asked");
     assert_eq!(bram.verdict, Verdict::Refuse);
-    assert!(bram.premises.iter().any(|premise| matches!(
-        premise,
-        Premise::TrustAsked { met: false, .. }
-    )));
+    assert!(
+        bram.premises
+            .iter()
+            .any(|premise| matches!(premise, Premise::TrustAsked { met: false, .. }))
+    );
 
     // He stood at home the whole run: every trail row holds him at the
     // muster point.

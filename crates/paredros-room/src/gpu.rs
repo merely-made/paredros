@@ -30,48 +30,33 @@ pub const SIZE: [u32; 2] = [1280, 720];
 /// a PNG wants.
 pub const MASTER_FORMAT: wgpu::TextureFormat = wgpu::TextureFormat::Rgba8Unorm;
 
+/// What renderling wants from the shared device.
+///
+/// All optional: renderling runs without them, and a thin adapter should
+/// still get a room. Netrender's own requirement and its limit minimum are
+/// not stated here at all, which is the point of the seam — they belong to
+/// netrender and it applies them.
+fn renderling_needs() -> netrender::TenantNeeds {
+    netrender::TenantNeeds {
+        optional_features: wgpu::Features::INDIRECT_FIRST_INSTANCE
+            | wgpu::Features::MULTI_DRAW_INDIRECT_COUNT
+            | wgpu::Features::VERTEX_WRITABLE_STORAGE
+            | wgpu::Features::CLEAR_TEXTURE,
+        label: Some("paredros room probe"),
+        ..Default::default()
+    }
+}
+
 /// Boots one device for both tenants.
 ///
-/// The feature set is netrender's requirement plus what renderling asks for,
-/// intersected with what the adapter actually has, so a thin adapter reports
-/// a missing feature rather than failing at pipeline creation.
+/// Netrender owns the boot (R4, 2026-08-10): this states what renderling
+/// needs and netrender unions it with its own requirements. The probe used
+/// to run the adapter dance itself and carry a copy of netrender's
+/// inter-stage-variable minimum, which is exactly the kind of copy that
+/// goes stale without anything failing until a shader will not link.
 pub fn boot(instance: &wgpu::Instance, compatible: Option<&wgpu::Surface<'_>>) -> WgpuHandles {
-    let adapter = pollster::block_on(instance.request_adapter(&wgpu::RequestAdapterOptions {
-        power_preference: wgpu::PowerPreference::HighPerformance,
-        force_fallback_adapter: false,
-        compatible_surface: compatible,
-    }))
-    .expect("no wgpu adapter");
-
-    let features = (netrender::REQUIRED_FEATURES
-        | wgpu::Features::INDIRECT_FIRST_INSTANCE
-        | wgpu::Features::MULTI_DRAW_INDIRECT_COUNT
-        | wgpu::Features::VERTEX_WRITABLE_STORAGE
-        | wgpu::Features::CLEAR_TEXTURE)
-        .intersection(adapter.features());
-    assert!(
-        adapter.features().contains(netrender::REQUIRED_FEATURES),
-        "this adapter cannot host netrender: missing {:?}",
-        netrender::REQUIRED_FEATURES - adapter.features()
-    );
-
-    let (device, queue) = pollster::block_on(adapter.request_device(&wgpu::DeviceDescriptor {
-        label: Some("paredros room probe"),
-        required_features: features,
-        required_limits: wgpu::Limits {
-            max_inter_stage_shader_variables: 28,
-            ..Default::default()
-        },
-        ..Default::default()
-    }))
-    .expect("no wgpu device");
-
-    WgpuHandles {
-        instance: instance.clone(),
-        adapter,
-        device,
-        queue,
-    }
+    netrender::boot_on(instance.clone(), compatible, &renderling_needs())
+        .expect("no wgpu device able to host both netrender and renderling")
 }
 
 /// The renderling half: the room and the body, drawn into a texture netrender

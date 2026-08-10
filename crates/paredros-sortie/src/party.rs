@@ -87,11 +87,7 @@ pub fn negotiate_scout(
 /// heals its people wherever they are. Verified, not formed: the agreement
 /// must stand and its work must cover the tending, or there is no healer
 /// and no pact on the march.
-pub fn healer_part(
-    society: &Society,
-    under: AgreementId,
-    tend: &Work,
-) -> Option<Part> {
+pub fn healer_part(society: &Society, under: AgreementId, tend: &Work) -> Option<Part> {
     let agreement = society.agreement(under)?;
     (agreement.standing() && agreement.covers(tend)).then_some(Part::Healer { under })
 }

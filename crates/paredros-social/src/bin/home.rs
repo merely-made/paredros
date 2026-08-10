@@ -53,7 +53,10 @@ fn main() {
                 "{} lives in {} and daily does {} at grade {}.",
                 name,
                 dwelling.name,
-                round.does.map(|work| work.craft.name()).unwrap_or("nothing"),
+                round
+                    .does
+                    .map(|work| work.craft.name())
+                    .unwrap_or("nothing"),
                 round.does.map(|work| work.grade).unwrap_or(0),
             ),
             None => println!("{name} lives as before."),

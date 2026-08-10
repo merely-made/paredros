@@ -345,7 +345,7 @@ Isometry as an artifact. Shapes become relics; values become factions.
   named, or explicitly declined in writing.
   **DECIDED 2026-08-10**: see
   [the extraction review](2026-08-10_r4_extraction_review.md). Tenancy
-  pushed up to netrender (queued on its tree), identity promoted in
+  pushed up to netrender (landed there 2026-08-10), identity promoted in
   place, grammar refused on principle, the adventure-mode frame adopted
   symmetrically.
 

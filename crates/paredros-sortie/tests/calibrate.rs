@@ -41,9 +41,10 @@ fn survey_the_marches() {
             println!("offset {offset:?}: no standing site");
             continue;
         };
-        let fell = sortie.events.iter().any(
-            |event| matches!(event, SortieEvent::Fell { who, .. } if *who == AUD),
-        );
+        let fell = sortie
+            .events
+            .iter()
+            .any(|event| matches!(event, SortieEvent::Fell { who, .. } if *who == AUD));
         let tagged = sortie
             .events
             .iter()

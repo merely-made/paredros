@@ -29,7 +29,12 @@ fn main() {
         match event {
             SortieEvent::Departed { at } => println!("t{}: the party departs.", at.0),
             SortieEvent::Fell { who, at, dropped } => {
-                println!("t{}: {} falls {} down the scarp.", at.0, name(*who), dropped)
+                println!(
+                    "t{}: {} falls {} down the scarp.",
+                    at.0,
+                    name(*who),
+                    dropped
+                )
             }
             SortieEvent::Wounded { who, at, revision } => println!(
                 "t{}: {} is wounded (body revision {}).",

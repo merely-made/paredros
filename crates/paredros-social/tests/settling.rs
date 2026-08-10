@@ -44,14 +44,18 @@ fn a_home_is_taken_a_home_is_refused_and_a_home_is_bargained() {
     // Odris's refusal is about Aud and provably not about the work: his
     // watching exactly meets the grade, the trust gate failed, and the
     // deciding evidence is the abandonment, cited by id.
-    assert!(answers[1].premises.iter().any(|premise| matches!(
-        premise,
-        Premise::Confidence { margin: 0, .. }
-    )));
-    assert!(answers[1].premises.iter().any(|premise| matches!(
-        premise,
-        Premise::TrustAsked { met: false, .. }
-    )));
+    assert!(
+        answers[1]
+            .premises
+            .iter()
+            .any(|premise| matches!(premise, Premise::Confidence { margin: 0, .. }))
+    );
+    assert!(
+        answers[1]
+            .premises
+            .iter()
+            .any(|premise| matches!(premise, Premise::TrustAsked { met: false, .. }))
+    );
     assert!(
         !answers[1]
             .premises
@@ -66,14 +70,18 @@ fn a_home_is_taken_a_home_is_refused_and_a_home_is_bargained() {
     }));
 
     // Sela's counter is the danger gate speaking: trust met, weight not.
-    assert!(answers[2].premises.iter().any(|premise| matches!(
-        premise,
-        Premise::TrustAsked { met: true, .. }
-    )));
-    assert!(answers[2].premises.iter().any(|premise| matches!(
-        premise,
-        Premise::DangerWeighed { borne: false, .. }
-    )));
+    assert!(
+        answers[2]
+            .premises
+            .iter()
+            .any(|premise| matches!(premise, Premise::TrustAsked { met: true, .. }))
+    );
+    assert!(
+        answers[2]
+            .premises
+            .iter()
+            .any(|premise| matches!(premise, Premise::DangerWeighed { borne: false, .. }))
+    );
 }
 
 #[test]

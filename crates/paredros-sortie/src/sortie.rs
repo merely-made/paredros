@@ -81,19 +81,55 @@ pub struct Salvage {
 /// The sortie's own record, one entry per thing that happened.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub enum SortieEvent {
-    Departed { at: Tick },
-    Fell { who: SubjectId, at: Tick, dropped: i32 },
-    Wounded { who: SubjectId, at: Tick, revision: BodyRevisionId },
-    Downed { who: SubjectId, at: Tick },
-    PactInvoked { at: Tick, under: paredros_social::agreement::AgreementId },
-    TaggedIn { at: Tick, to: SubjectId },
-    Tended { at: Tick, by: SubjectId, whom: SubjectId },
-    TaggedOut { at: Tick },
+    Departed {
+        at: Tick,
+    },
+    Fell {
+        who: SubjectId,
+        at: Tick,
+        dropped: i32,
+    },
+    Wounded {
+        who: SubjectId,
+        at: Tick,
+        revision: BodyRevisionId,
+    },
+    Downed {
+        who: SubjectId,
+        at: Tick,
+    },
+    PactInvoked {
+        at: Tick,
+        under: paredros_social::agreement::AgreementId,
+    },
+    TaggedIn {
+        at: Tick,
+        to: SubjectId,
+    },
+    Tended {
+        at: Tick,
+        by: SubjectId,
+        whom: SubjectId,
+    },
+    TaggedOut {
+        at: Tick,
+    },
     /// The played body carved rock out of its way. `removed` is voxels.
-    Dug { at: Tick, removed: u32 },
-    Took { at: Tick, what: u8 },
-    SharedOut { at: Tick, with: SubjectId },
-    Returned { at: Tick },
+    Dug {
+        at: Tick,
+        removed: u32,
+    },
+    Took {
+        at: Tick,
+        what: u8,
+    },
+    SharedOut {
+        at: Tick,
+        with: SubjectId,
+    },
+    Returned {
+        at: Tick,
+    },
 }
 
 pub struct Sortie {
@@ -439,7 +475,10 @@ impl Sortie {
             && !self.control.tagged_in()
             && self.downed.is_none()
             && self.way_index + 1 == self.way_home.len()
-            && march::arrived(self.positions[&self.control.home()], [self.home[0], self.home[2]])
+            && march::arrived(
+                self.positions[&self.control.home()],
+                [self.home[0], self.home[2]],
+            )
         {
             let leader = self.control.home();
             let with: Vec<SubjectId> = self.parts.iter().map(|(who, _)| *who).collect();

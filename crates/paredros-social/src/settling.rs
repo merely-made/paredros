@@ -117,10 +117,7 @@ pub fn sela_settled_ask() -> Offer {
 /// The homes actually made: Bram into the gatehouse at 11, Sela into the
 /// still-room at 12 on her own terms. Odris refused, so no arrangement and
 /// no tenancy exists to show for him, which is the point.
-pub fn housings(
-    society: &mut Society,
-    settlement: &mut Settlement,
-) -> Result<(), SettleError> {
+pub fn housings(society: &mut Society, settlement: &mut Settlement) -> Result<(), SettleError> {
     settlement.offer_home(society, &ask_of(BRAM), THE_GATEHOUSE, Tick(11))?;
     settlement.offer_home(society, &sela_settled_ask(), THE_STILL_ROOM, Tick(12))?;
     Ok(())

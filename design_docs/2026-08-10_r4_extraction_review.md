@@ -1,8 +1,8 @@
 # R4: The Extraction Review (2026-08-10)
 
-**Status: decided 2026-08-10.** Rulings by Mark, evidence and execution
-notes here. Two rulings executed immediately; two queued on sibling
-trees that carry in-flight work (see Execution state).
+**Status: decided and executed 2026-08-10.** Rulings by Mark, evidence
+and execution notes here. All four are carried out; nothing is owed
+(see Execution state).
 
 ## The charge
 
@@ -34,9 +34,9 @@ recognizable across vessels are **people** (subjects and their deeds),
 history). Facts of the world cross via the pipeline. Platform organs
 are shared upward, into the stack that owns them. Verbs never cross.
 
-An amendment recording this belongs in the wing founding record
-(`mesocosm/design_docs/2026-07-30_games_wing_founding.md`). **Owed**,
-not yet applied: the mesocosm tree carries in-flight work.
+Recorded in the wing founding record
+(`mesocosm/design_docs/2026-07-30_games_wing_founding.md`, §1, "Each
+vessel is a mode of the same peopled history") on 2026-08-10.
 
 ## Seam verdicts
 
@@ -55,26 +55,38 @@ doctrine names netrender as the owning layer anyway: the composition
 half (`ExternalTextureComposite`) is already netrender API, so the seam
 is finishing a wall netrender already started.
 
-What netrender grows (the design, to land when its tree quiets):
+**Landed 2026-08-10** in netrender as `93a9cdf23`. What it grew:
 
-- **Tenant requirements at boot.** Device creation accepts the union of
-  extra `wgpu::Features` and limits a tenant needs, so one device
-  serves both by construction. Today that union lives in
-  `paredros-room::gpu::boot`; it moves behind a netrender API and the
-  app states requirements instead of running the adapter dance.
-- **The tenancy contract, documented.** One device and queue, tenant
-  renders to its own texture, composite at a stated scene-op boundary,
-  neutral span names, and the tenant identity recorded in receipts, per
-  the cohesion contract (landscape §8.9) and the backend-seam findings
-  (netrender-notes 2026-08-04: backend-owned state, neutral spans,
-  rasterizer in receipts).
+- **Tenant requirements at boot.** `TenantNeeds` (required features,
+  optional features, limits, label) plus `boot_shared` / `boot_on` and
+  their async forms. `boot_async_with` delegates, so the plain path is
+  the tenant path with no tenant. Features split by whether the tenant
+  can do without them: required ones fail the boot naming the gap,
+  optional ones are granted when present and dropped when not.
+- **The tenancy contract, documented** on `TenantNeeds`: one device and
+  queue, tenant renders to its own texture, composite at a stated
+  scene-op boundary, tenant identity recorded in receipts, per the
+  cohesion contract (landscape §8.9) and the backend-seam findings.
+- **The duplicated constant, deduplicated.** Netrender's
+  inter-stage-variable minimum is `REQUIRED_INTER_STAGE_VARIABLES`,
+  stated once and *raised over* a tenant's limits rather than replacing
+  them. The probe had been carrying its own copy of the number.
 - **What stays app-side:** everything tenant-specific. The renderling
   `Context` on the shared device, stages, cameras, content. Netrender
   never learns what a tenant draws.
 
-Consumers, named: `paredros-room` first (its `gpu.rs` shrinks to the
-renderling half), mesocosm-genet's G2 second (lands on the same API
-instead of copying the glue).
+Consumers: `paredros-room` first — its `boot` is now a `TenantNeeds`
+declaration and one call, with the adapter dance gone — and
+mesocosm-genet's G2 second, which lands on the same API rather than
+copying glue.
+
+**A finding the work produced.** wgpu 29 advertises experimental
+features on the adapter but refuses the device unless they were asked
+for deliberately (`ExperimentalFeaturesNotEnabled`), so the obvious
+"grant whatever the adapter has" rule is a boot failure waiting for the
+right machine. Opportunistic grants now mask experimental features out;
+a tenant that wants one names it as required. Found by a receipt, not
+by a user.
 
 ### 2. The body pipeline (mesocosm-mesh)
 
@@ -127,11 +139,13 @@ review does not move it.
 
 ## Execution state
 
-- Framing ruling: recorded here; founding-record amendment **owed** to
-  mesocosm when its tree quiets.
-- Netrender tenant seam: designed above; implementation **queued** on
-  the netrender tree quieting (19 files of in-flight filter and
-  paint-list work as of this review).
+All four rulings are carried out.
+
+- Framing ruling: **executed.** Wing founding record amended
+  (mesocosm `ae7a6d8`), DOC_README row updated.
+- Netrender tenant seam: **executed.** netrender `93a9cdf23`
+  (`TenantNeeds`, `boot_shared`/`boot_on`, contract docs, four
+  receipts); `paredros-room::gpu::boot` now consumes it.
 - Identity promotion: **executed** (manifest, license, docs).
 - Grammar refusal: **recorded**, closed.
 
