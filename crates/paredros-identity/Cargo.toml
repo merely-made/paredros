@@ -2,8 +2,12 @@
 name = "paredros-identity"
 version = "0.0.1"
 edition = "2024"
-license = "MPL-2.0"
-description = "The identity prerequisites: the continuing person, the body worn, the roles held, and who the player is currently being."
+# The wing's identity crate, promoted by the R4 extraction review
+# (design_docs/2026-08-10_r4_extraction_review.md): a reusable library
+# with its boundary declared real, so it carries the library grant
+# rather than the game code's MPL.
+license = "MIT OR Apache-2.0"
+description = "The wing's identity facts: the continuing person, the body worn, the roles held, and who the player is currently being."
 repository = "https://github.com/merely-made/paredros"
 publish = false
 

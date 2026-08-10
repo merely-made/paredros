@@ -1,8 +1,3 @@
-// This Source Code Form is subject to the terms of the Mozilla Public
-// License, v. 2.0. If a copy of the MPL was not distributed with this
-// file, You can obtain one at https://mozilla.org/MPL/2.0/.
-// SPDX-License-Identifier: MPL-2.0
-
 //! Controlled-subject session state: who the player is being.
 //!
 //! The pointer moves only through a recorded intent, with the same discipline

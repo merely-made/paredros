@@ -1,10 +1,12 @@
 # Paredros Execution Plan (2026-08-07)
 
-**Status: in progress (2026-08-08).** S0 landed; S1 landed with its headed
+**Status: in progress (2026-08-10).** S0 landed; S1 landed with its headed
 judgment open; S2 landed the same day, headed judgment likewise open; S3's
-sim half landed the same day (headed real-time action open), which **arms
-R4**: the extraction review now owes its written decision. S4 is next in
-the gate line. The
+sim half landed the same day (headed real-time action open). **R4 decided
+2026-08-10**: see
+[the extraction review](2026-08-10_r4_extraction_review.md). S4 is next
+in the gate line; the netrender tenant seam and the founding-record
+amendment are queued on sibling trees quieting. The
 [founding plan](2026-07-30_paredros_founding_plan.md)
 remains the charter: its rulings (agreements as the interface, tag-in as
 rehearsed succession, the puppeteering canary, settlement at
@@ -341,6 +343,11 @@ Isometry as an artifact. Shapes become relics; values become factions.
   all — fires **after S3**, the sortie being the wing's ruled extraction
   trigger. Done when the seam is either extracted with two consumers
   named, or explicitly declined in writing.
+  **DECIDED 2026-08-10**: see
+  [the extraction review](2026-08-10_r4_extraction_review.md). Tenancy
+  pushed up to netrender (queued on its tree), identity promoted in
+  place, grammar refused on principle, the adventure-mode frame adopted
+  symmetrically.
 
 ## Findings
 

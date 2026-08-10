@@ -1,8 +1,3 @@
-// This Source Code Form is subject to the terms of the Mozilla Public
-// License, v. 2.0. If a copy of the MPL was not distributed with this
-// file, You can obtain one at https://mozilla.org/MPL/2.0/.
-// SPDX-License-Identifier: MPL-2.0
-
 //! The identity prerequisites of the execution plan's §1, in minimal form.
 //!
 //! Four facts kept four, so that tag-in, succession, chassis replacement, and

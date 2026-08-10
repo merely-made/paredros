@@ -26,6 +26,10 @@ Keeping those license texts at repository root does not dual-license the
 MPL-covered game code. Extraction requires a real reusable boundary and
 should not be used merely to evade the game license.
 
+One crate holds this status: `crates/paredros-identity`, promoted to the
+wing's identity crate by the R4 extraction review
+(`design_docs/2026-08-10_r4_extraction_review.md`).
+
 ## Assets
 
 Original game assets under `assets/` are licensed under Creative Commons
