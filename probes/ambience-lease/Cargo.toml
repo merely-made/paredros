@@ -47,3 +47,5 @@ wgpu = { version = "29", default-features = false, features = [
 bytemuck = { version = "1", features = ["derive"] }
 pollster = "0.4"
 png = "0.17"
+# The windowed run.
+winit = "0.30"
