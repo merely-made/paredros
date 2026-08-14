@@ -47,6 +47,10 @@ fn main() {
     // One device for the ambience kernels, renderling, and netrender.
     // The mesh tenant's usual asks, declared rather than greedy: this
     // is not a JIT runtime, so it states what it needs.
+    // The control run skips the re-attach, to prove the guard is load
+    // bearing rather than decorative.
+    let reattach = !std::env::args().any(|arg| arg == "--no-reattach");
+
     let handles = boot_shared(
         wgpu::Backends::all(),
         None,
@@ -88,10 +92,32 @@ fn main() {
         tenant.draw();
     }
 
+    // Composed before the loop so the run can be sampled mid-flight:
+    // the control below compares a frame taken just before the forced
+    // growth against the last frame.
+    let composer = Composer::new(handles.clone(), SIZE);
+    let chrome = Scene::new(SIZE[0], SIZE[1]);
+    let mut before_growth: Option<Vec<u8>> = None;
+
     let start = Instant::now();
     let mut worst = 0.0f64;
-    for _ in 0..FRAMES {
+    let mut regrows = 0u32;
+    // Held so the forced growth is not immediately freed again.
+    let mut ballast: Option<renderling::geometry::Vertices> = None;
+    for frame_index in 0..FRAMES {
         let frame = Instant::now();
+
+        // The epoch check, every frame, before anything is published:
+        // if the consumer's allocator recreated its buffer, the
+        // producer's binding is stale and must be rebuilt.
+        let (slab, grew) = tenant.commit();
+        if grew {
+            regrows += 1;
+            if reattach {
+                ambience.attach_slab(&slab);
+            }
+        }
+
         ambience.step(1.0 / 60.0, base, TRANSFORM_WORDS);
         tenant.draw();
         handles
@@ -100,9 +126,58 @@ fn main() {
             .expect("frame poll");
         let ms = frame.elapsed().as_secs_f64() * 1e3;
         worst = worst.max(ms);
+
+        // Halfway through, make the consumer's allocator grow. Without
+        // the check above this is where the cloud would quietly stop.
+        if frame_index == FRAMES / 2 {
+            let master = composer.compose(&chrome, &tenant.view);
+            before_growth = Some(composer.capture(&master).pixels);
+            ballast = Some(tenant.grow(400_000));
+        }
     }
     let avg = start.elapsed().as_secs_f64() * 1e3 / FRAMES as f64;
     println!("wing projection: {FRAMES} frames, avg {avg:.2} ms (worst {worst:.2})");
+    println!(
+        "slab regrows detected: {regrows}, re-attached: {}",
+        if reattach { "yes" } else { "NO (control run)" }
+    );
+    assert!(
+        regrows > 0,
+        "the forced growth never recreated the buffer: the epoch receipt proved nothing"
+    );
+    assert!(ballast.is_some(), "ballast was not allocated");
+
+    // The positive control. With the epoch honoured, the motes kept
+    // moving across the growth; without it, the producer publishes into
+    // an orphaned buffer while renderling reads the new one, and the
+    // cloud freezes at its last published positions. The same run
+    // measures it either way, so an unchanged picture is evidence
+    // rather than an assumption.
+    let after = {
+        let master = composer.compose(&chrome, &tenant.view);
+        composer.capture(&master).pixels
+    };
+    let before = before_growth.expect("a frame was sampled before growth");
+    let changed = before
+        .chunks_exact(4)
+        .zip(after.chunks_exact(4))
+        .filter(|(a, b)| a[..3] != b[..3])
+        .count() as f32
+        / (SIZE[0] * SIZE[1]) as f32;
+    println!("pixels changed across the growth: {:.2}%", changed * 100.0);
+    if reattach {
+        assert!(
+            changed > 0.02,
+            "the cloud stopped moving across the growth even with the epoch honoured"
+        );
+    } else {
+        assert!(
+            changed < 0.001,
+            "the control did not freeze: {changed} of the frame still changed, so the              guard is not what keeps the cloud alive"
+        );
+        println!("control: the cloud froze, which is what the epoch check prevents");
+        return;
+    }
 
     // The receipt that renderling drew *these* motes: read the resident
     // positions once (a diagnostic, outside the frame discipline), and
@@ -129,8 +204,6 @@ fn main() {
         "the cloud is flat: depth span {depth_span:.1} is not carrying anything"
     );
 
-    let composer = Composer::new(handles.clone(), SIZE);
-    let chrome = Scene::new(SIZE[0], SIZE[1]);
     let master = composer.compose(&chrome, &tenant.view);
     let capture = composer.capture(&master);
     let path = std::path::Path::new("../../../testing/paredros/p3_ambience_lease.png");
@@ -255,6 +328,29 @@ impl Tenant {
             _motes: motes,
             transforms,
         }
+    }
+
+    /// Commit the stage and report whether the slab buffer was
+    /// *recreated* this commit. This is the lease's epoch, and the
+    /// consumer supplies it: craballoc's `is_new_this_commit` exists
+    /// precisely so downstream resources (bind groups) can be rebuilt.
+    /// A producer that skips this writes into a dead buffer while the
+    /// consumer reads a live one, and the picture silently freezes.
+    fn commit(&self) -> (wgpu::Buffer, bool) {
+        let geometry: &Geometry = self.stage.as_ref();
+        let slab = geometry.commit();
+        let grew = slab.is_new_this_commit();
+        ((*slab).clone(), grew)
+    }
+
+    /// Force the allocator past its spare capacity, so it *recreates*
+    /// the buffer rather than filling slack: the event the epoch exists
+    /// for, provoked deliberately rather than waited for. One large
+    /// allocation, because the first attempt at this (40,000 more
+    /// transforms) fit in the slack and proved nothing while costing a
+    /// 600 ms frame.
+    fn grow(&self, vertices: usize) -> renderling::geometry::Vertices {
+        self.stage.new_vertices(vec![Vertex::default(); vertices])
     }
 
     /// Where renderling actually put the transform descriptors, asked of
