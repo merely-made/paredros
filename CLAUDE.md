@@ -7,10 +7,12 @@ first when starting any session.
 
 ## Project Identity
 
-**Paredros** is a second-person action RPG: you play one character among
-companions who are peers, who outlive you, and who succeed you when you die.
-A single character with a simulated entourage, and a settlement that lives
-because the entourage does.
+**Paredros** is a second-person action RPG in a persistent generated world.
+You name one creature and ordinarily inhabit that life until it dies. Other
+named creatures live independently across settlements, dungeons, ruins,
+surface and underground places. They may become allies, enemies, neighbors,
+or strangers; none is a unit in a party, and none is required for the player
+to build, explore, or live.
 
 Vessel 2 of a three-game wing — Mesocosm (first person), Paredros (second
 person), Isometry (third person) — that shares a world substrate, a lineage
@@ -38,8 +40,10 @@ participation, terrain falls as body-revision wounds, the pact-governed
 tag-in, the dig rule, and sortie deeds that explain later answers.
 `crates/paredros-identity` holds the identity facts both owners
 share and neither may own. The executable plan is
-`design_docs/2026-08-07_paredros_execution_plan.md` (S0-S6); the founding
-plan remains the charter with its phase section superseded.
+`design_docs/2026-08-07_paredros_execution_plan.md`; S0-S3 are retained as
+foundation receipts, while the 2026-08-13 fundamental-layer ledger now owns
+future ordering. The founding plan remains the charter with its phase section
+superseded.
 
 See `design_docs/PROJECT_DESCRIPTION.md` for the product description,
 `design_docs/DOC_README.md` for the doc index, and the wing-level
@@ -65,9 +69,11 @@ architecture in the sibling repo at
 - **The battle-frame noun** — the machine a character pilots, if this game
   keeps the Gotcha Force silhouette — **remains unnamed.** It is a separate
   question from the unit word, and not a gap to fill casually.
-- **companion / peer**: what the entourage is. Never "unit", never "party
-  member" — both imply command.
-- **succession**: a companion becoming the played character on death.
+- **companion / peer**: a relationship to another named creature, not a
+  required entourage or roster slot. Never "unit" or "party member" — both
+  imply command.
+- **succession**: play continuing through another subject after death. An
+  existing connected creature and a newly generated outsider are both valid.
 - **fili**: lineage across worlds. Not event history.
 - **tulpa**: the legend and memorial organ — persistence through memory when
   no one carries the line. Proposed, **not yet inscribed in mere's lexicon**;
@@ -125,10 +131,16 @@ it here.
   narrowed 2026-07-30 when the wing replaced person purity with care
   granularity (wing founding record §1). Paredros is care for **individuals**;
   drift means care widening to a squad you administer, which is Isometry's
-  granularity. Permitted and encouraged: *configure, don't command* (standing
-  behaviour agreed in advance, gambit-shaped, which a peer may refuse) and
-  *tag-in* (temporarily becoming a companion, which is succession rehearsed).
-  Forbidden: moment-to-moment orders to several characters at once.
+  granularity. Permitted: *configure, don't command* (standing behaviour
+  agreed in advance, which a peer may refuse). Tag-in may exist as an optional
+  player rule or explicit world process, but ordinary play stays with one
+  named creature until death. Forbidden: free roster selection and
+  moment-to-moment orders to several characters at once.
+- **Do not make body switching a menu operation in ordinary play.** Control
+  changes through death or a recorded world event. Possession, domination,
+  transplantation, cloning, resurrection, and similar exceptions must leave
+  material, causal, and social consequences. Record what occurred; do not
+  collapse disputed continuity into a universal `same_person` flag.
 - **Do not violate the three pipeline laws** (wing founding record §3). What
   crosses between games is choices under scarcity, not morphology;
   inheritance must be pointable; player history displaces procedural content

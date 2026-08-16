@@ -17,7 +17,7 @@ mesocosm-mesh = { version = "0.0.1", path = "../../../mesocosm/crates/mesocosm-m
 mesocosm-render = { version = "0.0.1", path = "../../../mesocosm/crates/mesocosm-render" }
 netrender = { path = "../../../netrender/netrender" }
 renderling = { path = "../../../../crates/renderling/crates/renderling" }
-wgpu = { version = "29", default-features = false, features = [
+wgpu = { version = "30", default-features = false, features = [
     "dx12",
     "vulkan",
     "metal",

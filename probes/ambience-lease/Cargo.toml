@@ -38,7 +38,7 @@ opt-level = 1
 [dependencies]
 netrender = { path = "../../../netrender/netrender" }
 renderling = { path = "../../../../crates/renderling/crates/renderling" }
-wgpu = { version = "29", default-features = false, features = [
+wgpu = { version = "30", default-features = false, features = [
     "dx12",
     "vulkan",
     "metal",

@@ -1,8 +1,9 @@
 # Paredros: Founding Plan
 
-**Status: plan, 2026-07-30. Nothing implemented.** Vessel 2 of the games
-wing. Shared architecture, the three pipeline laws, and the wing vocabulary
-live in the wing founding record at
+**Status: active founding record, revised 2026-08-13.** Early foundation
+receipts are implemented; the phase section is superseded by the execution
+plan. Vessel 2 of the games wing. Shared architecture, the three pipeline
+laws, and the wing vocabulary live in the wing founding record at
 `mesocosm/design_docs/2026-07-30_games_wing_founding.md` (sibling repo; cited
 by path because relative links do not cross repos). They are not repeated
 here.
@@ -11,25 +12,33 @@ here.
 
 ## 1. The game
 
-**Second person. I live with you.** You play one character among companions
-who are peers. You can address them, persuade them, equip them, and help
-them. You do not command them as a party; bounded tag-in lets you become
-another companion rather than puppeteer them from outside. They outlive you,
-and when you die one of them becomes the character you play.
+**Second person. I live among you.** You ordinarily inhabit one named
+creature until it dies. The world is populated by other named creatures who
+remain subjects of their own lives: people you may meet, help, offend, trade
+with, fight, avoid, house, work beside, or come to love. Allies are useful but
+contingent. An entourage is possible, not required, and never the game's unit
+of control.
+
+The world persists around that life. Settlements, dungeons, ruins, random
+encounters, surface and underground places, constructed homes, injuries,
+tools, customs, and reputations retain the consequences of what its
+inhabitants do. When the played creature dies, play continues through another
+life in the same history.
 
 A paredros is the one who sits beside you: the Greek Magical Papyri's
 acquired companion, and — the sense that decides the design — in classical
 civic use an **assessor seated beside a magistrate**. A colleague, not a
 servant. Colleagues also succeed to office.
 
-Scope, stated as a canary: **a single character with a simulated entourage.**
-The care granularity here is the **individual** — particular others you know —
-and that is the thing that must not drift. Care that widens to a community you
+Scope, stated as a canary: **one embodied life in a peopled world.** The care
+granularity here is the **individual** — particular others you know — and that
+is the thing that must not drift. Care that widens to a population you
 administer is Isometry's granularity, not this one.
 
 ### Leverage without command
 
-**Permitted 2026-07-30** by the care-granularity relaxation (see
+**Permitted 2026-07-30; narrowed 2026-08-13** by the care-granularity
+relaxation (see
 `mesocosm/design_docs/2026-07-30_games_wing_founding.md` §1, which replaced a
 strict person-purity rule with a home-person rule). The earlier wording
 forbade the player any influence over a companion's conduct, which was too
@@ -41,10 +50,13 @@ available, and both keep companions peers:
   the moment. The difference is the whole point — an agreement is something a
   peer can also refuse, revise, or ignore under stress, which a command
   cannot. Refusal is a legitimate outcome and a good source of character.
-- **Tag-in.** Temporarily *becoming* a companion, as Crystal Chronicles and
-  Gotcha Force allow. This is succession in miniature, and succession is
-  already the spine — becoming a companion for a fight is the same mechanic as
-  becoming one permanently, rehearsed.
+- **Control may change, but never as a free roster operation.** The ordinary
+  rule is one named creature until death. Creative mode, accessibility or
+  difficulty settings may permit bounded tag-in. The world may also contain
+  difficult, obscure, or dangerous methods of changing bodies: possession,
+  domination, transplantation, cloning, ritual continuation, or other
+  processes not known in advance. Each is an explicit event with material and
+  social consequences. The body left behind remains part of the world.
 
 Still forbidden, and this is what the canary now watches: **real-time
 puppeteering of a party.** If the player is issuing moment-to-moment orders to
@@ -76,60 +88,32 @@ Routine exceptions should be rare and legible. The design target is the ease
 of “assign this trusted smith to the forge” with the social truth of “we
 already agreed that this is their role.”
 
-### Shape: expeditions and a settlement that keeps
+### Shape: a persistent generated world
 
-**Ruled 2026-07-30: lean Heroes of Hammerwatch-ward.** Not a continuous
-colony simulation but **runs out and back, against a settlement that
-persists and improves from what you bring home.** Hammerwatch's structure is
-the reference: a town that upgrades from materials found on runs, heroes who
-persist and level between them, and co-op where you bring your own character
-into a friend's game.
+**Ruled 2026-08-13; supersedes the expedition-and-return ruling.** Paredros
+is not founded on a run loop, a home base, or a party. It is a persistent
+generated-world RPG in which one named life moves through settlements,
+dungeons, ruins, surface and underground regions, and encounters with other
+named creatures. The player may settle, wander, build, join others, live
+alone, return home, or never establish one.
 
-This resolves a real tension in the concept. A full colony sim is heavy,
-wants a commander's attention, and would have dragged this vessel toward
-third person — the exact drift the canary above forbids. Expedition-and-return
-keeps the player embodied in one character throughout, while still letting the
-settlement be the thing that accumulates.
-
-It also puts the wing in one rhythm without making the games alike: Mesocosm
-runs generations, Paredros runs expeditions, Isometry runs campaigns. And it
-delivers the sortie-and-return through-line that sits under half the
-influence set (Crystal Chronicles' caravan year, PSO's Pioneer 2, the
-Avenger, the Super Destroyer), where the return trip is where the reward
-actually lands.
-
-The co-op lane falls out of the same reference and is the first co-op design
-in the wing with a concrete shape: **your character visits another player's
-settlement**, which is Hammerwatch's "bring your own hero" and, at world
-scale, the graft the lineage model already describes.
+Expeditions and returns remain possible world events, and the landed sortie
+remains useful evidence, but they do not define progression. What accumulates
+is the world: altered places, material works, relationships, practices,
+reputations, injuries, deaths, and the histories later lives inherit.
 
 ### The settlement is assembled, not managed
 
-**Ruled 2026-07-30: the Ball × Pit model.** Hammerwatch supplies the rhythm;
-Ball × Pit supplies the *shape of the base*, and it is the better reference
-for what the settlement actually is.
+**Amended 2026-08-13.** Construction is an embodied world verb, not a base
+screen. A creature may build alone. Cooperation changes feasible scale,
+speed, knowledge, and safety rather than granting permission to make a home.
+Housing another creature is an offer; building shelter for oneself is not.
 
-There, the base is a spatial assemblage you lay out: buildings produce
-resources and grant passive bonuses that carry into the run, each new
-character needs a residence built for them, characters move between
-structures and adjacency determines how much they collect, and rearranging
-costs nothing so the layout stays a live decision rather than a commitment.
-
-That is exactly the weight this vessel wants. It gives:
-
-- **A reason each companion is housed somewhere**, which makes the roster
-  spatial and legible without a job-priority grid.
-- **Assignment without command.** You decide where someone lives and what
-  they are near; you do not issue orders. That is the second-person line held
-  in the base layer, not just in the field.
-- **A base that is read at a glance**, so returning from an expedition means
-  seeing what changed rather than auditing a colony.
-
-The distinction from a colony sim is the whole point: **assemble, upgrade,
-and assign — not schedule, prioritise, and micromanage.** If a player is ever
-tuning a work-priority matrix, care has widened from individuals to an
-administered population, which is Isometry's granularity rather than this
-vessel's.
+Settlements are spatial and material accumulations made by inhabitants. The
+player interacts with particular people, structures, stores, routes, and
+institutions rather than scheduling a population. If the player is tuning a
+work-priority matrix or assigning homes by fiat, care has widened into
+Isometry's granularity.
 
 ### The lineage of a place
 
@@ -155,12 +139,19 @@ workplaces, expeditions, and agreements rather than a sovereign's population
 spreadsheet. At the point the player primarily administers factions as
 pieces, the accumulated place becomes an Isometry campaign subject.
 
-### Succession is the spine
+### One life, then continuation
 
-Dead is dead; lineage persists. When your character dies, a companion becomes
-the played one. This is why the roster must be people rather than equipment:
-the entourage is your cast of future protagonists. You care about them partly
-because you will *be* one.
+**Ruled 2026-08-13.** You name one creature and ordinarily inhabit that life
+until it dies. This commitment makes its body, location, danger, injury, and
+relationships real. At death, play may continue as an existing named creature
+whose life connects to the dead, or as a newly generated outsider. Connection
+makes existing lives available; lack of allies must never end the world.
+
+Death is the common control transition, not the only metaphysically possible
+one. Rare world processes may move, fork, copy, exchange, or contest a mind or
+body. The durable record says what happened rather than asserting a universal
+`same_person` truth. Cultures and individuals may disagree about whether a
+possessed, transplanted, resurrected, or copied creature is the same person.
 
 Descent requires more than a rebuild. A line is carried by offspring or by a
 tended continuation. Impact on the settlement without anyone carrying the
@@ -169,15 +160,15 @@ of line; tulpa records what memory keeps.
 
 ### The social layer is the base layer
 
-The player controls one character, so the rest of the roster running a social
-simulation is what generates the settlement's life. This is the Crusader
-Kings stance — one avatar, a court that simulates around you — pointed at a
-workshop.
+The player controls one creature, so everyone else living without reference
+to that control is what makes the world social. Named creatures pursue needs,
+work, safety, curiosity, loyalties, and projects whether or not the player has
+recruited or even met them.
 
-It also sidesteps the failure that kills most social simulations: they die on
-contact with combat, because companions driven by feelings play badly. Here
-the social layer never has to make anyone competent in a fight. It has to
-make the settlement alive and decide who is in the deployment queue.
+Social willingness and action execution remain separate authorities. A
+creature's relationships may determine whether it helps, flees, bargains, or
+attacks; once acting, its embodied capabilities and situation determine what
+it can accomplish. There is no deployment queue required by the product.
 
 **Architecture: a layered hybrid.** Research on 2026-07-30 found five
 shipped approaches, each of which caps out alone — opinion ledgers (RimWorld
@@ -199,9 +190,8 @@ of Doubt, Norland: the underused frontier). The recipe:
 - **a legibility surface built on day one**, because Dwarf Fortress depth
   nobody notices reads as procedural noise
 
-Bonds carry mechanical weight: hidden compatibility, cohesion from shared
-deployments, and bond levels unlocking paired actions — the Crystal
-Chronicles spell-fusion shape, expressed on the deployment queue. The Darkest
+Bonds carry mechanical weight through trust, information, shelter,
+cooperation, rescue, trade, hostility, and other situated acts. The Darkest
 Dungeon 2 caution applies: relationship drift the player cannot influence
 reads as random punishment, so the player must hold levers.
 
@@ -210,14 +200,20 @@ promotion hierarchies) is patented to August 2036. Generic grudges and
 remembered encounters are fine and have Dwarf Fortress prior art; the
 rival-hierarchy-promotion machinery is what to design around.
 
-### Identity in three layers
+### Identity as recorded continuity
 
-- **Chassis** — parts and gear, swapped and lost freely
-- **Skills** — use-based, accrued to the mind, surviving reassembly, so limb
-  loss never costs skill (the Kenshi rule)
-- **Quirks and emblems** — event-granted only, never purchasable
+- **Current control** — which creature receives player input.
+- **Subject** — the continuing person claimed by a history.
+- **Body and revision** — the material organism presently inhabited and how
+  it has changed.
+- **Social identity** — who other creatures and institutions believe this is.
+- **Role and faction** — relationships held, never intrinsic properties.
+- **Lineage** — biological or constructed descent.
+- **Player history** — the continuous record of lives the player inhabited.
 
-Bonds are the fourth thing and are not owned by any of the three.
+Skills, quirks, emblems, and bonds attach to the owner their causal history
+supports. A body-changing process must say what it carries, abandons, copies,
+or leaves disputed.
 
 The wing-level composition rule keeps these as profile facets rather than
 nested copies. A Paredros character may reference a Mesocosm critter/body
@@ -254,12 +250,15 @@ the proof pair, not before.
 
 ## 2. What is genuinely new here
 
-- **Settlement simulation at expedition scale.** Needs, jobs, stockpiles, and
-  production, bounded to what a returning character can read rather than a
-  colony manager's dashboard. Nothing in the stack does this today, though
-  armillary supplies actors, chartulary supplies containment, and codicil's
-  append-only log is the right shape for character history.
+- **A persistent generated world at inhabited scale.** Needs, work,
+  stockpiles, construction, settlements, ruins, underground regions, and
+  material change, encountered through one embodied life rather than a colony
+  manager's dashboard.
 - **The social hybrid above**, which no shipped game has assembled whole.
+- **Culture as accumulated precedent.** Choices become deeds; repeated
+  practices become expectations, norms, prohibitions, roles, rituals, and
+  institutions with pointable histories. Ideology is a projection of lived
+  causes, not a randomly assigned bonus card.
 - **Real-time embodied combat.** Note that this vessel likely carries the
   wing's heaviest renderer requirement (close camera, 3D), so it does *not*
   simply inherit Mesocosm's lane — Mesocosm is proposed at 2.5D. Renderers are
@@ -343,6 +342,11 @@ companion appears as a named figure in an Isometry campaign.
   (`isometry/design_docs/2026-07-09_shared_authority_and_collaborative_building_plan.md`).
   Paredros therefore does not need to choose between collaborative settlement
   authorship and ordered real-time action; they are separate domains.
+- **2026-08-13**: replaced the required entourage, bounded-tag-in, and
+  expedition-loop framing with one named life in a persistent generated
+  world. Control changes through death, an explicit world event, or an
+  optional player rule. The landed room, social, home, and sortie scenes are
+  retained as foundation receipts rather than treated as the product loop.
 
 ---
 
@@ -355,3 +359,7 @@ companion appears as a named figure in an Isometry campaign.
 - **2026-07-31**: adopted the wing license split: MPL-2.0 game code and
   repository documentation, MIT OR Apache-2.0 for separately identified
   reusable library crates, and CC BY-SA 4.0 for original assets.
+- **2026-08-13**: revised the charter from a simulated entourage and
+  expedition rhythm to one named life among autonomous inhabitants in a
+  persistent generated world; made culture causal and body-changing methods
+  explicit world processes rather than free roster selection.

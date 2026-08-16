@@ -1,53 +1,78 @@
 # Paredros
 
-A second-person action RPG.
+A second-person action RPG in a persistent generated world.
 
-You play one character among companions who are peers. You can address them,
-persuade them, equip them, and help them. You negotiate standing behavior
-rather than command a party, though you may tag into another character's
-perspective. They outlive you, and when you die one of them becomes the
-character you play.
+You name one creature and ordinarily inhabit that life until it dies. Other
+named creatures live their own lives across settlements, dungeons, ruins,
+surface and underground places. You may help, persuade, equip, house, work
+beside, coordinate with, avoid, rob, or fight them. Allies are useful but not
+required, and never units in a party.
 
-Because you control one character, the rest of the roster simulating is what
-makes the settlement alive. The social layer never has to make anyone
-competent in a fight; it has to make the place worth coming home to and
-decide who is standing beside you when you go.
+Control changes only through death, an explicit world event, or an optional
+player rule. Creative settings may allow tag-in; difficult or obscure world
+mechanics may permit possession, domination, transplantation, cloning, or
+stranger ways of continuing. The body and consequences left behind remain in
+the world.
 
-The base is assembled and inhabited: camp becomes settlement and perhaps
-city as buildings change what its people can do. Their biographies, homes,
-agreements, and accumulated deeds become the lineage and culture of the
-place.
+Vessel 2 of a three-game wing (Mesocosm, Paredros, Isometry); the wing-level
+architecture lives in the sibling mesocosm repo and is cited, not copied.
 
-A *paredros* is the one who sits beside you: in the Greek Magical Papyri an
-acquired companion, and in classical civic use an assessor seated beside a
-magistrate. A colleague, not a servant. Colleagues also succeed to office.
+## Status (2026-08-12)
 
-## Status
+Early implementation. Four proof scenes landed 2026-08-08; nothing here is a
+shipped game yet.
 
-**Early implementation.** Two gates landed 2026-08-08.
-`crates/paredros-room` walks one body around one room carved into a grown
-world, replays a fixed input trace to a matching state hash across a save
-and reload, and draws the room through the shared renderer stack.
-`crates/paredros-social` is the social half, kept a separate owner that
-never reads the first: three companions with different histories answer the
-same offer three different ways, each answer carrying the deeds, standing,
-and thresholds that produced it, and one standing agreement is formed,
-exercised, renegotiated, and ended. `cargo run -p paredros-social --bin
-refusal` prints the scene.
+- S0 room probe (`paredros-room`): one body walking one room carved into
+  grown mesocosm terrain, with save/reload replay to a matching state hash,
+  rendered through the shared renderer stack.
+- S1 refusal scene (`paredros-social`): three companions with different
+  histories answer the same offer three different ways, with their premises
+  attached; one standing agreement is formed, exercised, renegotiated, and
+  ended.
+- S2 negotiated home (same crate): homes offered with daily work; residence
+  and the daily round derive from agreement state, so moving out is the
+  agreement ending.
+- S3 sim half (`paredros-sortie`): negotiated participation, terrain falls
+  as wounds, pact-governed tag-in, and sortie deeds that change later
+  answers. The headed real-time action half is open, as are the playtester
+  judgments for S1-S3.
+- The 2026-08-10 extraction review promoted `paredros-identity` to the
+  wing-wide identity crate (relicensed MIT OR Apache-2.0) and pushed the GPU
+  tenancy seam up into netrender.
 
-- [Project description](design_docs/PROJECT_DESCRIPTION.md)
-- [Execution plan](design_docs/2026-08-07_paredros_execution_plan.md) — gates S0-S6; S0 through S3 (sim half) landed
-- [Founding plan](design_docs/2026-07-30_paredros_founding_plan.md) — design and phases P0–P5, phase section superseded
-- Wing-level architecture: `mesocosm/design_docs/2026-07-30_games_wing_founding.md` (sibling repo)
+Current plans live in [design_docs/](design_docs/DOC_README.md); the
+executable plan retains S0-S3 as foundation receipts and orders future work
+through F0-F8: persistent world, one embodied life, other autonomous lives,
+memory and standing, coordination, material life, settlement and culture,
+danger, then death and control continuity. Camera choice remains open until
+those spatial laws can judge it.
+
+## Use
+
+Scene receipts are runnable. Building requires the sibling repos (mesocosm,
+netrender, and a local renderling fork) checked out at their expected
+relative paths, since cross-repo deps are path deps.
+
+```sh
+cargo run -p paredros-social --bin refusal   # three companions answer one offer
+cargo run -p paredros-social --bin home      # the negotiated home
+cargo run -p paredros-sortie --bin sortie    # one sortie and return
+ROOM_TRACE=1 cargo run -p paredros-room --bin room   # headed room probe
+```
 
 ## License
 
-Paredros uses an explicit three-part license boundary:
+Three-part boundary (see [LICENSES.md](LICENSES.md)):
 
 - game code and repository documentation: MPL-2.0
-- separately identified reusable library crates: MIT OR Apache-2.0
+- `paredros-identity` and other identified reusable libraries: MIT OR
+  Apache-2.0
 - original game assets: CC BY-SA 4.0
 
-See [LICENSES.md](LICENSES.md) for scope and attribution rules. The published
-`0.0.1` name reservation remains available under its original MIT OR
-Apache-2.0 terms; this split begins with `0.0.2`.
+The published `0.0.1` name reservation remains MIT OR Apache-2.0; the split
+begins with `0.0.2`.
+
+---
+
+*This README was generated by AI and will be edited by the author upon
+release.*

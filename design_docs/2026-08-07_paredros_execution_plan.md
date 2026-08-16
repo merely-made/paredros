@@ -1,41 +1,34 @@
 # Paredros Execution Plan (2026-08-07)
 
-**Status: in progress (2026-08-10).** S0 landed; S1 landed with its headed
-judgment open; S2 landed the same day, headed judgment likewise open; S3's
-sim half landed the same day (headed real-time action open). **R4 decided
+**Status: rebased in progress (2026-08-13).** S0-S3 remain landed foundation
+receipts, with their stated headed judgments still open. They do not define a
+required entourage, sortie loop, or camera. **R4 was decided and executed
 2026-08-10**: see
-[the extraction review](2026-08-10_r4_extraction_review.md). S4 is next
-in the gate line; the netrender tenant seam and the founding-record
-amendment are queued on sibling trees quieting. The
+[the extraction review](2026-08-10_r4_extraction_review.md). The former
+S4-S6 future gate line is superseded by the fundamental layers in §4. The
 [founding plan](2026-07-30_paredros_founding_plan.md)
-remains the charter: its rulings (agreements as the interface, tag-in as
-rehearsed succession, the puppeteering canary, settlement at
-returning-character scale) all bind here. Its phase section is superseded
-by this plan, on the 2026-08-07 audit finding that the old order could not
-test the premise: P1 introduced socially conditioned offers while deeds,
-relationships, and explanation waited until P3, and succession arrived
-before any of them. Companions cannot demonstrably act *for reasons* if
-the reasons ship two phases after the acting.
+remains the charter. Its 2026-08-13 rulings now bind here: one named life in a
+persistent generated world; allies are contingent; control changes through
+death, an explicit world event, or an optional player rule; culture has
+pointable causes; free roster control remains forbidden. Its phase section is
+superseded by this plan.
 
 **The wing question, in this vessel** (founding record, ruled 2026-08-07):
 Paredros asks whether a **community remains itself as control, bodies, and
 generations change**. Every gate below is a partial answer.
 
-**The synthesis ruling (Mark, 2026-08-07).** The first real sortie is the
-wing's extraction trigger, preferred over another infrastructure proof:
-companions negotiate participation, a standing agreement governs tag-in,
-combat produces bodily and social consequence, scavenge changes the
-settlement, death changes who the player inhabits, and deeds explain later
-offers and refusals. The sortie is where everything already designed
-meets an actual game.
+**The sortie ruling, retained as proof history (2026-08-07).** S3 was the
+wing's extraction trigger and successfully joined negotiated participation,
+body facts, terrain, control, deeds, and return. The 2026-08-13 rebase removes
+its authority over product shape. A sortie is one possible sequence in the
+world, not the game loop, and its tag-in pact is one valid optional or diegetic
+control mechanism rather than the ordinary rule.
 
 ---
 
 ## 1. Identity prerequisites
 
-Per the audit, succession and inheritance are unbuildable until these are
-separate facts (they are the wing's four — subject, body, role, lineage —
-landed in the founding record 2026-08-07):
+Control continuity and inheritance require these to remain separate facts:
 
 - **`SubjectId`**: the continuing person, across bodies and control.
 - **`BodyRevisionId`**: which body, at which revision, per the wing
@@ -43,24 +36,31 @@ landed in the founding record 2026-08-07):
 - **Controlled-subject session state**: who the player is being, as
   recorded state with the same discipline as Mesocosm's control pointer
   (moves only through a recorded intent; replays).
-- **Character and faction facets kept separate**: a role is held, not
-  been. Offices survive their holders, which is half of what community
-  continuity means.
+- **Social identity**: who another subject or institution believes this is.
+- **Character, office, and faction facets kept separate**: a role is held,
+  not been. Offices survive their holders.
+- **Lineage**: biological or constructed descent, independent of player
+  control.
+- **Player history**: which lives the player has inhabited, without claiming
+  that they were one metaphysical person.
 
-Tag-in, succession, chassis replacement, and biological descent are then
-four different operations on these four facts, not one muddle.
+Death succession, optional tag-in, possession, domination, transplantation,
+cloning, resurrection, chassis replacement, and biological descent are
+different recorded operations on these facts. The record says what happened;
+cultures and subjects may disagree about what identity survived.
 
 ## 2. The two owners, and their joint receipt
 
-The audit's structural correction, adopted: **social willingness and
-combat execution are separate owners.** Willingness (agreements, deeds,
-confidence, refusal) never reads combat internals; combat adjudication
-never decides what anyone was willing to do. They meet in exactly one
-place: the sortie (S3), which is the joint receipt.
+The audit's structural correction remains: **social willingness and embodied
+action execution are separate owners.** Willingness (agreements, deeds,
+confidence, refusal) never reads movement or combat internals; action
+adjudication never decides what anyone was willing to do. S3 is the first
+joint receipt, not their only future meeting place.
 
-The puppeteering canary binds both: the player embodies **one** subject at
-a time; companions execute their own agreed parts. Tag-in switches who you
-are; it never becomes issuing orders to several characters.
+The puppeteering canary binds both: ordinary play embodies one named creature
+until death. Other creatures execute their own chosen or agreed acts. An
+optional player rule or explicit world event may move control, but never turns
+into issuing moment-to-moment orders to several characters.
 
 ## 3. Gates
 
@@ -241,7 +241,7 @@ weighs anything; a vacated one can be offered again. Settlement hash
 --bin home` prints the answers with premises and the resulting daily
 rounds; nothing has been put in front of a player. What a dwelling
 yields, who may offer on the settlement's behalf, and any production are
-S5's questions, deliberately absent.
+F5/F6 questions, deliberately absent.
 
 ### S3 — One sortie and return (sim half landed 2026-08-08, headed real-time action open)
 
@@ -300,36 +300,154 @@ until then. **R4 is hereby armed**: the extraction review owes its
 written decision (extract with two consumers named, or decline in
 writing) as its own deliberate pass.
 
-### S4 — Death and succession
+## 4. Fundamental layer ledger (ruled 2026-08-13)
 
-Death during action, and a companion becomes the played subject, through
-the identity facts of §1.
+These are game foundations, not a demo itinerary. Each layer establishes
+laws and durable facts that later layers consume. A small executable receipt
+proves a law; it does not need to resemble a satisfying vertical slice.
 
-**Done when:** the first succession lands with `SubjectId` continuity for
-the community (the office, agreements, and deeds survive the holder), and
-the player minds who they became — the charter's own bar.
+S0-S3 map onto several of these layers as preliminary evidence, but none is
+closed merely because a fixture exists.
 
-### S5 — The settlement that keeps
+### F0 — Persistent world
 
-The founding P4, unchanged in intent: expedition-and-return feeds the
-settlement; the settlement's output changes what the played character can
-attempt; one building's history makes its effect particular.
+Own stable place identity, containment and routes; generated settlements,
+dungeons, ruins, random-encounter sites, and surface/underground regions;
+seeded generation; persistent material edits; save, reload, and replay.
+Imported history displaces procedural content at the same slots and never
+gates a playable generated world.
 
-### S6 — Inheritance and export
+**Done when:** two fresh runs generate the same world facts from the same
+seed; a journey crosses surface, underground, ruin, and settlement places;
+player and non-player edits survive reload; regenerated and inherited places
+share one structural slot; replay reaches the same state hash.
 
-The founding P5, unchanged in intent, now buildable on §1: Mesocosm
-critters and RNG critters through one slot (Law C receipt); a dead
-companion appears as a named figure in an Isometry campaign; **the
-inherited tool** travels the full arc — a tool from a Mesocosm body part
-enters with provenance intact, accumulates deeds, and surfaces in
-Isometry as an artifact. Shapes become relics; values become factions.
+### F1 — One embodied life
 
-## 4. Stop rules
+One generated creature becomes named and played. The body owns movement,
+perception, inventory, needs, rest, injury, recovery, capability, and death.
+Naming begins a life rather than selecting a reusable avatar. Neither camera
+nor player control exempts the body from world rules.
 
-- The canary above all: real-time puppeteering of a party is drift, full
-  stop.
-- Willingness and combat stay separately owned; only S3 joins them.
-- No universal character schema: the four facts stay four.
+**Done when:** one named creature can live, travel, gather, carry, rest, be
+injured, recover, and die under the same recorded transition rules that an
+uncontrolled creature will later use; save/reload preserves its exact body and
+history.
+
+### F2 — Other lives
+
+Generate named creatures from settlements, ruins, dungeons, migrations, and
+encounters. They pursue needs, safety, work, curiosity, travel, and projects
+without consulting player identity. Meeting the player changes their history,
+not their ontological status.
+
+**Done when:** multiple named creatures continue consequential lives while
+unobserved; returning later reveals legible changes caused by them; controlling
+or following none of them does not suspend their world participation.
+
+### F3 — Memory, belief, and standing
+
+Observed events become deeds and remembered claims. Subjects may witness
+differently, forget, lie, gossip, revise beliefs, and judge the same act under
+different norms. Standing and explanations derive from pointable evidence.
+The landed S1 fold is a beginning, not the full epistemic model.
+
+**Done when:** two witnesses form different supported beliefs about one event;
+one claim travels to an absent creature; a later consequential answer cites
+the observations, reports, and norms that produced it; correction or deception
+remains visible in history.
+
+### F4 — Requests and coordination
+
+Generalize offers and agreements beyond companions: help, trade, shelter,
+work, travel, rescue, shared construction, information, and combat support.
+An ally is a current relationship between autonomous creatures, not a roster
+slot. A lone creature retains access to ordinary world verbs; cooperation
+changes cost, scale, knowledge, and safety.
+
+**Done when:** the same grammar can ask a stranger, neighbor, ally, or enemy
+for materially different acts; refusal and counteroffer remain complete
+outcomes; coordinated action follows agreed terms without exposing a party
+command surface.
+
+### F5 — Material life
+
+Gather, carry, store, craft, dig, build, repair, maintain, damage, and destroy
+through embodied acts over authoritative materials. A creature can build a
+modest home alone. Other creatures and institutions make larger works feasible
+without becoming construction permissions.
+
+**Done when:** one creature can establish and maintain shelter from world
+materials; cooperation changes the attainable work without changing the verb;
+the resulting structure retains builders, materials, purpose, maintenance,
+beneficiaries, and later alterations as provenance.
+
+### F6 — Settlement and culture
+
+Settlements emerge from inhabitants, places, works, practices, and remembered
+choices. Repetition and enforcement turn practices into expectations, norms,
+prohibitions, roles, rituals, and institutions. A RimWorld-like ideology is a
+legible projection of this history, not an independent random modifier card.
+The player may found, join, influence, oppose, or ignore a settlement.
+
+**Done when:** two settlements develop materially and normatively different
+responses from their inhabitants' histories; each visible tenet points to
+practices, precedents, places, and beneficiaries; a player choice can reinforce,
+contest, or violate a norm without opening a sovereign management screen.
+
+### F7 — Danger
+
+Hostile creatures, factions, fauna, environmental hazards, ruins, and
+dungeons use the same bodies, places, perception, material facts, standing,
+and coordination laws. Combat and escape are situated world processes, not a
+separate arena ontology. Injury, death, property loss, rescue, surrender, and
+reputation persist.
+
+**Done when:** one conflict can be avoided, negotiated, escaped, won, or lost
+through existing facts; allies act from their own perception and agreements;
+the consequences alter bodies, property, relationships, and places without
+requiring a combat-only duplicate of any of them.
+
+### F8 — Death and control continuity
+
+Ordinary control remains with the named creature until death. On death, an
+existing connected life may be available; a generated outsider keeps the
+world playable when no connection exists. Offices, structures, deeds,
+reputations, remains, enemies, and tools outlive their holder according to
+their own facts.
+
+Creative, accessibility, or difficulty settings may permit tag-in. World
+mechanics may allow obscure and consequential possession, domination,
+transplantation, cloning, resurrection, exchange, or stranger processes. They
+use the same explicit transition boundary as death and leave the original
+body, copies, witnesses, and social interpretations in the world.
+
+**Done when:** death continues through both an eligible existing life and the
+outsider fallback; neither path rewrites prior history; one non-death
+body-changing process records exactly what moved, copied, died, remained, or
+became disputed; different cultures can recognize that event differently;
+replay preserves the complete control history.
+
+### Presentation is a lens, not a foundation
+
+Every layer needs enough projection to inspect and judge its laws. The final
+camera is deliberately open. Third-person, over-the-shoulder, top-down, and
+first-person references each privilege different information. Choose only
+after F1 embodiment, F5 construction, and F7 danger establish locomotion,
+perception, reach, verticality, scene density, and how much off-body knowledge
+the player should receive. S0's close camera is evidence, not a ruling.
+
+## 5. Stop rules
+
+- The canary above all: ordinary play stays with one named creature until
+  death. Free roster selection and real-time puppeteering of a party are drift.
+- Allies are contingent. Building, exploration, and ordinary survival may be
+  harder alone but never require a friendship flag.
+- Willingness and embodied execution stay separately owned.
+- No universal character schema or `same_person` flag: control, subject, body,
+  social identity, role, lineage, and player history remain distinct.
+- S0-S3 are receipts. Do not optimize the game around reenacting their fixture
+  stories or closing their playtester judgments.
 - Nothing here grows an engine organ Mesocosm already owns; the room
   probe *consumes* near-tier kinematics and the tenant seam, it does not
   fork them.
@@ -349,7 +467,7 @@ Isometry as an artifact. Shapes become relics; values become factions.
   place, grammar refused on principle, the adventure-mode frame adopted
   symmetrically.
 
-## Findings
+## 6. Findings
 
 - **2026-08-08 (S3):** the wound threshold is Paredros's own constant
   (`SAFE_FALL = 4`), not an import: the near tier keeps `COMFORT_DROP`
@@ -360,8 +478,8 @@ Isometry as an artifact. Shapes become relics; values become factions.
   Downing is a control fact — it is what the pact watches for — and a
   tagged-in successor or a companion grits through the same wound,
   because two downed bodies at a cliff base with the healer among them is
-  a deadlock, not a story. S4 (death) will have to revisit what a
-  companion's fall can mean.
+  a deadlock, not a story. F7/F8 will revisit what another creature's fall,
+  injury, and death can mean.
 - **2026-08-08 (S3):** the grown terrain's pockets are one-way at a
   one-voxel climb, everywhere the survey looked: what a walker descends
   past comfort it can never re-climb. The dig rule (stuck four ticks →
@@ -397,12 +515,12 @@ Isometry as an artifact. Shapes become relics; values become factions.
 - **2026-08-08 (S2):** the settlement lives in `paredros-social` as a
   module, not a crate. It is willingness-adjacent state (what agreements
   change) with no combat surface, so the two-owners wall is not in play;
-  a module is the default until an enforced boundary is needed. S5 may
-  revisit when production arrives.
+  a module is the default until an enforced boundary is needed. F5/F6 may
+  revisit when material production and culture arrive.
 - **2026-08-08 (S2):** dwellings are founded, not negotiated: `found` is
   a world act that moves nobody's standing, and nothing gates who may
   offer a dwelling on the settlement's behalf. That permission question
-  is deliberately S5's, recorded here so its absence reads as a decision
+  belongs to F4/F6, recorded here so its absence reads as a decision
   rather than an oversight.
 - **2026-08-08 (S1):** the two-owners rule is a dependency fact, and that
   decided a crate boundary. `SubjectId` cannot live in either owner: if it
@@ -435,7 +553,8 @@ Isometry as an artifact. Shapes become relics; values become factions.
   only `serde` and `paredros-identity`.
 - **2026-08-08 (S1):** §1's controlled-subject session state landed and S1
   does not use it. `Control` is tested on its own (tag-in, tag-out,
-  succession, replay from intents) and waits for S3 and S4. Recorded so it
+  succession, replay from intents); S3 consumed part of it, and F8 owns its
+  general control-continuity role. Recorded so it
   is not rediscovered as missing.
 - **2026-08-08 (S0):** the stop rule holds in practice. The room probe
   writes no terrain, no kinematics, and no mesher: `Places::grown`,
@@ -462,7 +581,7 @@ Isometry as an artifact. Shapes become relics; values become factions.
   stand on the machine. Revisit when the probe grows into a shipped
   target.
 
-## Progress
+## 7. Progress
 
 - **2026-08-08:** S3's sim half landed; headed real-time action open;
   R4 armed. `crates/paredros-sortie` joins the workspace as the one
@@ -498,3 +617,10 @@ Isometry as an artifact. Shapes become relics; values become factions.
   the premise; no action-RPG slice existed; identity facts were missing)
   and Mark's synthesis ruling (the sortie as the wing's extraction
   trigger). Charter rulings preserved; phase section superseded.
+- **2026-08-13:** rebased after Mark rejected demo-first and entourage-first
+  framing. The ordinary rule is one named life until death; tag-in survives as
+  an optional player rule or explicit world process; clever body-changing
+  mechanics remain deliberately possible. S0-S3 became foundation receipts.
+  F0-F8 now order the game from persistent world through embodied and social
+  life, material construction, causal culture, danger, death, and contested
+  continuity. Camera choice remains open until the spatial laws can judge it.

@@ -31,6 +31,11 @@ members = [
 spirv-std = { git = "https://github.com/rust-gpu/rust-gpu.git", rev = "05b34493ce661dccd6694cf58afc13e3c8f7a7e0" }
 craballoc = { path = "../../crates/crabslab/crates/craballoc" }
 crabslab = { path = "../../crates/crabslab/crates/crabslab" }
+# Netrender (a sibling path dep here) resolves vello from crates.io, and
+# upstream vello 0.10 still requires wgpu 29. Without this the graph carries
+# two wgpu majors and netrender's vello rasterizer stops type-checking
+# against this workspace's wgpu 30. Retires when a wgpu-30 vello ships.
+vello = { git = "https://github.com/mark-ik/vello.git", branch = "mark-ik/wgpu-30" }
 
 # The probe builds a lot of shader and rasterizer code. Unoptimized debug
 # builds render a frame slowly enough to misread as a hang.

@@ -58,6 +58,8 @@ struct Live {
     surface: wgpu::Surface<'static>,
     format: wgpu::TextureFormat,
     device: wgpu::Device,
+    // wgpu 30 presents through the queue rather than the surface texture.
+    queue: wgpu::Queue,
     tenant: Tenant,
     composer: Composer,
     /// The room is meshed once. Only the torch changes, and the torch rides
@@ -94,6 +96,7 @@ impl ApplicationHandler for RoomApp {
         // different adapters.
         let handles = gpu::boot(&self.instance, Some(&surface));
         let device = handles.device.clone();
+        let queue = handles.queue.clone();
         let capabilities = surface.get_capabilities(&handles.adapter);
         // Prefer a linear format: the master is already encoded, and letting
         // the swapchain apply a second srgb transfer washes the room out.
@@ -114,6 +117,7 @@ impl ApplicationHandler for RoomApp {
             surface,
             format,
             device,
+            queue,
             tenant,
             composer,
             room,
@@ -176,7 +180,7 @@ impl RoomApp {
                     [size.width.max(1), size.height.max(1)],
                 );
                 live.window.pre_present_notify();
-                frame.present();
+                live.queue.present(frame);
             }
             Acquired::Outdated | Acquired::Lost => configure(live),
             Acquired::Timeout | Acquired::Occluded => {}
@@ -209,6 +213,9 @@ fn configure(live: &mut Live) {
             width: size.width.max(1),
             height: size.height.max(1),
             present_mode: wgpu::PresentMode::AutoVsync,
+            // wgpu 30 made surface color space explicit; Auto keeps the
+            // pre-30 platform-chosen behavior.
+            color_space: wgpu::SurfaceColorSpace::Auto,
             desired_maximum_frame_latency: 2,
             alpha_mode: wgpu::CompositeAlphaMode::Auto,
             view_formats: vec![],
