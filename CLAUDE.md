@@ -28,7 +28,10 @@ design docs, and three crates. `crates/paredros-room` is the S0 room probe
 landed 2026-08-08: one room carved into a grown mesocosm hillside, one body
 under near-tier kinematics, a fixed input trace with save/reload/replay, and
 a headed run presenting netrender's composed master with a renderling room
-in it. `crates/paredros-social` is the S1 willingness owner landed the same
+in it. Its opt-in `r1-proof` profile also runs the real room and perspective
+camera through Mesocosm's existing brick DDA; that is second-consumer proof,
+not permanent cross-vessel ownership. `crates/paredros-social` is the S1
+willingness owner landed the same
 day: deeds, standing, confidence, refusal, standing agreements, and the
 premises behind every answer, with the refusal scene as an executable
 receipt. S2 (landed 2026-08-08) added the settlement in peer-agency form

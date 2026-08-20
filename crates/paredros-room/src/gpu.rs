@@ -11,6 +11,13 @@
 //! rather than under it. Nothing here creates a second device, which is the
 //! whole point of the cohesion contract this gate is proving.
 
+#[cfg(feature = "r1-proof")]
+use mesocosm_core::places::Ground;
+#[cfg(feature = "r1-proof")]
+use mesocosm_lens::{
+    BrickDiagnostics, BrickFrameInput, BrickMap, BrickRevision, BrickTracer, CritterPose, Grade,
+    TraceCamera,
+};
 use mesocosm_render::geometry::Vertex as MeshVertex;
 use netrender::{
     Compositor, ExternalTextureComposite, ExternalTexturePlacement, NetrenderOptions,
@@ -29,6 +36,17 @@ pub const SIZE: [u32; 2] = [1280, 720];
 /// The master texture's format. Non-srgb so a readback is already the bytes
 /// a PNG wants.
 pub const MASTER_FORMAT: wgpu::TextureFormat = wgpu::TextureFormat::Rgba8Unorm;
+
+/// The brick layout receipt shared by the Mesocosm and Paredros profiles.
+#[cfg(feature = "r1-proof")]
+#[derive(Clone, Copy, Debug, serde::Serialize)]
+pub struct BrickAbi {
+    pub origin: [i16; 3],
+    pub pointer_extent: [u32; 3],
+    pub atlas_extent: [u32; 3],
+    pub pointer_bytes: usize,
+    pub atlas_bytes: usize,
+}
 
 /// What renderling wants from the shared device.
 ///
@@ -141,6 +159,104 @@ impl Tenant {
         let frame = self.ctx.get_next_frame().expect("tenant frame");
         self.stage.render(&frame.view());
         frame.present();
+    }
+}
+
+/// The R1 terrain tenant: Paredros camera policy over Mesocosm's existing
+/// brick ABI and DDA implementation.
+///
+/// This is deliberately adjacent to the retained S0 renderling tenant. R1
+/// proves shared traversal; it does not silently replace the room receipt or
+/// pretend the later hybrid depth join has landed.
+#[cfg(feature = "r1-proof")]
+pub struct DdaTenant {
+    pub view: wgpu::TextureView,
+    _target: wgpu::Texture,
+    device: wgpu::Device,
+    queue: wgpu::Queue,
+    tracer: BrickTracer,
+    map: BrickMap,
+    revision: BrickRevision,
+    grade: Grade,
+}
+
+#[cfg(feature = "r1-proof")]
+impl DdaTenant {
+    pub fn new(handles: &WgpuHandles, ground: &Ground, size: [u32; 2]) -> Result<Self, String> {
+        let target = handles.device.create_texture(&wgpu::TextureDescriptor {
+            label: Some("Paredros R1 DDA target"),
+            size: wgpu::Extent3d {
+                width: size[0],
+                height: size[1],
+                depth_or_array_layers: 1,
+            },
+            mip_level_count: 1,
+            sample_count: 1,
+            dimension: wgpu::TextureDimension::D2,
+            format: wgpu::TextureFormat::Rgba8Unorm,
+            usage: wgpu::TextureUsages::RENDER_ATTACHMENT
+                | wgpu::TextureUsages::TEXTURE_BINDING
+                | wgpu::TextureUsages::COPY_SRC,
+            view_formats: &[],
+        });
+        let view = target.create_view(&Default::default());
+        let map = BrickMap::from_ground(ground).map_err(|error| error.to_string())?;
+        Ok(Self {
+            view,
+            _target: target,
+            device: handles.device.clone(),
+            queue: handles.queue.clone(),
+            tracer: BrickTracer::with_format(
+                handles.device.clone(),
+                handles.queue.clone(),
+                size[0],
+                size[1],
+                wgpu::TextureFormat::Rgba8Unorm,
+            ),
+            map,
+            revision: BrickRevision(ground.revision()),
+            grade: Grade {
+                fog: [0.03, 0.03, 0.045],
+                fog_start: 0.62,
+                palette_len: 0,
+                dither: 0.0,
+                fog_bands: 0.0,
+                downscale: 1,
+            },
+        })
+    }
+
+    pub fn draw(
+        &mut self,
+        camera: TraceCamera,
+        pose: &CritterPose,
+    ) -> Result<BrickDiagnostics, String> {
+        let mut encoder = self
+            .device
+            .create_command_encoder(&wgpu::CommandEncoderDescriptor {
+                label: Some("Paredros R1 DDA frame"),
+            });
+        let diagnostics = self
+            .tracer
+            .encode(
+                &mut encoder,
+                &self.view,
+                BrickFrameInput::for_camera(&self.map, self.revision, camera, &self.grade)
+                    .with_pose(pose),
+            )
+            .map_err(|error| error.to_string())?;
+        self.queue.submit([encoder.finish()]);
+        Ok(diagnostics)
+    }
+
+    pub fn abi(&self) -> BrickAbi {
+        BrickAbi {
+            origin: self.map.origin(),
+            pointer_extent: self.map.pointer_extent(),
+            atlas_extent: self.map.atlas_extent(),
+            pointer_bytes: std::mem::size_of_val(self.map.pointers()),
+            atlas_bytes: self.map.atlas().len(),
+        }
     }
 }
 

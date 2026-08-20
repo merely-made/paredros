@@ -16,6 +16,8 @@ use std::sync::Arc;
 use std::time::Instant;
 
 use paredros_room::gpu::{self, Composer, SIZE, Tenant};
+#[cfg(feature = "r1-proof")]
+use paredros_room::gpu::{BrickAbi, DdaTenant};
 use paredros_room::room::SEED;
 use paredros_room::{Probe, TICKS, scene};
 use winit::application::ApplicationHandler;
@@ -27,9 +29,17 @@ use winit::window::{Window, WindowId};
 /// Where the receipt lands. The screenshots layout is per-repo under
 /// `Code/testing/<repo>/`.
 const CAPTURE: &str = r"C:\Users\mark_\Code\testing\paredros\s0_room.png";
+#[cfg(feature = "r1-proof")]
+const R1_CAPTURE: &str = r"C:\Users\mark_\Code\testing\paredros\r1_perspective.png";
+#[cfg(feature = "r1-proof")]
+const R1_RECEIPT: &str = r"C:\Users\mark_\Code\testing\paredros\r1_perspective.json";
 
 fn main() {
-    let trace_mode = std::env::var("ROOM_TRACE").is_ok_and(|v| v != "0");
+    #[cfg(feature = "r1-proof")]
+    let r1_mode = std::env::var("ROOM_R1").is_ok_and(|v| v != "0");
+    #[cfg(not(feature = "r1-proof"))]
+    let r1_mode = false;
+    let trace_mode = r1_mode || std::env::var("ROOM_TRACE").is_ok_and(|v| v != "0");
     let probe = Probe::new(SEED).expect("the room probe grows its world");
     println!(
         "room at {:?}, stance {:?}, ground hash {:#018x}",
@@ -46,9 +56,13 @@ fn main() {
         ),
         probe,
         trace_mode,
+        r1_mode,
         live: None,
         frames: 0,
         captured: false,
+        frame_us: Vec::new(),
+        #[cfg(feature = "r1-proof")]
+        last_trace: None,
     };
     event_loop.run_app(&mut app).expect("winit run");
 }
@@ -61,19 +75,27 @@ struct Live {
     // wgpu 30 presents through the queue rather than the surface texture.
     queue: wgpu::Queue,
     tenant: Tenant,
+    #[cfg(feature = "r1-proof")]
+    dda: Option<DdaTenant>,
     composer: Composer,
     /// The room is meshed once. Only the torch changes, and the torch rides
     /// the eye, so the vertices are re-shaded per frame rather than remeshed.
     room: Vec<mesocosm_render::geometry::Vertex>,
+    #[cfg(feature = "r1-proof")]
+    adapter: String,
 }
 
 struct RoomApp {
     instance: wgpu::Instance,
     probe: Probe,
     trace_mode: bool,
+    r1_mode: bool,
     live: Option<Live>,
     frames: u64,
     captured: bool,
+    frame_us: Vec<u64>,
+    #[cfg(feature = "r1-proof")]
+    last_trace: Option<mesocosm_lens::BrickDiagnostics>,
 }
 
 impl ApplicationHandler for RoomApp {
@@ -108,8 +130,16 @@ impl ApplicationHandler for RoomApp {
             .unwrap_or(capabilities.formats[0]);
 
         let tenant = Tenant::new(&handles, SIZE);
+        #[cfg(feature = "r1-proof")]
+        let dda = self
+            .r1_mode
+            .then(|| DdaTenant::new(&handles, &self.probe.room().ground, SIZE))
+            .transpose()
+            .expect("R1 brick map and tracer");
         let room = scene::room_vertices(self.probe.room());
         println!("room mesh: {} triangles", room.len() / 3);
+        #[cfg(feature = "r1-proof")]
+        let adapter = handles.adapter.get_info().name;
         let composer = Composer::new(handles, SIZE);
 
         let mut live = Live {
@@ -119,8 +149,12 @@ impl ApplicationHandler for RoomApp {
             device,
             queue,
             tenant,
+            #[cfg(feature = "r1-proof")]
+            dda,
             composer,
             room,
+            #[cfg(feature = "r1-proof")]
+            adapter,
         };
         configure(&mut live);
         live.window.request_redraw();
@@ -160,14 +194,34 @@ impl RoomApp {
             self.probe.heading(),
             aspect,
         );
-        live.tenant.look(camera.projection, camera.view);
-        live.tenant.set_room(&live.room, camera.eye);
-        live.tenant
-            .set_body(&scene::body_vertices(self.probe.at()), camera.eye);
-        live.tenant.draw();
+        #[cfg(feature = "r1-proof")]
+        let picture = if let Some(dda) = live.dda.as_mut() {
+            let pose = scene::body_pose(self.probe.at());
+            let diagnostics = dda
+                .draw(camera.trace(aspect), &pose)
+                .expect("Paredros R1 DDA frame");
+            self.last_trace = Some(diagnostics);
+            &dda.view
+        } else {
+            live.tenant.look(camera.projection, camera.view);
+            live.tenant.set_room(&live.room, camera.eye);
+            live.tenant
+                .set_body(&scene::body_vertices(self.probe.at()), camera.eye);
+            live.tenant.draw();
+            &live.tenant.view
+        };
+        #[cfg(not(feature = "r1-proof"))]
+        let picture = {
+            live.tenant.look(camera.projection, camera.view);
+            live.tenant.set_room(&live.room, camera.eye);
+            live.tenant
+                .set_body(&scene::body_vertices(self.probe.at()), camera.eye);
+            live.tenant.draw();
+            &live.tenant.view
+        };
 
         let chrome = scene::chrome(SIZE, self.probe.tick_count(), TICKS);
-        let master = live.composer.compose(&chrome, &live.tenant.view);
+        let master = live.composer.compose(&chrome, picture);
 
         use wgpu::CurrentSurfaceTexture as Acquired;
         match live.surface.get_current_texture() {
@@ -188,11 +242,28 @@ impl RoomApp {
         }
 
         let span = began.elapsed();
+        self.frame_us.push(span.as_micros() as u64);
         self.frames += 1;
 
         if self.trace_mode && !self.probe.running() && !self.captured {
             self.captured = true;
-            report(&live.composer, &master, &self.probe, span, self.frames);
+            report(
+                &live.composer,
+                &master,
+                &self.probe,
+                span,
+                self.frames,
+                ReportEvidence {
+                    r1_mode: self.r1_mode,
+                    frame_us: &self.frame_us,
+                    #[cfg(feature = "r1-proof")]
+                    trace: self.last_trace,
+                    #[cfg(feature = "r1-proof")]
+                    abi: live.dda.as_ref().map(DdaTenant::abi),
+                    #[cfg(feature = "r1-proof")]
+                    adapter: &live.adapter,
+                },
+            );
             event_loop.exit();
             return;
         }
@@ -224,14 +295,35 @@ fn configure(live: &mut Live) {
 }
 
 /// The receipt: the capture, its variety, the replay hash, and the spans.
+struct ReportEvidence<'a> {
+    r1_mode: bool,
+    frame_us: &'a [u64],
+    #[cfg(feature = "r1-proof")]
+    trace: Option<mesocosm_lens::BrickDiagnostics>,
+    #[cfg(feature = "r1-proof")]
+    abi: Option<BrickAbi>,
+    #[cfg(feature = "r1-proof")]
+    adapter: &'a str,
+}
+
 fn report(
     composer: &Composer,
     master: &wgpu::Texture,
     probe: &Probe,
     span: std::time::Duration,
     frames: u64,
+    evidence: ReportEvidence<'_>,
 ) {
+    #[cfg(not(feature = "r1-proof"))]
+    let _ = (evidence.r1_mode, evidence.frame_us);
     let capture = composer.capture(master);
+    #[cfg(feature = "r1-proof")]
+    let path = PathBuf::from(if evidence.r1_mode {
+        R1_CAPTURE
+    } else {
+        CAPTURE
+    });
+    #[cfg(not(feature = "r1-proof"))]
     let path = PathBuf::from(CAPTURE);
     capture.write_png(&path).expect("write the receipt");
     assert!(
@@ -253,6 +345,58 @@ fn report(
         capture.distinct
     );
     report_spans(composer, span);
+    #[cfg(feature = "r1-proof")]
+    if evidence.r1_mode {
+        let mut spans = evidence.frame_us.to_vec();
+        spans.sort_unstable();
+        let diagnostics = evidence.trace.expect("R1 trace diagnostics");
+        let receipt = R1Receipt {
+            gate: "R1",
+            vessel: "paredros",
+            camera_profile: "close-perspective-room",
+            traversal_implementation: "mesocosm_lens::BrickTracer/tracer.wgsl",
+            adapter: evidence.adapter,
+            size: SIZE,
+            frames: spans.len(),
+            frame_us_min: spans[0],
+            frame_us_median: spans[spans.len() / 2],
+            frame_us_max: *spans.last().expect("non-empty R1 spans"),
+            tracer_cpu_prepare_us: diagnostics.cpu_prepare_us,
+            steady_brick_upload_bytes: diagnostics.brick_upload_bytes,
+            steady_uniform_upload_bytes: diagnostics.uniform_upload_bytes,
+            brick_abi: evidence.abi.expect("R1 brick ABI"),
+            capture: path.display().to_string(),
+            capture_distinct_colours: capture.distinct,
+            ground_hash: format!("{:#018x}", probe.ground_hash()),
+            position_log_hash: format!("{:#018x}", probe.hash()),
+        };
+        let json = serde_json::to_string_pretty(&receipt).expect("R1 receipt JSON");
+        std::fs::write(R1_RECEIPT, &json).expect("write R1 receipt");
+        println!("{json}");
+    }
+}
+
+#[cfg(feature = "r1-proof")]
+#[derive(serde::Serialize)]
+struct R1Receipt<'a> {
+    gate: &'static str,
+    vessel: &'static str,
+    camera_profile: &'static str,
+    traversal_implementation: &'static str,
+    adapter: &'a str,
+    size: [u32; 2],
+    frames: usize,
+    frame_us_min: u64,
+    frame_us_median: u64,
+    frame_us_max: u64,
+    tracer_cpu_prepare_us: u64,
+    steady_brick_upload_bytes: u64,
+    steady_uniform_upload_bytes: u64,
+    brick_abi: BrickAbi,
+    capture: String,
+    capture_distinct_colours: usize,
+    ground_hash: String,
+    position_log_hash: String,
 }
 
 fn report_spans(composer: &Composer, span: std::time::Duration) {

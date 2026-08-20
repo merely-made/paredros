@@ -7,12 +7,18 @@ description = "S0, the room probe: one body, one room, a close camera, a fixed i
 repository = "https://github.com/merely-made/paredros"
 publish = false
 
+[features]
+# R1 proves the shared traversal by borrowing the current Mesocosm owner.
+# It stays opt-in so the proof does not become a sideways product dependency.
+r1-proof = ["dep:mesocosm-lens", "dep:serde_json"]
+
 # Path deps rather than git, because the probe's whole point is to consume the
 # sibling crates as they stand on this machine: mesocosm's near-tier
 # kinematics, netrender's frame, and the local renderling fork (which has no
 # published home). Revisit when the probe grows into a shipped target.
 [dependencies]
 mesocosm-core = { version = "0.0.1", path = "../../../mesocosm/crates/mesocosm-core" }
+mesocosm-lens = { version = "0.0.1", path = "../../../mesocosm/crates/mesocosm-lens", optional = true }
 mesocosm-mesh = { version = "0.0.1", path = "../../../mesocosm/crates/mesocosm-mesh" }
 mesocosm-render = { version = "0.0.1", path = "../../../mesocosm/crates/mesocosm-render" }
 netrender = { path = "../../../netrender/netrender" }
@@ -27,3 +33,4 @@ winit = "0.30"
 pollster = "0.4"
 png = "0.17"
 serde = { version = "1", default-features = false, features = ["derive", "alloc"] }
+serde_json = { version = "1", optional = true }

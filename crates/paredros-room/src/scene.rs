@@ -13,6 +13,8 @@
 
 use mesocosm_core::VolumeRef;
 use mesocosm_core::places::{BRICK, Ground, WALKER_HEIGHT};
+#[cfg(feature = "r1-proof")]
+use mesocosm_lens::{CritterPose, TraceCamera, critter::Capsule};
 use mesocosm_mesh::{BodyMesh, Volume};
 use mesocosm_render::geometry::{SceneItem, Vertex, build_scene_vertices};
 use netrender::Scene;
@@ -78,6 +80,24 @@ pub struct Camera {
     pub view: Mat4,
     /// The eye in world voxels. Doubles as the torch position.
     pub eye: Vec3,
+    /// The Paredros-owned focus point. The DDA profile consumes this policy;
+    /// it does not derive or replace it.
+    pub target: Vec3,
+}
+
+impl Camera {
+    #[cfg(feature = "r1-proof")]
+    pub fn trace(self, aspect: f32) -> TraceCamera {
+        TraceCamera::perspective(
+            self.eye.to_array(),
+            self.target.to_array(),
+            Vec3::Y.to_array(),
+            std::f32::consts::FRAC_PI_3,
+            aspect,
+            200.0,
+        )
+        .expect("Paredros room camera is valid")
+    }
 }
 
 /// A close camera that keeps its back to the room and its eye on the body.
@@ -121,7 +141,27 @@ pub fn camera(room: &crate::Room, at: [i32; 3], heading: [i32; 2], aspect: f32) 
         projection: Mat4::perspective_rh(std::f32::consts::FRAC_PI_3, aspect, 0.05, 200.0),
         view: Mat4::look_at_rh(eye, head, Vec3::Y),
         eye,
+        target: head,
     }
+}
+
+/// The same played body as a presentation-only SDF for the DDA profile.
+#[cfg(feature = "r1-proof")]
+pub fn body_pose(at: [i32; 3]) -> CritterPose {
+    let centre = [at[0] as f32 + 0.5, at[1] as f32, at[2] as f32 + 0.5];
+    CritterPose::from_capsules(
+        vec![Capsule {
+            a: [centre[0], centre[1] + 0.35, centre[2]],
+            ra: 0.34,
+            b: [centre[0], centre[1] + 1.65, centre[2]],
+            rb: 0.30,
+        }],
+        [
+            [centre[0] - 0.13, centre[1] + 1.52, centre[2] - 0.27, 0.07],
+            [centre[0] + 0.13, centre[1] + 1.52, centre[2] - 0.27, 0.07],
+        ],
+        BODY_COLOUR,
+    )
 }
 
 /// How far the torch carries, in voxels. Underground, an unlit greedy-meshed

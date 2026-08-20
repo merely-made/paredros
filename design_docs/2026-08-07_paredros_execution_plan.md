@@ -112,6 +112,28 @@ dominates because it re-uploads the room's 2,834 triangles every frame to
 move the torch; that is the first thing to fix when a frame budget
 matters.
 
+**R1 shared-traversal receipt, 2026-08-20.** The opt-in command
+`ROOM_R1=1 cargo run -p paredros-room --features r1-proof --bin room`
+keeps this room, trace, camera policy, netrender master, and replay
+discipline, but projects `Ground` through the same `BrickTracer` and
+`tracer.wgsl` DDA used by Mesocosm. Paredros supplies its existing
+close-perspective eye and target as a `TraceCamera`; it does not borrow
+Mesocosm's camera policy. The 64-frame headed run at 1280×720 on the RTX
+4060 Laptop GPU recorded 11.601–34.646 ms overall, 12.552 ms median, zero
+steady brick upload, and 2,357 distinct capture colours. The position-log
+hash remained `0x27a905731c6bfc61`; the current upstream Ground revision
+produced `0x809e3da5b3bd9cf3`, consistent with the dated-hash caveat above.
+The receipt and inspected capture live at
+`Code/testing/paredros/r1_perspective.{json,png}`.
+
+The same Rust `BrickMap` type proves the ABI directly: origin
+`[-9,0,-8]`, pointer extent `[18,3,17]`, atlas extent `[128,16,128]`,
+3,672 pointer bytes, and 262,144 atlas bytes. The `r1-proof` feature is
+off by default. Its direct `mesocosm-lens` path is evidence for lifting
+the traversal organ to a platform owner, not a sanctioned permanent
+sideways dependency. The original renderling S0 receipt remains intact;
+hybrid depth composition is a later gate.
+
 The room: `Places::grown(4242, 4, 64)` and `Ground::grow`, then one
 `carve` at `[35, 6, -35]` into the first hillside a deterministic outward
 ring scan finds with enough overburden to keep a floor, walls, and a
