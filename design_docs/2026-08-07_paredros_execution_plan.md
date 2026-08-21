@@ -402,22 +402,24 @@ The receipt proves same-seed equality, different seeded topology, a connected
 route plan touching surface, underground, ruin, and settlement, same-slot
 inheritance, and surviving player and non-player edits.
 
-**F0b landed 2026-08-21 — embodied journey; F0 closed.** `Journey` begins one
-still-unnamed subject on the surface, enters a roofed underground stance, then
-follows the structural itinerary through surface regions to the generated ruin
-and settlement. Paredros owns the route choice but expands only Mesocosm's
-integer `step` transition over the authoritative `Ground`, so planning does not
-invent another collision law. Its search budget and underground projection
-radius are caller-visible configuration.
+**F0b landed 2026-08-21 — exact movement; F0 closed.** `Movement` owns one
+subject's position, ordered inputs, resolved moves or holds, and replay. It has
+no destination or activity vocabulary. `Navigation` is a derived exact-ground
+query with caller-visible search limits; it expands only Mesocosm's integer
+`step` transition over the authoritative `Ground` and is absent from movement
+saves.
 
-Movement is an ordered intent log. A journey save carries the world genesis and
-edit record, subject, route configuration, route hash, and accepted movement
-intents. Restore regrows the world and route, refuses either kind of drift, and
-replays the body to the same position log and whole-state hash. The receipt
-checks every transition against `step`, every stance against exact occupancy,
-the underground waypoint for a solid roof, and each surface waypoint for its
-promised `PlaceId`. A mid-journey save reaches the same final state as a
-straight run, and twin runs reach equal authoritative state and state hashes.
+The four-place itinerary exists only in the receipt. The receipt composes
+generic slot routes and navigation queries to enter a roofed underground and
+reach the generated ruin and settlement. It checks every resolved transition
+against `step`, every stance against exact occupancy, the underground waypoint
+for a solid roof, and each surface waypoint for its promised `PlaceId`.
+World and movement remain separately owned saves. The movement record is only
+ordered spawn and step inputs for a subject-keyed position store; restore
+replays them against the regrown world. A mid-route restore reaches the same
+final state as a straight run. Twin navigation queries return the same advice
+without making that advice authority. The same store and transition move a
+second, unplayed subject without a control-specific path.
 
 This closes every F0 done-condition. These sites are world structure, not yet
 populated lives or mature settlements; those belong to F2 and F6. The traveller

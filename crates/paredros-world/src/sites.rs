@@ -207,20 +207,4 @@ impl WorldMap {
         }
         None
     }
-
-    /// A structural journey touching the four place categories named by F0.
-    /// This plans the route; embodied traversal remains a later receipt.
-    pub fn foundation_journey(&self) -> Option<Vec<SlotId>> {
-        let underground = self
-            .sites
-            .values()
-            .find(|site| site.slot.layer == Layer::Underground)?
-            .slot;
-        let ruin = self.slots_of_kind(SiteKind::Ruin).next()?;
-        let settlement = self.slots_of_kind(SiteKind::Settlement).next()?;
-        let mut journey = self.route(underground, ruin)?;
-        let tail = self.route(ruin, settlement)?;
-        journey.extend(tail.into_iter().skip(1));
-        Some(journey)
-    }
 }

@@ -3,7 +3,7 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 // SPDX-License-Identifier: MPL-2.0
 
-//! F0: the persistent structure of a Paredros world and one exact journey.
+//! F0: persistent Paredros world structure and exact movement.
 //!
 //! Mesocosm currently supplies verb-neutral generated topology and exact
 //! material ground. This crate gives that structure Paredros meanings:
@@ -14,14 +14,16 @@
 //! A [`SlotId`] survives changes in what occupies it. This is the important
 //! distinction for imported history: a fact replaces procedural content at
 //! an existing structural address rather than adding a parallel world.
-//! [`Journey`] then proves one still-unnamed subject can cross those addresses
-//! through exact ground and survive regrow-and-replay persistence.
+//! [`Movement`] records where a subject is and the accepted inputs that put it
+//! there. [`Navigation`] is a disposable query over the same exact ground.
 
-mod journey;
+mod movement;
+mod navigation;
 mod sites;
 mod world;
 
-pub use journey::{Journey, JourneyError, JourneyIntent, JourneySave, RouteBudget};
+pub use movement::{Movement, MovementError, MovementEvent, MovementIntent, MovementSave};
+pub use navigation::{Navigation, NavigationError};
 pub use sites::{HistoryFactId, Layer, Site, SiteKind, SiteSource, SlotId, WorldMap};
 pub use world::{
     GENERATOR_VERSION, World, WorldConfig, WorldError, WorldEvent, WorldIntent, WorldSave,

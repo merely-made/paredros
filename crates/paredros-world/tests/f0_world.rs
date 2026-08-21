@@ -48,7 +48,7 @@ fn fresh_runs_share_world_facts_and_seed_changes_topology() {
 }
 
 #[test]
-fn generated_structure_plans_the_foundation_journey() {
+fn generated_structure_connects_the_foundation_places() {
     let world = world();
     for kind in [
         SiteKind::Settlement,
@@ -59,22 +59,35 @@ fn generated_structure_plans_the_foundation_journey() {
         assert!(world.map().slots_of_kind(kind).next().is_some(), "{kind:?}");
     }
 
-    let journey = world
+    let underground = world
         .map()
-        .foundation_journey()
+        .slots_of_kind(SiteKind::Dungeon)
+        .next()
         .expect("this seed has a generated underground");
-    let layers = journey
-        .iter()
-        .map(|slot| slot.layer)
-        .collect::<BTreeSet<_>>();
-    let kinds = journey
+    let ruin = world.map().slots_of_kind(SiteKind::Ruin).next().unwrap();
+    let settlement = world
+        .map()
+        .slots_of_kind(SiteKind::Settlement)
+        .next()
+        .unwrap();
+    let mut route = world.map().route(underground, ruin).unwrap();
+    route.extend(
+        world
+            .map()
+            .route(ruin, settlement)
+            .unwrap()
+            .into_iter()
+            .skip(1),
+    );
+    let layers = route.iter().map(|slot| slot.layer).collect::<BTreeSet<_>>();
+    let kinds = route
         .iter()
         .map(|slot| world.map().site(*slot).unwrap().kind)
         .collect::<Vec<_>>();
     assert_eq!(layers, BTreeSet::from([Layer::Surface, Layer::Underground]));
     assert!(kinds.contains(&SiteKind::Ruin));
     assert!(kinds.contains(&SiteKind::Settlement));
-    for pair in journey.windows(2) {
+    for pair in route.windows(2) {
         assert!(world.map().neighbours(pair[0]).unwrap().contains(&pair[1]));
     }
 }

@@ -45,11 +45,11 @@ tag-in, the dig rule, and sortie deeds that explain later answers.
 share and neither may own. `crates/paredros-world` is F0a's persistent
 structure: Paredros-owned site meanings over stable surface and underground
 slots, routes and containment, inherited replacement, multi-author material
-edits, and regrow-plus-replay saves. F0b closes the layer with one still-unnamed
-subject following those slots over exact ground through a roofed underground,
-ruin, and settlement, including mid-journey save and replay. Its direct
-Mesocosm core dependency is current shared-organ evidence, not settled
-permanent ownership. The executable plan is
+edits, and regrow-plus-replay saves. F0b closes the layer with generic
+`Movement` state and derived `Navigation` queries over exact ground. The
+four-place traversal belongs to the receipt, not the production vocabulary.
+Its direct Mesocosm core dependency is current shared-organ evidence, not
+settled permanent ownership. The executable plan is
 `design_docs/2026-08-07_paredros_execution_plan.md`; S0-S3 are retained as
 foundation receipts, while the 2026-08-13 fundamental-layer ledger now owns
 future ordering. The founding plan remains the charter with its phase section
