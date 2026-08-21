@@ -11,6 +11,9 @@ publish = false
 # R1 proves the shared traversal by borrowing the current Mesocosm owner.
 # It stays opt-in so the proof does not become a sideways product dependency.
 r1-proof = ["dep:mesocosm-lens", "dep:serde_json"]
+# V1 keeps the R1 traversal receipt and adds Paredros-owned camera and
+# residency policy over a larger exact Ground working set.
+v1-proof = ["r1-proof"]
 
 # Path deps rather than git, because the probe's whole point is to consume the
 # sibling crates as they stand on this machine: mesocosm's near-tier
@@ -34,3 +37,8 @@ pollster = "0.4"
 png = "0.17"
 serde = { version = "1", default-features = false, features = ["derive", "alloc"] }
 serde_json = { version = "1", optional = true }
+
+[[bin]]
+name = "v1_residency"
+path = "src/bin/v1_residency.rs"
+required-features = ["v1-proof"]

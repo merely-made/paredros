@@ -25,6 +25,8 @@
 
 pub mod gpu;
 pub mod probe;
+#[cfg(feature = "v1-proof")]
+pub mod residency;
 pub mod room;
 pub mod scene;
 

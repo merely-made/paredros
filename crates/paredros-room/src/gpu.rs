@@ -183,6 +183,25 @@ pub struct DdaTenant {
 #[cfg(feature = "r1-proof")]
 impl DdaTenant {
     pub fn new(handles: &WgpuHandles, ground: &Ground, size: [u32; 2]) -> Result<Self, String> {
+        let map = BrickMap::from_ground(ground).map_err(|error| error.to_string())?;
+        Ok(Self::from_map(
+            handles,
+            map,
+            BrickRevision(ground.revision()),
+            size,
+        ))
+    }
+
+    /// Starts the tracer over a caller-selected exact brick working set.
+    ///
+    /// Mesocosm still owns the allocation and traversal. The caller owns the
+    /// camera-driven selection policy and may replace the projection below.
+    pub fn from_map(
+        handles: &WgpuHandles,
+        map: BrickMap,
+        revision: BrickRevision,
+        size: [u32; 2],
+    ) -> Self {
         let target = handles.device.create_texture(&wgpu::TextureDescriptor {
             label: Some("Paredros R1 DDA target"),
             size: wgpu::Extent3d {
@@ -200,8 +219,7 @@ impl DdaTenant {
             view_formats: &[],
         });
         let view = target.create_view(&Default::default());
-        let map = BrickMap::from_ground(ground).map_err(|error| error.to_string())?;
-        Ok(Self {
+        Self {
             view,
             _target: target,
             device: handles.device.clone(),
@@ -214,7 +232,7 @@ impl DdaTenant {
                 wgpu::TextureFormat::Rgba8Unorm,
             ),
             map,
-            revision: BrickRevision(ground.revision()),
+            revision,
             grade: Grade {
                 fog: [0.03, 0.03, 0.045],
                 fog_start: 0.62,
@@ -223,7 +241,29 @@ impl DdaTenant {
                 fog_bands: 0.0,
                 downscale: 1,
             },
-        })
+        }
+    }
+
+    /// Publishes a differently sized projection of the same exact world.
+    ///
+    /// The current tracer detects projection replacement through texture
+    /// extents. A same-sized travel page at the same source revision would be
+    /// mistaken for the already resident map, so this proof refuses it rather
+    /// than rendering stale terrain.
+    pub fn replace_map(
+        &mut self,
+        map: BrickMap,
+        revision: BrickRevision,
+    ) -> Result<(), &'static str> {
+        if map.pointer_extent() == self.map.pointer_extent()
+            && map.atlas_extent() == self.map.atlas_extent()
+            && revision == self.revision
+        {
+            return Err("same-sized travel pages require an explicit projection revision");
+        }
+        self.map = map;
+        self.revision = revision;
+        Ok(())
     }
 
     pub fn draw(

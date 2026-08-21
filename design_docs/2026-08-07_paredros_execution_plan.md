@@ -134,6 +134,47 @@ the traversal organ to a platform owner, not a sanctioned permanent
 sideways dependency. The original renderling S0 receipt remains intact;
 hybrid depth composition is a later gate.
 
+**V1 continuous-zoom residency receipt, 2026-08-21.** The opt-in command
+`cargo run -p paredros-room --features v1-proof --bin v1_residency`
+grows a 256-voxel-half-extent planning region, holds one surface character
+as the camera focus, and drives the ratified near-acts / mid-leads /
+far-plans camera from distance 8 to 72. The rig rises continuously from 50
+to 65 degrees. Its visible range is the four-corner ground-plane footprint
+plus one brick, rather than the smaller target-plane width.
+
+The full 6,091-brick Ground refuses the exact tracer's 4,096-brick ceiling.
+Paredros therefore selects exact page radii 40, 88, and 128 while Mesocosm's
+`BrickMap` owns their allocation. At the far view, visible radius 127 pulls
+1,411 bricks and 795,144 logical payload bytes under the 1 MiB budget. Five
+page transitions over 96 frames moved 2,250,848 bytes in all. Page
+preparation took 230 to 1,463 microseconds after startup.
+
+On the RTX 4060 Laptop GPU, the headed 1280x720 run recorded 4.385 to 32.271
+ms frame spans, 5.918 ms median, and 5.876 ms steady median. Warm transition
+frames were 5.534, 6.822, 5.995, and 6.724 ms; the 32.271 ms maximum was an
+unchanged close page. Rapid far-to-close at frame 48 and close-to-far at
+frame 60 both met their profile's 125 percent recovery threshold on the next
+frame. The inspected capture contains 63 distinct colours. Full samples and
+the capture live at `Code/testing/paredros/v1_residency.{json,png}`.
+
+The receipt's byte count is pointer plus atlas payload. It excludes driver
+rounding and the overlap while old GPU resources retire. Its load and
+eviction counts are logical set differences. The current tracer physically
+creates replacement textures and uploads the whole page on every band
+change; it does not have an incremental resident cache. It also detects a
+same-revision replacement from changed texture extents, so the proof refuses
+a same-sized travel page rather than risk stale terrain.
+
+**Ruling.** This first base-planning view does not force a clipmap: its exact
+frustum fits the budget and band changes were not the dominant hitch in this
+run. Do not generalize that into an LOD refusal. Larger planning views and
+travel remain unproved. The next permanent engine seam is a stable
+`ResidentChunk`-backed brick cache with explicit projection revision,
+per-brick publication, and measured allocator bytes. Clipmaps or mips become
+required when a real camera footprint exceeds that exact cache, not before.
+The feature-gated sideways dependency remains proof code until traversal and
+residency have a platform owner.
+
 The room: `Places::grown(4242, 4, 64)` and `Ground::grow`, then one
 `carve` at `[35, 6, -35]` into the first hillside a deterministic outward
 ring scan finds with enough overburden to keep a floor, walls, and a
