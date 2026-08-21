@@ -24,7 +24,7 @@ whether a community remains itself as control, bodies, and generations
 change.
 
 **Early implementation.** The repo holds the name-reservation package, the
-design docs, and three crates. `crates/paredros-room` is the S0 room probe
+design docs, and five crates. `crates/paredros-room` is the S0 room probe
 landed 2026-08-08: one room carved into a grown mesocosm hillside, one body
 under near-tier kinematics, a fixed input trace with save/reload/replay, and
 a headed run presenting netrender's composed master with a renderling room
@@ -42,11 +42,15 @@ ending. `crates/paredros-sortie` is S3's joint receipt (sim half landed
 participation, terrain falls as body-revision wounds, the pact-governed
 tag-in, the dig rule, and sortie deeds that explain later answers.
 `crates/paredros-identity` holds the identity facts both owners
-share and neither may own. The executable plan is
-`design_docs/2026-08-07_paredros_execution_plan.md`; S0-S3 are retained as
-foundation receipts, while the 2026-08-13 fundamental-layer ledger now owns
-future ordering. The founding plan remains the charter with its phase section
-superseded.
+share and neither may own. `crates/paredros-world` is F0a's persistent
+structure: Paredros-owned site meanings over stable surface and underground
+slots, routes and containment, inherited replacement, multi-author material
+edits, and regrow-plus-replay saves. Its direct Mesocosm core dependency is
+current shared-organ evidence, not settled permanent ownership. The executable
+plan is `design_docs/2026-08-07_paredros_execution_plan.md`; S0-S3 are retained
+as foundation receipts, while the 2026-08-13 fundamental-layer ledger now
+owns future ordering. The founding plan remains the charter with its phase
+section superseded.
 
 See `design_docs/PROJECT_DESCRIPTION.md` for the product description,
 `design_docs/DOC_README.md` for the doc index, and the wing-level

@@ -21,6 +21,7 @@ members = [
     "crates/paredros-room",
     "crates/paredros-social",
     "crates/paredros-sortie",
+    "crates/paredros-world",
 ]
 
 # renderling is a rust-gpu consumer: it wants the shader toolchain's spirv-std

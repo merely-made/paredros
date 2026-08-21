@@ -1,0 +1,24 @@
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at https://mozilla.org/MPL/2.0/.
+// SPDX-License-Identifier: MPL-2.0
+
+//! F0a: the stable structure of a Paredros world.
+//!
+//! Mesocosm currently supplies verb-neutral generated topology and exact
+//! material ground. This crate gives that structure Paredros meanings:
+//! settlements, ruins, encounters, dungeons, inherited replacements, and
+//! edits made by particular subjects. Saves carry only genesis facts and
+//! ordered intents; restore regrows the base world before replaying them.
+//!
+//! A [`SlotId`] survives changes in what occupies it. This is the important
+//! distinction for imported history: a fact replaces procedural content at
+//! an existing structural address rather than adding a parallel world.
+
+mod sites;
+mod world;
+
+pub use sites::{HistoryFactId, Layer, Site, SiteKind, SiteSource, SlotId, WorldMap};
+pub use world::{
+    GENERATOR_VERSION, World, WorldConfig, WorldError, WorldEvent, WorldIntent, WorldSave,
+};

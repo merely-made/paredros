@@ -385,6 +385,29 @@ seed; a journey crosses surface, underground, ruin, and settlement places;
 player and non-player edits survive reload; regenerated and inherited places
 share one structural slot; replay reaches the same state hash.
 
+**F0a landed 2026-08-21 — structural world and replayed edits.**
+`paredros-world` projects Mesocosm's current verb-neutral `Grown` topology and
+exact `Ground` into Paredros-owned stable slots. Surface slots carry generated
+settlement, ruin, encounter, or wilds meanings; generated nests become
+contained underground dungeon slots. Routes are deterministic and keyed by
+the structural slot rather than its current meaning. An inherited history fact
+replaces the generated meaning in that same slot while retaining its parent
+and routes.
+
+One ordered intent path now records material carves by any `SubjectId` and
+inherited site replacement. Saves carry seed, configurable world dimensions,
+generator version, base hash, and accepted intents. Restore regrows the base,
+refuses generator or base drift, then replays to the same whole-state hash.
+The receipt proves same-seed equality, different seeded topology, a connected
+route plan touching surface, underground, ruin, and settlement, same-slot
+inheritance, and surviving player and non-player edits.
+
+**F0 remains open.** The route receipt is graph traversal, not a body making
+the journey through exact ground. Site kinds are structural occupants, not yet
+populated settlements or dungeon lives. The next F0 slice must join this world
+record to one embodied traveller and prove the four-place journey across
+save/reload. Do not open F1's needs, injury, inventory, or death in that slice.
+
 ### F1 — One embodied life
 
 One generated creature becomes named and played. The body owns movement,
