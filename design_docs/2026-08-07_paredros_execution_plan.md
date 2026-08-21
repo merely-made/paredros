@@ -402,12 +402,12 @@ The receipt proves same-seed equality, different seeded topology, a connected
 route plan touching surface, underground, ruin, and settlement, same-slot
 inheritance, and surviving player and non-player edits.
 
-**F0b landed 2026-08-21 — exact movement; F0 closed.** `Movement` owns one
-subject's position, ordered inputs, resolved moves or holds, and replay. It has
-no destination or activity vocabulary. `Navigation` is a derived exact-ground
-query with caller-visible search limits; it expands only Mesocosm's integer
-`step` transition over the authoritative `Ground` and is absent from movement
-saves.
+**F0b landed 2026-08-21 — exact movement; F0 closed.** `Movement` owns
+subject-keyed positions, ordered inputs, resolved moves or holds, and replay.
+It has no destination or activity vocabulary. `Navigation` is a derived
+exact-ground query with caller-visible search limits; it expands only
+Mesocosm's integer `step` transition over the authoritative `Ground` and is
+absent from movement saves.
 
 The four-place itinerary exists only in the receipt. The receipt composes
 generic slot routes and navigation queries to enter a roofed underground and
@@ -426,7 +426,7 @@ populated lives or mature settlements; those belong to F2 and F6. The traveller
 has position and walker height only. Naming, needs, inventory, injury,
 capability, rest, recovery, and death now begin at F1.
 
-### F1 — One embodied life
+### F1 — One embodied life (closed 2026-08-21)
 
 One generated creature becomes named and played. The body owns movement,
 perception, inventory, needs, rest, injury, recovery, capability, and death.
@@ -437,6 +437,36 @@ nor player control exempts the body from world rules.
 injured, recover, and die under the same recorded transition rules that an
 uncontrolled creature will later use; save/reload preserves its exact body and
 history.
+
+**F1 landed 2026-08-21 — body systems and one transition grammar.**
+`Bodies`, `Items`, and `Movement` remain separate multi-subject stores.
+`GameState` coordinates them with subject-addressed `GameIntent` and
+`GameEvent` records; there is no player or camera field and no alternate path
+for a controlled subject. `transitions.rs` owns that shared grammar while
+`state.rs` owns only system coordination and replay.
+
+A deterministic world, subject, and body seed establish mass, carrying
+capacity, sight range, and recovery capacity. Naming starts its durable life.
+Hunger and fatigue advance through accepted actions; sight derives from exact
+ground; portable items retain stable identity and location; carrying capacity,
+wounds, and fatigue gate capability. Falling creates a body revision, dressing
+and rest can recover it, starvation or injury can end the life, and a dead body
+rejects further action without admitting that refusal to history.
+
+The F1 receipt composes those systems for one named subject and then repeats
+the same grammar for a second subject. Its settlement supplies and ruin are
+test fixtures, not production state. A mid-life save stores the world record
+and accepted game intents, regrows and replays them, then continues in lockstep
+to the same body, inventory, event history, and whole-state hash. This closes
+every F1 done-condition. F2 begins autonomous intent production and continued
+lives while unobserved; it does not require a second body model.
+
+Verification on 2026-08-21: all fourteen `paredros-world` tests pass and
+focused plus workspace clippy pass with warnings denied. Full workspace tests
+retain the two pre-existing S3 calibration failures
+`a_tag_in_occurs_mid_action_under_the_pact` and
+`an_injury_persists_as_a_body_revision_fact` against the live Mesocosm core;
+the focused F1 receipt is green and does not alter that separate gate.
 
 ### F2 — Other lives
 

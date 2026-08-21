@@ -42,14 +42,17 @@ ending. `crates/paredros-sortie` is S3's joint receipt (sim half landed
 participation, terrain falls as body-revision wounds, the pact-governed
 tag-in, the dig rule, and sortie deeds that explain later answers.
 `crates/paredros-identity` holds the identity facts both owners
-share and neither may own. `crates/paredros-world` is F0a's persistent
-structure: Paredros-owned site meanings over stable surface and underground
-slots, routes and containment, inherited replacement, multi-author material
-edits, and regrow-plus-replay saves. F0b closes the layer with generic
-`Movement` state and derived `Navigation` queries over exact ground. The
-four-place traversal belongs to the receipt, not the production vocabulary.
-Its direct Mesocosm core dependency is current shared-organ evidence, not
-settled permanent ownership. The executable plan is
+share and neither may own. `crates/paredros-world` owns persistent site
+meanings over stable surface and underground slots, routes, containment,
+inherited replacement, multi-author material edits, generated bodies and
+items, needs, perception, injury, recovery, death, and regrow-plus-replay
+saves. `Movement`, `Bodies`, and `Items` are separate multi-subject systems;
+`GameState` coordinates them through one subject-addressed transition grammar
+with no control-specific path. Navigation remains derived advice. Traversal
+and named-life scenarios belong to receipts, not production vocabulary. Its
+direct Mesocosm core dependency is current shared-organ evidence, not settled
+permanent ownership. F0 and F1 are closed; F2 autonomous lives are next. The
+executable plan is
 `design_docs/2026-08-07_paredros_execution_plan.md`; S0-S3 are retained as
 foundation receipts, while the 2026-08-13 fundamental-layer ledger now owns
 future ordering. The founding plan remains the charter with its phase section

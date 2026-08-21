@@ -3,7 +3,7 @@ name = "paredros-world"
 version = "0.0.1"
 edition = "2024"
 license = "MPL-2.0"
-description = "Paredros persistent world slots, routes, inherited sites, edits, and replay."
+description = "Paredros world, body, item, movement, and replay systems."
 repository = "https://github.com/merely-made/paredros"
 publish = false
 
