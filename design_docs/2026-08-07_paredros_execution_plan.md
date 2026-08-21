@@ -372,7 +372,7 @@ proves a law; it does not need to resemble a satisfying vertical slice.
 S0-S3 map onto several of these layers as preliminary evidence, but none is
 closed merely because a fixture exists.
 
-### F0 — Persistent world
+### F0 — Persistent world (closed 2026-08-21)
 
 Own stable place identity, containment and routes; generated settlements,
 dungeons, ruins, random-encounter sites, and surface/underground regions;
@@ -402,11 +402,27 @@ The receipt proves same-seed equality, different seeded topology, a connected
 route plan touching surface, underground, ruin, and settlement, same-slot
 inheritance, and surviving player and non-player edits.
 
-**F0 remains open.** The route receipt is graph traversal, not a body making
-the journey through exact ground. Site kinds are structural occupants, not yet
-populated settlements or dungeon lives. The next F0 slice must join this world
-record to one embodied traveller and prove the four-place journey across
-save/reload. Do not open F1's needs, injury, inventory, or death in that slice.
+**F0b landed 2026-08-21 — embodied journey; F0 closed.** `Journey` begins one
+still-unnamed subject on the surface, enters a roofed underground stance, then
+follows the structural itinerary through surface regions to the generated ruin
+and settlement. Paredros owns the route choice but expands only Mesocosm's
+integer `step` transition over the authoritative `Ground`, so planning does not
+invent another collision law. Its search budget and underground projection
+radius are caller-visible configuration.
+
+Movement is an ordered intent log. A journey save carries the world genesis and
+edit record, subject, route configuration, route hash, and accepted movement
+intents. Restore regrows the world and route, refuses either kind of drift, and
+replays the body to the same position log and whole-state hash. The receipt
+checks every transition against `step`, every stance against exact occupancy,
+the underground waypoint for a solid roof, and each surface waypoint for its
+promised `PlaceId`. A mid-journey save reaches the same final state as a
+straight run, and twin runs reach equal authoritative state and state hashes.
+
+This closes every F0 done-condition. These sites are world structure, not yet
+populated lives or mature settlements; those belong to F2 and F6. The traveller
+has position and walker height only. Naming, needs, inventory, injury,
+capability, rest, recovery, and death now begin at F1.
 
 ### F1 — One embodied life
 
