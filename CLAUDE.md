@@ -48,11 +48,14 @@ inherited replacement, multi-author material edits, generated bodies and
 items, needs, perception, injury, recovery, death, and regrow-plus-replay
 saves. `Movement`, `Bodies`, and `Items` are separate multi-subject systems;
 `GameState` coordinates them through one subject-addressed transition grammar
-with no control-specific path. Navigation remains derived advice. Traversal
-and named-life scenarios belong to receipts, not production vocabulary. Its
-direct Mesocosm core dependency is current shared-organ evidence, not settled
-permanent ownership. F0 and F1 are closed; F2 autonomous lives are next. The
-executable plan is
+with no control-specific path. `Population` owns deterministic site and
+migration origins; `Projects` owns durable goals and replayed completion;
+`Simulation` advances every living subject through the same game intents with
+no observer or selected-subject input. Navigation remains derived advice.
+Traversal and named-life scenarios belong to receipts, not production
+vocabulary. Its direct Mesocosm core dependency is current shared-organ
+evidence, not settled permanent ownership. F0-F2 are closed; F3 memory,
+belief, and standing is next. The executable plan is
 `design_docs/2026-08-07_paredros_execution_plan.md`; S0-S3 are retained as
 foundation receipts, while the 2026-08-13 fundamental-layer ledger now owns
 future ordering. The founding plan remains the charter with its phase section

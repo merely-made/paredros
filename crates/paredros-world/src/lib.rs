@@ -19,11 +19,18 @@
 //! [`Bodies`] and [`Items`] own durable physical condition independently;
 //! [`GameState`] composes those systems through one subject-addressed intent
 //! grammar and regrows them from accepted inputs on restore.
+//! [`Population`] records where named lives came from, [`Projects`] owns
+//! durable goals, and [`Simulation`] advances every living subject without a
+//! player, camera, or observer entering the scheduling contract.
 
 mod bodies;
 mod items;
 mod movement;
 mod navigation;
+mod population;
+mod projects;
+mod simulation;
+mod simulation_record;
 mod sites;
 mod state;
 mod transitions;
@@ -35,6 +42,16 @@ pub use bodies::{
 pub use items::{Item, ItemError, ItemId, ItemKind, ItemLocation, Items};
 pub use movement::{Movement, MovementError, MovementEvent, MovementIntent, MovementSave};
 pub use navigation::{Navigation, NavigationError};
+pub use population::{
+    Life, MAX_MIGRANTS_PER_ROUTE, MAX_RESIDENTS_PER_SITE, Migration, Population, PopulationConfig,
+    PopulationError, PopulationOrigin,
+};
+pub use projects::{
+    Project, ProjectError, ProjectEvent, ProjectGoal, ProjectId, ProjectIntent, ProjectSave,
+    ProjectStatus, Projects,
+};
+pub use simulation::{Decision, LifeReport, Pursuit, Simulation, SimulationError};
+pub use simulation_record::{SIMULATION_VERSION, SimulationSave};
 pub use sites::{HistoryFactId, Layer, Site, SiteKind, SiteSource, SlotId, WorldMap};
 pub use state::GameState;
 pub use transitions::{DeathCause, GAME_STATE_VERSION, GameError, GameEvent, GameIntent, GameSave};

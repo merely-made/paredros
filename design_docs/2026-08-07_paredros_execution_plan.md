@@ -468,7 +468,7 @@ retain the two pre-existing S3 calibration failures
 `an_injury_persists_as_a_body_revision_fact` against the live Mesocosm core;
 the focused F1 receipt is green and does not alter that separate gate.
 
-### F2 — Other lives
+### F2 — Other lives (closed 2026-08-22)
 
 Generate named creatures from settlements, ruins, dungeons, migrations, and
 encounters. They pursue needs, safety, work, curiosity, travel, and projects
@@ -478,6 +478,48 @@ not their ontological status.
 **Done when:** multiple named creatures continue consequential lives while
 unobserved; returning later reveals legible changes caused by them; controlling
 or following none of them does not suspend their world participation.
+
+**F2 landed 2026-08-22 — population, projects, and unattended rounds.**
+`Population` deterministically regrows named life genesis from world facts and
+a configurable population seed. Site origins retain their exact `SlotId` and
+site kind; configured migration origins retain both endpoints. Settlement,
+ruin, encounter, dungeon, migration, and optionally wild origins all produce
+the same `Life`, `Body`, and `SubjectId` facts. There is no NPC type.
+
+`Projects` gives goals stable IDs, explicit targets, active or completed state,
+and an ordered completion log. The initial baseline assigns each life one
+generated visit goal over the structural place graph. This is a real durable
+project law, but not yet material work, construction, employment, or cultural
+meaning; those remain F5 and F6.
+
+`Simulation` advances every living population member once per round. Its
+deterministic policy prioritizes injury and fatigue safety, hunger, available
+work, curiosity about another subject, migration travel, active projects, and
+ordinary routine. Every accepted act is the existing subject-addressed
+`GameIntent`; a `Decision` adds only the pursuit and a checked pointer into
+that log. The scheduler accepts rounds only. It has no observer, camera,
+selected subject, or control identity.
+
+Simulation saves retain the game record, population configuration and regrown
+hash, project completion intents and regrown hash, round, decision pointers,
+and whole-state hash. Restore regrows world, population, and projects; replays
+their accepted intents; validates each pursuit against the pointed-to game
+transition; and refuses reordered project completions or incoherent decision
+pointers.
+
+The F2 receipt covers all named origin classes, sixty unattended rounds, every
+pursuit class, changed positions and inventories, completed projects, factual
+before/after life reports, exact restore and continued decisions, and a
+three-round run in which every subject acts without one being selected. All
+eighteen `paredros-world` tests pass; focused and workspace clippy pass with
+warnings denied. Full workspace tests retain only the two pre-existing S3
+calibration failures `a_tag_in_occurs_mid_action_under_the_pact` and
+`an_injury_persists_as_a_body_revision_fact` against the live Mesocosm core.
+
+This closes the F2 done-condition, not autonomous society. The policy is a
+deterministic baseline rather than final creature intelligence. `LifeReport`
+is factual state plus pointable causes, not memory, belief, gossip, standing,
+or explanation under a norm. Those begin at F3.
 
 ### F3 — Memory, belief, and standing
 

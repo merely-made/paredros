@@ -56,6 +56,19 @@ pub enum NavigationError {
 }
 
 impl Navigation {
+    /// One deterministic valid stance for a structural slot.
+    pub fn stance(&self, world: &World, slot: SlotId) -> Result<[i32; 3], NavigationError> {
+        self.validate()?;
+        match slot.layer {
+            Layer::Surface => self.surface_stance(world, slot),
+            Layer::Underground => self
+                .underground_stances(world, slot)?
+                .into_iter()
+                .next()
+                .ok_or(NavigationError::MissingUnderground(slot)),
+        }
+    }
+
     pub fn surface_stance(&self, world: &World, slot: SlotId) -> Result<[i32; 3], NavigationError> {
         if slot.layer != Layer::Surface {
             return Err(NavigationError::MissingSurface(slot));
