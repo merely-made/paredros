@@ -23,6 +23,8 @@
 //!
 //! [`places`]: mesocosm_core::places
 
+#[cfg(feature = "r1-proof")]
+mod brick;
 pub mod gpu;
 pub mod probe;
 #[cfg(feature = "v1-proof")]

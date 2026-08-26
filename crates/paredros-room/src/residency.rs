@@ -11,8 +11,9 @@
 
 use std::{collections::BTreeSet, fmt};
 
+use conatus_brick::{BrickMap, BrickMapError, BrickProjectionRevision};
 use mesocosm_core::places::{BRICK, Ground, Places, WALKER_HEIGHT};
-use mesocosm_lens::{BrickMap, BrickMapError, BrickProjectionRevision, TraceCamera};
+use mesocosm_lens::TraceCamera;
 use renderling::glam::Vec3;
 
 use crate::room::SEED;
@@ -235,8 +236,11 @@ impl ResidencyPolicy {
                     .ok_or(ResidencyError::ProjectionRevisionOverflow)?,
             )
         };
-        let map =
-            BrickMap::from_ground_keys(&scene.ground, projection_revision, keys.iter().copied())?;
+        let map = crate::brick::from_ground_keys(
+            &scene.ground,
+            projection_revision,
+            keys.iter().copied(),
+        )?;
         let loaded_bricks = keys.difference(&self.current_keys).count();
         let evicted_bricks = self.current_keys.difference(&keys).count();
         let pointer_bytes = std::mem::size_of_val(map.pointers()) as u64;
@@ -298,7 +302,7 @@ mod tests {
     fn one_budget_pages_a_region_that_cannot_be_wholly_resident() {
         let scene = ResidencyScene::grow();
         assert!(matches!(
-            BrickMap::from_ground(&scene.ground),
+            crate::brick::from_ground(&scene.ground),
             Err(BrickMapError::TooManyBricks { .. })
         ));
         let mut policy = ResidencyPolicy::default();
@@ -333,12 +337,12 @@ mod tests {
         let mut scene = ResidencyScene::grow();
         let mut policy = ResidencyPolicy::default();
         let first = policy
-            .prepare(&scene, PAGE_RANGES[0])
+            .prepare(&scene, PAGE_RANGES[2])
             .unwrap()
             .expect("initial page");
-        assert!(scene.move_focus_x(BRICK * 4));
+        assert!(scene.move_focus_x(BRICK));
         let travelled = policy
-            .prepare(&scene, PAGE_RANGES[0])
+            .prepare(&scene, PAGE_RANGES[2])
             .unwrap()
             .expect("same-band travel page");
 
@@ -349,6 +353,16 @@ mod tests {
         assert!(travelled.metrics.loaded_bricks > 0);
         assert!(travelled.metrics.evicted_bricks > 0);
         assert_eq!(
+            first.map.pointer_extent(),
+            travelled.map.pointer_extent(),
+            "the headed far-page move must preserve pointer texture extent"
+        );
+        assert_eq!(
+            first.map.atlas_extent(),
+            travelled.map.atlas_extent(),
+            "the headed far-page move must preserve atlas texture extent"
+        );
+        assert_eq!(
             travelled.metrics.projection_revision.0,
             first.metrics.projection_revision.0 + 1
         );
@@ -356,6 +370,6 @@ mod tests {
             travelled.map.projection_revision(),
             travelled.metrics.projection_revision
         );
-        assert!(policy.prepare(&scene, PAGE_RANGES[0]).unwrap().is_none());
+        assert!(policy.prepare(&scene, PAGE_RANGES[2]).unwrap().is_none());
     }
 }

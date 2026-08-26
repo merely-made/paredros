@@ -12,11 +12,12 @@
 //! whole point of the cohesion contract this gate is proving.
 
 #[cfg(feature = "r1-proof")]
+use conatus_brick::BrickMap;
+#[cfg(feature = "r1-proof")]
 use mesocosm_core::places::Ground;
 #[cfg(feature = "r1-proof")]
 use mesocosm_lens::{
-    BrickDiagnostics, BrickFrameInput, BrickMap, BrickRevision, BrickTracer, CritterPose, Grade,
-    TraceCamera,
+    BrickDiagnostics, BrickFrameInput, BrickRevision, BrickTracer, CritterPose, Grade, TraceCamera,
 };
 use mesocosm_render::geometry::Vertex as MeshVertex;
 use netrender::{
@@ -183,7 +184,7 @@ pub struct DdaTenant {
 #[cfg(feature = "r1-proof")]
 impl DdaTenant {
     pub fn new(handles: &WgpuHandles, ground: &Ground, size: [u32; 2]) -> Result<Self, String> {
-        let map = BrickMap::from_ground(ground).map_err(|error| error.to_string())?;
+        let map = crate::brick::from_ground(ground).map_err(|error| error.to_string())?;
         Ok(Self::from_map(
             handles,
             map,

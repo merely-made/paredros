@@ -168,7 +168,7 @@ impl ResidencyApp {
 
         if travel {
             assert!(
-                self.scene.move_focus_x(BRICK * 4),
+                self.scene.move_focus_x(BRICK),
                 "the V1 travel receipt needs a valid destination stance"
             );
         }
@@ -451,7 +451,7 @@ fn report(
         gate: "V1",
         vessel: "paredros",
         camera_profile: "third-person continuous zoom: near acts, mid leads, far plans",
-        traversal_implementation: "mesocosm_lens::BrickTracer/tracer.wgsl",
+        traversal_implementation: "conatus_brick::BRICK_DDA_WGSL via mesocosm_lens::BrickTracer",
         resident_measure: "logical pointer plus atlas payload; excludes driver rounding and transition overlap",
         publication_mode: "retained equal-sized textures; full CPU republish when projection revision changes",
         adapter,

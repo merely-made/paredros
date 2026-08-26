@@ -113,11 +113,11 @@ dominates because it re-uploads the room's 2,834 triangles every frame to
 move the torch; that is the first thing to fix when a frame budget
 matters.
 
-**R1 shared-traversal receipt, 2026-08-20.** The opt-in command
+**R1 shared-traversal receipt, 2026-08-20.** The historical receipt command
 `ROOM_R1=1 cargo run -p paredros-room --features r1-proof --bin room`
 keeps this room, trace, camera policy, netrender master, and replay
-discipline, but projects `Ground` through the same `BrickTracer` and
-`tracer.wgsl` DDA used by Mesocosm. Paredros supplies its existing
+discipline, but projects `Ground` through the same `BrickTracer` and brick
+DDA used by Mesocosm. Paredros supplies its existing
 close-perspective eye and target as a `TraceCamera`; it does not borrow
 Mesocosm's camera policy. The 64-frame headed run at 1280×720 on the RTX
 4060 Laptop GPU recorded 11.601–34.646 ms overall, 12.552 ms median, zero
@@ -129,11 +129,13 @@ The receipt and inspected capture live at
 
 The same Rust `BrickMap` type proves the ABI directly: origin
 `[-9,0,-8]`, pointer extent `[18,3,17]`, atlas extent `[128,16,128]`,
-3,672 pointer bytes, and 262,144 atlas bytes. The `r1-proof` feature is
-off by default. Its direct `mesocosm-lens` path is evidence for lifting
-the traversal organ to a platform owner, not a sanctioned permanent
-sideways dependency. The original renderling S0 receipt remains intact;
-hybrid depth composition is a later gate.
+3,672 pointer bytes, and 262,144 atlas bytes. On 2026-08-26 that reusable
+organ moved to Mere's `conatus-brick` at commit `28c07fab`. Paredros now owns
+its Ground source binding, constructs the shared `BrickMap` directly, and
+keeps `r1-proof` in its default compile path. `mesocosm-lens` remains a product
+presentation adapter for the headed tenant; it no longer owns the shared ABI
+or `BRICK_DDA_WGSL`. The original renderling S0 receipt remains intact;
+raymarch-depth composition is the next shared rendering gate.
 
 **V1 continuous-zoom residency receipt, 2026-08-21.** The opt-in command
 `cargo run -p paredros-room --features v1-proof --bin v1_residency`
@@ -144,8 +146,8 @@ to 65 degrees. Its visible range is the four-corner ground-plane footprint
 plus one brick, rather than the smaller target-plane width.
 
 The full 6,091-brick Ground refuses the exact tracer's 4,096-brick ceiling.
-Paredros therefore selects exact page radii 40, 88, and 128 while Mesocosm's
-`BrickMap` owns their allocation. At the far view, visible radius 127 pulls
+Paredros therefore selects exact page radii 40, 88, and 128 while the shared
+`BrickMap` owns their deterministic pointer/atlas layout. At the far view, visible radius 127 pulls
 1,411 bricks and 795,144 logical payload bytes under the 1 MiB budget. Five
 page transitions over 96 frames moved 2,250,848 bytes in all. Page
 preparation took 230 to 1,463 microseconds after startup.
@@ -164,27 +166,34 @@ eviction counts are logical set differences. Extent changes still create
 replacement textures and upload the complete page; incremental residency
 remains open.
 
-**V1a implementation, 2026-08-26; headed travel receipt open.** Paredros's working-set policy recomputes
+**V1a complete, 2026-08-26.** Paredros's working-set policy recomputes
 selected keys inside an unchanged zoom band and advances a product-owned
-`BrickProjectionRevision` whenever selection changes. Mesocosm's retained
-tracer uses that revision to fully republish equal-sized pages without
+`BrickProjectionRevision` whenever selection changes. The retained Mesocosm
+presentation tracer uses that revision to fully republish equal-sized pages without
 recreating textures or bind groups, while repeated unchanged pages stay
 upload-silent. The tenant admits a newer Ground revision at the same projection
 but refuses revision regressions and a map that advances neither identity.
 Headless cache/lease coverage and the Paredros policy test are present. The
-headed V1 trace now moves focus inside one page band and asserts a full
-republish with zero texture or bind-group creation; its refreshed artifact is
-the remaining closing evidence.
+headed V1 trace moves focus one brick inside the far page band. At frame 72 it
+advanced projection revision 4 to 5, exchanged 66 loaded for 33 evicted bricks,
+retained the 795,144-byte physical extent, fully republished that payload, and
+created zero textures or bind groups. Frame 73 uploaded zero bytes. The real
+1280x720 RTX 4060 Laptop GPU run completed 96 frames, preserved one-frame
+close/far recovery, and produced a 62-colour capture at
+`Code/testing/paredros/v1_residency.{json,png}`. The original four-brick travel
+probe changed physical extent and therefore could not prove this gate; the
+closing receipt deliberately uses the equal-extent one-brick move.
 
 **Ruling.** This first base-planning view does not force a clipmap: its exact
 frustum fits the budget and band changes were not the dominant hitch in this
 run. Do not generalize that into an LOD refusal. Larger planning views and
-larger travel footprints remain unproved. The next permanent engine seam is a
-stable `ResidentChunk`-backed brick cache with per-brick publication and
-measured allocator bytes. Clipmaps or mips become required when a real camera
-footprint exceeds that exact cache, not before. The feature-gated sideways
-dependency remains proof code until traversal and residency have a platform
-owner.
+larger travel footprints remain unproved. Traversal ownership is now closed in
+`conatus-brick`; the next shared rendering gate is raymarch depth composed with
+Renderling. The separate residency gate remains a stable `ResidentChunk`-backed
+brick cache with per-brick publication and measured allocator bytes. Clipmaps
+or mips become required when a real camera footprint exceeds that exact cache,
+not before. Neither gate promotes product projection identity, frame cadence,
+or lease scheduling into a cross-product contract.
 
 The room: `Places::grown(4242, 4, 64)` and `Ground::grow`, then one
 `carve` at `[35, 6, -35]` into the first hillside a deterministic outward
@@ -834,13 +843,18 @@ the player should receive. S0's close camera is evidence, not a ruling.
 
 ## 7. Progress
 
-- **2026-08-26:** V1a implements equal-sized travel-page cache coherence. The
+- **2026-08-26:** V1a closed equal-sized travel-page cache coherence, then the
+  proven traversal organ moved into Mere's `conatus-brick` at `28c07fab`.
+  Paredros now owns its Ground binding and compiles the shared ABI/DDA by
+  default; the final headed image remained byte-identical after extraction.
+  The
   Paredros residency policy owns projection revision, notices changed key sets
   inside one page band, refuses regressing or unchanged replacement maps, and
-  preserves unchanged-frame silence. The refreshed headed travel artifact,
-  platform ownership, incremental `ResidentChunk`
-  publication, allocator-observed bytes, and larger travel receipts remain
-  open.
+  preserves unchanged-frame silence. The refreshed headed artifact proves a
+  retained 795,144-byte extent, full changed-page publication with zero resource
+  recreation, and zero upload on the following frame. Raymarch-depth
+  composition, incremental `ResidentChunk` publication, allocator-observed
+  bytes, and larger travel receipts remain open.
 - **2026-08-26:** F3 became active and F3a landed in `paredros-social`: an
   append-only, actor-scoped epistemic record over accepted deeds, exact report
   provenance, claimant-owned correction, a deterministic belief fold, and

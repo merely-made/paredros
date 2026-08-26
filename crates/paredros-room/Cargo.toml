@@ -8,9 +8,11 @@ repository = "https://github.com/merely-made/paredros"
 publish = false
 
 [features]
-# R1 proves the shared traversal by borrowing the current Mesocosm owner.
-# It stays opt-in so the proof does not become a sideways product dependency.
-r1-proof = ["dep:mesocosm-lens", "dep:serde_json"]
+# The shared traversal is a permanent compile-time product organ. `ROOM_R1`
+# selects it at runtime for the historical R1 receipt; ordinary room rendering
+# can still select the Renderling tenant.
+default = ["r1-proof"]
+r1-proof = ["dep:conatus-brick", "dep:mesocosm-lens", "dep:serde_json"]
 # V1 keeps the R1 traversal receipt and adds Paredros-owned camera and
 # residency policy over a larger exact Ground working set.
 v1-proof = ["r1-proof"]
@@ -20,6 +22,7 @@ v1-proof = ["r1-proof"]
 # kinematics, netrender's frame, and the local renderling fork (which has no
 # published home). Revisit when the probe grows into a shipped target.
 [dependencies]
+conatus-brick = { git = "https://github.com/merely-made/mere.git", rev = "28c07fab5baea0b780972f088b43bf853ee856d5", optional = true }
 mesocosm-core = { version = "0.0.1", path = "../../../mesocosm/crates/mesocosm-core" }
 mesocosm-lens = { version = "0.0.1", path = "../../../mesocosm/crates/mesocosm-lens", optional = true }
 mesocosm-mesh = { version = "0.0.1", path = "../../../mesocosm/crates/mesocosm-mesh" }
