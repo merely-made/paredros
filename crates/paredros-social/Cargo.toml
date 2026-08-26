@@ -3,7 +3,7 @@ name = "paredros-social"
 version = "0.0.1"
 edition = "2024"
 license = "MPL-2.0"
-description = "S1, the willingness owner: deeds, standing, confidence, refusal, standing agreements, and the premises behind every answer."
+description = "Paredros social authority: deeds, beliefs, standing, confidence, refusal, agreements, and explanations."
 repository = "https://github.com/merely-made/paredros"
 publish = false
 

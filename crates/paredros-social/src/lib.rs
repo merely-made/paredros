@@ -14,6 +14,8 @@
 //! The minimal forms are all present, which was the point of the gate:
 //!
 //! - [`DeedLog`], append-only, who did what to whom and when;
+//! - [`EpistemicLog`], append-only observations, claims, reports, and
+//!   claimant-owned corrections over accepted deeds, with belief derived;
 //! - [`Standing`], folded out of the log rather than authored, carrying the
 //!   ids of the deeds that produced it;
 //! - [`Confidence`], a companion's own read of whether work is within their
@@ -39,6 +41,7 @@
 pub mod agreement;
 pub mod companion;
 pub mod deed;
+pub mod epistemic;
 pub mod offer;
 pub mod relation;
 pub mod response;
@@ -53,6 +56,10 @@ pub use agreement::{
 };
 pub use companion::{Companion, Confidence, Craft, Skill};
 pub use deed::{Deed, DeedId, DeedKind, DeedLog};
+pub use epistemic::{
+    Belief, ClaimHistory, ClaimId, EpistemicEntry, EpistemicError, EpistemicId, EpistemicLog,
+    EpistemicRecord, EventReading, Evidence, ObservationId, Proposition, ReportId,
+};
 pub use offer::{Offer, Terms, Work};
 pub use relation::{Relations, Standing};
 pub use response::{Premise, Response, Ruling, RulingKind, Verdict, cited_deeds};

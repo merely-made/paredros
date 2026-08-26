@@ -1,8 +1,9 @@
 # Paredros Execution Plan (2026-08-07)
 
-**Status: rebased in progress (2026-08-13).** S0-S3 remain landed foundation
-receipts, with their stated headed judgments still open. They do not define a
-required entourage, sortie loop, or camera. **R4 was decided and executed
+**Status: in progress (2026-08-26); F0-F2 closed, F3 active, F3a landed.**
+S0-S3 remain landed foundation receipts, with their stated headed judgments
+still open. They do not define a required entourage, sortie loop, or camera.
+**R4 was decided and executed
 2026-08-10**: see
 [the extraction review](2026-08-10_r4_extraction_review.md). The former
 S4-S6 future gate line is superseded by the fundamental layers in §4. The
@@ -533,6 +534,52 @@ one claim travels to an absent creature; a later consequential answer cites
 the observations, reports, and norms that produced it; correction or deception
 remains visible in history.
 
+#### F3a — Pointable memory and belief
+
+The first slice establishes the durable epistemic record before selecting a
+runtime storage engine. `DeedLog` remains the accepted-event authority. F3a
+records observer-scoped observations, actor-supported claims, exact report
+transmissions, and explicit self-corrections about those deeds. Each current
+belief retains pointable support and the record entry for its latest revision.
+Reports may address an absent subject; sending a report does not silently make
+its recipient believe it.
+
+The record is append-only and replayable. Current belief is a deterministic
+fold over it, never a second serialized authority. Self-correction changes the
+current fold while the original contradiction remains visible in history.
+Same-tick append order is authoritative and pointable. This typed product
+vocabulary is deliberately narrower than an ontology or universal claim
+schema.
+
+**F3a done when:** one accepted event produces two differently supported
+witness claims; one claim is reported to an absent subject; a contradiction
+and the claimant's later correction both remain pointable; save/restore admits
+the exact same canonical record through live validation and produces the same
+belief fold; and rejected operations leave the record, next identifiers, and
+derived view unchanged.
+
+**Landed 2026-08-26.** `paredros-social::epistemic` meets that bounded
+condition with eight focused receipts. F3 remains open. Forgetting, rejection
+and adjudication policy, deception and intent, versioned norms,
+observer-relative standing, and a consequential answer citing its complete
+observation/report/norm chain remain F3b work.
+
+#### Post-F3 runtime projection proof — gated, orthogonal to F4
+
+After F3 supplies real product facts, a product-owned world compiler may lower
+accepted Paredros history into dense typed tables, relationship indexes, and
+later Conatus, scene, audio, or ECS bindings. This is an orthogonal composition
+receipt, not a new fundamental layer and not a prerequisite for unrelated F4
+work. No ECS dependency or shared compiler contract is selected in advance.
+
+**Done when:** cold rebuild and incremental application agree; recipe and
+source revisions refuse stale or skipped input before mutation; removal
+precedes replacement; unchanged truth produces no runtime work; disposable
+handles never enter saves; dropping and rebuilding the projection leaves the
+authoritative product hash unchanged; and one compiled value reaches a real
+query or runtime consumer. An embodied spatial consumer is still required to
+challenge Isometry R3.
+
 ### F4 — Requests and coordination
 
 Generalize offers and agreements beyond companions: help, trade, shelter,
@@ -645,6 +692,24 @@ the player should receive. S0's close camera is evidence, not a ruling.
 
 ## 6. Findings
 
+- **2026-08-26 (F3a planning):** the existing seams already express the
+  authority split. `GameEvent::Observed` records a witness and visible target
+  but not a proposition or another subject's belief. `DeedLog` is append-only;
+  `Relations::derive` folds one globally visible deed log; and `Premise` cites
+  objective deed evidence. F3 therefore needs an observer-scoped epistemic
+  record and derived belief fold without rewriting any of those owners.
+- **2026-08-26 (F3a implementation):** the admitted record now validates deeds
+  against `DeedLog`, scopes direct and reported evidence to the actor who holds
+  it, preserves exact report propositions and forwarding chains, and treats
+  correction as claimant-owned revision. Restore decodes only ordered entries
+  and replays them through live admission, refusing reordered identities,
+  noncanonical supports, or changed semantics. Deception was removed from this
+  slice because contradiction alone cannot establish intent.
+- **2026-08-26 (runtime projection):** Paredros's existing ordered maps and
+  replay receipts are the oracle for the first semantic lowering. Bevy, Flecs,
+  hecs, SHACL execution, and differential dataflow remain candidates behind a
+  later measured profile; choosing one in F3a would test a library before the
+  product facts force its shape.
 - **2026-08-08 (S3):** the wound threshold is Paredros's own constant
   (`SAFE_FALL = 4`), not an import: the near tier keeps `COMFORT_DROP`
   private, and the ruling is independent anyway — falls hurt here even if
@@ -759,6 +824,14 @@ the player should receive. S0's close camera is evidence, not a ruling.
 
 ## 7. Progress
 
+- **2026-08-26:** F3 became active and F3a landed in `paredros-social`: an
+  append-only, actor-scoped epistemic record over accepted deeds, exact report
+  provenance, claimant-owned correction, a deterministic belief fold, and
+  validated exact replay. All 31 focused social tests pass and focused clippy
+  passes with warnings denied. The ECS/world-compiler experiment remains an
+  orthogonal post-F3 receipt. Full F3 still requires forgetting, adjudication,
+  deception/intent, norms, observer-relative standing, and a consequential
+  answer citing its evidence chain.
 - **2026-08-08:** S3's sim half landed; headed real-time action open;
   R4 armed. `crates/paredros-sortie` joins the workspace as the one
   crate reading both owners: negotiated participation, agreement-driven
