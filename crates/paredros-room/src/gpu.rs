@@ -244,22 +244,26 @@ impl DdaTenant {
         }
     }
 
-    /// Publishes a differently sized projection of the same exact world.
+    /// Publishes a newer source revision, selected projection, or both.
     ///
-    /// The current tracer detects projection replacement through texture
-    /// extents. A same-sized travel page at the same source revision would be
-    /// mistaken for the already resident map, so this proof refuses it rather
-    /// than rendering stale terrain.
+    /// The source revision may advance while the selected keys remain stable.
+    /// The product-owned projection revision must advance when selection or
+    /// slot assignment changes. Regressing either identity is refused.
     pub fn replace_map(
         &mut self,
         map: BrickMap,
         revision: BrickRevision,
     ) -> Result<(), &'static str> {
-        if map.pointer_extent() == self.map.pointer_extent()
-            && map.atlas_extent() == self.map.atlas_extent()
-            && revision == self.revision
-        {
-            return Err("same-sized travel pages require an explicit projection revision");
+        let current_projection = self.map.projection_revision().0;
+        let next_projection = map.projection_revision().0;
+        if revision.0 < self.revision.0 {
+            return Err("replacement map regresses its Ground revision");
+        }
+        if next_projection < current_projection {
+            return Err("replacement map regresses its projection revision");
+        }
+        if revision == self.revision && next_projection == current_projection {
+            return Err("replacement map advances neither source nor projection");
         }
         self.map = map;
         self.revision = revision;

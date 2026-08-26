@@ -12,7 +12,7 @@
 use std::{collections::BTreeSet, fmt};
 
 use mesocosm_core::places::{BRICK, Ground, Places, WALKER_HEIGHT};
-use mesocosm_lens::{BrickMap, BrickMapError, TraceCamera};
+use mesocosm_lens::{BrickMap, BrickMapError, BrickProjectionRevision, TraceCamera};
 use renderling::glam::Vec3;
 
 use crate::room::SEED;
@@ -60,6 +60,21 @@ impl ResidencyScene {
             })
             .expect("the grown planning region has a surface stance");
         Self { ground, focus }
+    }
+
+    /// Moves the camera/body focus to the surface at a horizontal offset.
+    pub fn move_focus_x(&mut self, delta: i32) -> bool {
+        let x = self.focus[0] + delta;
+        let z = self.focus[2];
+        let Some(top) = self.ground.surface(x, z) else {
+            return false;
+        };
+        let next = [x, top + 1, z];
+        if !self.ground.stands(next, WALKER_HEIGHT) {
+            return false;
+        }
+        self.focus = next;
+        true
     }
 
     pub fn camera(&self, distance: f32, aspect: f32) -> TraceCamera {
@@ -127,6 +142,7 @@ fn camera_direction(distance: f32) -> Vec3 {
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct ResidencyMetrics {
+    pub projection_revision: BrickProjectionRevision,
     pub visible_range: i32,
     pub resident_range: i32,
     pub loaded_bricks: usize,
@@ -146,6 +162,7 @@ pub struct PreparedWorkingSet {
 pub enum ResidencyError {
     VisibleRange { actual: i32, maximum: i32 },
     Budget { actual: u64, maximum: u64 },
+    ProjectionRevisionOverflow,
     BrickMap(BrickMapError),
 }
 
@@ -160,6 +177,9 @@ impl fmt::Display for ResidencyError {
                 formatter,
                 "working set uses {actual} bytes, over the {maximum}-byte V1 budget"
             ),
+            Self::ProjectionRevisionOverflow => {
+                write!(formatter, "brick projection revision overflow")
+            }
             Self::BrickMap(error) => error.fmt(formatter),
         }
     }
@@ -177,11 +197,16 @@ impl From<BrickMapError> for ResidencyError {
 pub struct ResidencyPolicy {
     current_range: Option<i32>,
     current_keys: BTreeSet<[i16; 3]>,
+    projection_revision: BrickProjectionRevision,
 }
 
 impl ResidencyPolicy {
     pub fn current_range(&self) -> Option<i32> {
         self.current_range
+    }
+
+    pub fn projection_revision(&self) -> BrickProjectionRevision {
+        self.projection_revision
     }
 
     pub fn prepare(
@@ -196,12 +221,22 @@ impl ResidencyPolicy {
                 actual: visible_range,
                 maximum: *PAGE_RANGES.last().expect("V1 has residency bands"),
             })?;
-        if self.current_range == Some(resident_range) {
+        let keys = selected_keys(&scene.ground, scene.focus, resident_range);
+        if self.current_range == Some(resident_range) && self.current_keys == keys {
             return Ok(None);
         }
-
-        let keys = selected_keys(&scene.ground, scene.focus, resident_range);
-        let map = BrickMap::from_ground_keys(&scene.ground, keys.iter().copied())?;
+        let projection_revision = if self.current_range.is_none() {
+            self.projection_revision
+        } else {
+            BrickProjectionRevision(
+                self.projection_revision
+                    .0
+                    .checked_add(1)
+                    .ok_or(ResidencyError::ProjectionRevisionOverflow)?,
+            )
+        };
+        let map =
+            BrickMap::from_ground_keys(&scene.ground, projection_revision, keys.iter().copied())?;
         let loaded_bricks = keys.difference(&self.current_keys).count();
         let evicted_bricks = self.current_keys.difference(&keys).count();
         let pointer_bytes = std::mem::size_of_val(map.pointers()) as u64;
@@ -214,6 +249,7 @@ impl ResidencyPolicy {
             });
         }
         let metrics = ResidencyMetrics {
+            projection_revision,
             visible_range,
             resident_range,
             loaded_bricks,
@@ -225,6 +261,7 @@ impl ResidencyPolicy {
         };
         self.current_range = Some(resident_range);
         self.current_keys = keys;
+        self.projection_revision = projection_revision;
         Ok(Some(PreparedWorkingSet { map, metrics }))
     }
 }
@@ -289,5 +326,36 @@ mod tests {
         let ground_at = [scene.focus[0], scene.focus[1] - 1, scene.focus[2]];
         assert!(scene.ground.solid(ground_at));
         assert_ne!(recovered.map.material_at(ground_at), 0);
+    }
+
+    #[test]
+    fn travel_within_one_page_band_advances_projection_identity() {
+        let mut scene = ResidencyScene::grow();
+        let mut policy = ResidencyPolicy::default();
+        let first = policy
+            .prepare(&scene, PAGE_RANGES[0])
+            .unwrap()
+            .expect("initial page");
+        assert!(scene.move_focus_x(BRICK * 4));
+        let travelled = policy
+            .prepare(&scene, PAGE_RANGES[0])
+            .unwrap()
+            .expect("same-band travel page");
+
+        assert_eq!(
+            first.metrics.resident_range,
+            travelled.metrics.resident_range
+        );
+        assert!(travelled.metrics.loaded_bricks > 0);
+        assert!(travelled.metrics.evicted_bricks > 0);
+        assert_eq!(
+            travelled.metrics.projection_revision.0,
+            first.metrics.projection_revision.0 + 1
+        );
+        assert_eq!(
+            travelled.map.projection_revision(),
+            travelled.metrics.projection_revision
+        );
+        assert!(policy.prepare(&scene, PAGE_RANGES[0]).unwrap().is_none());
     }
 }

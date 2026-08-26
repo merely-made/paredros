@@ -160,21 +160,31 @@ the capture live at `Code/testing/paredros/v1_residency.{json,png}`.
 
 The receipt's byte count is pointer plus atlas payload. It excludes driver
 rounding and the overlap while old GPU resources retire. Its load and
-eviction counts are logical set differences. The current tracer physically
-creates replacement textures and uploads the whole page on every band
-change; it does not have an incremental resident cache. It also detects a
-same-revision replacement from changed texture extents, so the proof refuses
-a same-sized travel page rather than risk stale terrain.
+eviction counts are logical set differences. Extent changes still create
+replacement textures and upload the complete page; incremental residency
+remains open.
+
+**V1a implementation, 2026-08-26; headed travel receipt open.** Paredros's working-set policy recomputes
+selected keys inside an unchanged zoom band and advances a product-owned
+`BrickProjectionRevision` whenever selection changes. Mesocosm's retained
+tracer uses that revision to fully republish equal-sized pages without
+recreating textures or bind groups, while repeated unchanged pages stay
+upload-silent. The tenant admits a newer Ground revision at the same projection
+but refuses revision regressions and a map that advances neither identity.
+Headless cache/lease coverage and the Paredros policy test are present. The
+headed V1 trace now moves focus inside one page band and asserts a full
+republish with zero texture or bind-group creation; its refreshed artifact is
+the remaining closing evidence.
 
 **Ruling.** This first base-planning view does not force a clipmap: its exact
 frustum fits the budget and band changes were not the dominant hitch in this
 run. Do not generalize that into an LOD refusal. Larger planning views and
-travel remain unproved. The next permanent engine seam is a stable
-`ResidentChunk`-backed brick cache with explicit projection revision,
-per-brick publication, and measured allocator bytes. Clipmaps or mips become
-required when a real camera footprint exceeds that exact cache, not before.
-The feature-gated sideways dependency remains proof code until traversal and
-residency have a platform owner.
+larger travel footprints remain unproved. The next permanent engine seam is a
+stable `ResidentChunk`-backed brick cache with per-brick publication and
+measured allocator bytes. Clipmaps or mips become required when a real camera
+footprint exceeds that exact cache, not before. The feature-gated sideways
+dependency remains proof code until traversal and residency have a platform
+owner.
 
 The room: `Places::grown(4242, 4, 64)` and `Ground::grow`, then one
 `carve` at `[35, 6, -35]` into the first hillside a deterministic outward
@@ -824,6 +834,13 @@ the player should receive. S0's close camera is evidence, not a ruling.
 
 ## 7. Progress
 
+- **2026-08-26:** V1a implements equal-sized travel-page cache coherence. The
+  Paredros residency policy owns projection revision, notices changed key sets
+  inside one page band, refuses regressing or unchanged replacement maps, and
+  preserves unchanged-frame silence. The refreshed headed travel artifact,
+  platform ownership, incremental `ResidentChunk`
+  publication, allocator-observed bytes, and larger travel receipts remain
+  open.
 - **2026-08-26:** F3 became active and F3a landed in `paredros-social`: an
   append-only, actor-scoped epistemic record over accepted deeds, exact report
   provenance, claimant-owned correction, a deterministic belief fold, and

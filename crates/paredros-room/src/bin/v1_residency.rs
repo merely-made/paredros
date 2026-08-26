@@ -11,6 +11,7 @@
 
 use std::{path::Path, sync::Arc, time::Instant};
 
+use mesocosm_core::places::BRICK;
 use mesocosm_lens::{BrickDiagnostics, BrickRevision};
 use paredros_room::{
     gpu::{self, Composer, DdaTenant, SIZE},
@@ -31,6 +32,7 @@ use winit::{
 
 const CAPTURE: &str = r"C:\Users\mark_\Code\testing\paredros\v1_residency.png";
 const RECEIPT: &str = r"C:\Users\mark_\Code\testing\paredros\v1_residency.json";
+const TRAVEL_FRAME: u64 = 72;
 
 fn main() {
     let scene = ResidencyScene::grow();
@@ -162,6 +164,14 @@ impl ResidencyApp {
         let mut loaded_bricks = 0;
         let mut evicted_bricks = 0;
         let mut page_transition = false;
+        let travel = frame == TRAVEL_FRAME;
+
+        if travel {
+            assert!(
+                self.scene.move_focus_x(BRICK * 4),
+                "the V1 travel receipt needs a valid destination stance"
+            );
+        }
 
         if frame == 0 {
             page_prepare_us = live.initial_prepare_us;
@@ -170,18 +180,22 @@ impl ResidencyApp {
             page_transition = true;
         } else {
             let page_began = Instant::now();
-            if let Some(prepared) = self
+            let prepared = self
                 .policy
                 .prepare(&self.scene, visible)
-                .expect("camera range has a V1 page")
-            {
+                .expect("camera range has a V1 page");
+            assert!(
+                !travel || prepared.is_some(),
+                "same-band travel must select a new projection"
+            );
+            if let Some(prepared) = prepared {
                 page_prepare_us = page_began.elapsed().as_micros() as u64;
                 loaded_bricks = prepared.metrics.loaded_bricks;
                 evicted_bricks = prepared.metrics.evicted_bricks;
                 live.current = prepared.metrics;
                 live.tenant
                     .replace_map(prepared.map, BrickRevision(self.scene.ground.revision()))
-                    .expect("V1 band changes have distinct texture extents");
+                    .expect("V1 page changes advance projection revision");
                 page_transition = true;
             }
         }
@@ -189,6 +203,15 @@ impl ResidencyApp {
         let camera = self.scene.camera(distance, aspect);
         let pose = scene::body_pose(self.scene.focus);
         let diagnostics = live.tenant.draw(camera, &pose).expect("V1 DDA frame");
+        if travel {
+            assert!(
+                diagnostics.projection_replaced,
+                "V1 travel must retain and republish equal-sized textures"
+            );
+            assert_eq!(diagnostics.resource_creations, 0);
+            assert_eq!(diagnostics.bind_group_rebuilds, 0);
+            assert!(diagnostics.brick_upload_bytes > 0);
+        }
         let chrome = scene::chrome(SIZE, frame as usize + 1, V1_FRAMES as usize);
         let master = live.composer.compose(&chrome, &live.tenant.view);
         let size = live.window.inner_size();
@@ -232,8 +255,9 @@ impl ResidencyApp {
         );
         if sample.page_transition {
             println!(
-                "page @{:02}: visible {} -> range {}, {} resident, +{} -{}, {} bytes, prepare {} us, upload {} bytes, frame {} us",
+                "page @{:02}: projection {}, visible {} -> range {}, {} resident, +{} -{}, {} bytes, prepare {} us, upload {} bytes, frame {} us",
                 sample.frame,
+                sample.projection_revision,
                 sample.visible_range,
                 sample.resident_range,
                 sample.resident_bricks,
@@ -283,6 +307,7 @@ fn configure(live: &mut Live) {
 #[derive(Clone, Copy, Serialize)]
 struct FrameSample {
     frame: u64,
+    projection_revision: u64,
     camera_distance: f32,
     visible_range: i32,
     resident_range: i32,
@@ -298,6 +323,7 @@ struct FrameSample {
     tracer_cpu_prepare_us: u64,
     resource_creations: u32,
     bind_group_rebuilds: u32,
+    projection_replaced: bool,
     frame_us: u64,
 }
 
@@ -317,6 +343,7 @@ impl FrameSample {
     ) -> Self {
         Self {
             frame,
+            projection_revision: resident.projection_revision.0,
             camera_distance,
             visible_range,
             resident_range: resident.resident_range,
@@ -332,6 +359,7 @@ impl FrameSample {
             tracer_cpu_prepare_us: diagnostics.cpu_prepare_us,
             resource_creations: diagnostics.resource_creations,
             bind_group_rebuilds: diagnostics.bind_group_rebuilds,
+            projection_replaced: diagnostics.projection_replaced,
             frame_us,
         }
     }
@@ -365,6 +393,8 @@ struct Receipt<'a> {
     resident_budget_bytes: u64,
     maximum_resident_bytes: u64,
     page_transitions: usize,
+    equal_extent_travel_frame: u64,
+    equal_extent_travel_proved: bool,
     total_brick_upload_bytes: u64,
     frame_us_min: u64,
     frame_us_median: u64,
@@ -404,13 +434,26 @@ fn report(
             && rapid_far_recovery.recovered_at_frame.is_some(),
         "both rapid zooms must recover within the V1 trace"
     );
+    let travel = samples
+        .iter()
+        .find(|sample| sample.frame == TRAVEL_FRAME)
+        .expect("V1 travel frame");
+    let equal_extent_travel_proved = travel.page_transition
+        && travel.projection_replaced
+        && travel.resource_creations == 0
+        && travel.bind_group_rebuilds == 0
+        && travel.brick_upload_bytes > 0;
+    assert!(
+        equal_extent_travel_proved,
+        "V1 must prove an equal-extent travel republish"
+    );
     let receipt = Receipt {
         gate: "V1",
         vessel: "paredros",
         camera_profile: "third-person continuous zoom: near acts, mid leads, far plans",
         traversal_implementation: "mesocosm_lens::BrickTracer/tracer.wgsl",
         resident_measure: "logical pointer plus atlas payload; excludes driver rounding and transition overlap",
-        publication_mode: "whole-map CPU upload and texture replacement on page-band change",
+        publication_mode: "retained equal-sized textures; full CPU republish when projection revision changes",
         adapter,
         size: SIZE,
         frames: samples.len(),
@@ -427,6 +470,8 @@ fn report(
             .iter()
             .filter(|sample| sample.page_transition)
             .count(),
+        equal_extent_travel_frame: TRAVEL_FRAME,
+        equal_extent_travel_proved,
         total_brick_upload_bytes: samples.iter().map(|sample| sample.brick_upload_bytes).sum(),
         frame_us_min: *frame_spans.iter().min().expect("V1 frames"),
         frame_us_median: median(&frame_spans),
