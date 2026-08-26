@@ -137,6 +137,17 @@ impl Tenant {
         }
     }
 
+    /// The stage's stored `Depth32Float` surface for the D1 depth join,
+    /// fetched after a draw rather than held: the stage replaces the
+    /// texture on size or multisample changes, and a stale view tests the
+    /// join against zeroed memory, which loses every pixel.
+    #[cfg(feature = "d1-proof")]
+    pub fn depth_view(&self) -> wgpu::TextureView {
+        self.stage
+            .get_depth_texture()
+            .create_view(&Default::default())
+    }
+
     pub fn size(&self) -> [u32; 2] {
         self.size
     }
@@ -288,6 +299,93 @@ impl DdaTenant {
                 &self.view,
                 BrickFrameInput::for_camera(&self.map, self.revision, camera, &self.grade)
                     .with_pose(pose),
+            )
+            .map_err(|error| error.to_string())?;
+        self.queue.submit([encoder.finish()]);
+        Ok(diagnostics)
+    }
+
+    pub fn abi(&self) -> BrickAbi {
+        BrickAbi {
+            origin: self.map.origin(),
+            pointer_extent: self.map.pointer_extent(),
+            atlas_extent: self.map.atlas_extent(),
+            pointer_bytes: std::mem::size_of_val(self.map.pointers()),
+            atlas_bytes: self.map.atlas().len(),
+        }
+    }
+}
+
+/// The D1 join: the shared brick traversal drawn over the renderling
+/// tenant's own colour and depth, so raster geometry and raymarched rock
+/// occlude each other per pixel on one device.
+///
+/// Deliberately not a third texture: the tenant renders first with its
+/// depth stored, then this pass loads both attachments and lets hardware
+/// depth testing settle every pixel between them.
+#[cfg(feature = "d1-proof")]
+pub struct JoinTenant {
+    device: wgpu::Device,
+    queue: wgpu::Queue,
+    tracer: BrickTracer,
+    map: BrickMap,
+    revision: BrickRevision,
+    grade: Grade,
+}
+
+#[cfg(feature = "d1-proof")]
+impl JoinTenant {
+    /// A tracer aimed at the renderling tenant's srgb colour target.
+    pub fn new(handles: &WgpuHandles, ground: &Ground, size: [u32; 2]) -> Result<Self, String> {
+        let map = crate::brick::from_ground(ground).map_err(|error| error.to_string())?;
+        Ok(Self {
+            device: handles.device.clone(),
+            queue: handles.queue.clone(),
+            tracer: BrickTracer::with_format(
+                handles.device.clone(),
+                handles.queue.clone(),
+                size[0],
+                size[1],
+                wgpu::TextureFormat::Rgba8UnormSrgb,
+            ),
+            map,
+            revision: BrickRevision(ground.revision()),
+            grade: Grade {
+                fog: [0.03, 0.03, 0.045],
+                fog_start: 0.62,
+                palette_len: 0,
+                dither: 0.0,
+                fog_bands: 0.0,
+                downscale: 1,
+            },
+        })
+    }
+
+    /// One joined frame over an already-rendered raster tenant.
+    ///
+    /// `clip_from_world` must be the same matrix the raster tenant
+    /// projected with, or the two pictures would disagree about where
+    /// surfaces sit.
+    pub fn draw_over(
+        &mut self,
+        colour: &wgpu::TextureView,
+        depth: &wgpu::TextureView,
+        camera: TraceCamera,
+        clip_from_world: [[f32; 4]; 4],
+    ) -> Result<BrickDiagnostics, String> {
+        let mut encoder = self
+            .device
+            .create_command_encoder(&wgpu::CommandEncoderDescriptor {
+                label: Some("Paredros D1 depth join"),
+            });
+        let diagnostics = self
+            .tracer
+            .encode_with_depth(
+                &mut encoder,
+                colour,
+                depth,
+                BrickFrameInput::for_camera(&self.map, self.revision, camera, &self.grade)
+                    .with_clip_from_world(clip_from_world),
             )
             .map_err(|error| error.to_string())?;
         self.queue.submit([encoder.finish()]);

@@ -145,6 +145,80 @@ pub fn camera(room: &crate::Room, at: [i32; 3], heading: [i32; 2], aspect: f32) 
     }
 }
 
+/// The D1 pillars' colour. Cyan, because nothing else in the room is:
+/// terrain is brown and grey, the body warm orange, fog near-black blue,
+/// so a cyan-dominant pixel in the receipt can only be a pillar.
+#[cfg(feature = "d1-proof")]
+pub const PILLAR_COLOUR: [f32; 3] = [0.10, 0.85, 0.95];
+
+/// One renderling occlusion witness for D1: a voxel-aligned box.
+#[cfg(feature = "d1-proof")]
+#[derive(Clone, Copy, Debug)]
+pub struct Pillar {
+    /// Why this pillar is in the picture, for the receipt.
+    pub role: &'static str,
+    /// Lowest voxel corner, world coordinates.
+    pub min: [i32; 3],
+    /// Extent in voxels.
+    pub extent: [i32; 3],
+}
+
+/// The three witnesses, placed off the room's centre so a relief change
+/// upstream moves them with the chamber. All sit against the final
+/// camera's corner-facing frustum: one standing before the wall (raster
+/// occludes raymarch), one with its base a voxel under the floor
+/// (raymarch occludes raster, with its open span as the positive control),
+/// and one entirely under the floor, inside rock the carve's solid
+/// footprint guarantees, which must therefore be invisible.
+#[cfg(feature = "d1-proof")]
+pub fn d1_pillars(room: &crate::Room) -> [Pillar; 3] {
+    let c = room.centre;
+    let r = room.radius;
+    [
+        Pillar {
+            role: "standing before the wall",
+            min: [c[0] + 3, c[1] - r, c[2] - 2],
+            extent: [1, 3, 1],
+        },
+        Pillar {
+            role: "base buried a voxel under the floor",
+            min: [c[0] + 2, c[1] - r - 1, c[2] - r],
+            extent: [1, 3, 1],
+        },
+        Pillar {
+            role: "entirely under the floor",
+            min: [c[0] + 4, c[1] - r - 3, c[2] - r],
+            extent: [1, 2, 1],
+        },
+    ]
+}
+
+/// The pillars as renderling geometry. Render-only witnesses: the trace
+/// never collides with them and the world never learns about them.
+#[cfg(feature = "d1-proof")]
+pub fn pillar_vertices(pillars: &[Pillar]) -> Vec<Vertex> {
+    let items: Vec<(BodyMesh, [i32; 3])> = pillars
+        .iter()
+        .map(|pillar| {
+            let extent = [
+                pillar.extent[0] as u32,
+                pillar.extent[1] as u32,
+                pillar.extent[2] as u32,
+            ];
+            let volume = Volume::solid(extent, 1);
+            (
+                BodyMesh::single(VolumeRef::from_tag(3), &volume),
+                pillar.min,
+            )
+        })
+        .collect();
+    let items: Vec<SceneItem> = items
+        .iter()
+        .map(|(mesh, min)| SceneItem::creature(mesh, *min, 1.0, false, PILLAR_COLOUR, 1.0))
+        .collect();
+    build_scene_vertices(&items)
+}
+
 /// The same played body as a presentation-only SDF for the DDA profile.
 #[cfg(feature = "r1-proof")]
 pub fn body_pose(at: [i32; 3]) -> CritterPose {

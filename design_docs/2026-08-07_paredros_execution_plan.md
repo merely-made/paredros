@@ -135,7 +135,7 @@ its Ground source binding, constructs the shared `BrickMap` directly, and
 keeps `r1-proof` in its default compile path. `mesocosm-lens` remains a product
 presentation adapter for the headed tenant; it no longer owns the shared ABI
 or `BRICK_DDA_WGSL`. The original renderling S0 receipt remains intact;
-raymarch-depth composition is the next shared rendering gate.
+raymarch-depth composition closed as D1 on 2026-08-26.
 
 **V1 continuous-zoom residency receipt, 2026-08-21.** The opt-in command
 `cargo run -p paredros-room --features v1-proof --bin v1_residency`
@@ -188,8 +188,8 @@ closing receipt deliberately uses the equal-extent one-brick move.
 frustum fits the budget and band changes were not the dominant hitch in this
 run. Do not generalize that into an LOD refusal. Larger planning views and
 larger travel footprints remain unproved. Traversal ownership is now closed in
-`conatus-brick`; the next shared rendering gate is raymarch depth composed with
-Renderling. The separate residency gate remains a stable `ResidentChunk`-backed
+`conatus-brick`, and raymarch depth composed with Renderling closed as D1 on
+2026-08-26. The separate residency gate remains a stable `ResidentChunk`-backed
 brick cache with per-brick publication and measured allocator bytes. Clipmaps
 or mips become required when a real camera footprint exceeds that exact cache,
 not before. Neither gate promotes product projection identity, frame cadence,
@@ -207,6 +207,75 @@ wall the moment the body reaches a corner, which the trace does eight
 times. And the tenant applies a torch falloff from the eye per vertex,
 because greedy meshing turns a wall into one quad and one quad of one
 colour has no near side.
+
+### D1 — Raymarch depth composed with Renderling (landed 2026-08-26)
+
+The shared rendering gate named by V1's ruling and by the mesocosm engine
+review §5: brick-raymarch ground and Renderling raster geometry must occlude
+each other correctly, per pixel, in one headed frame on one device.
+
+**Mechanism (chosen 2026-08-26).** Renderling's stage already stores a
+single-sampled standard-z `Depth32Float` depth texture (cleared to 1.0,
+compare `Less`) and exposes it; `brick_dda` already returns hit distance
+`t`. So the join is a shared depth attachment, not a second compose pass:
+renderling draws first (colour and depth), then the brick tracer draws its
+fullscreen pass into the same colour target with renderling's depth texture
+attached, computing `@builtin(frag_depth)` from
+`clip_from_world * (origin + direction * t)` under depth compare
+`LessEqual` with depth write on. Occlusion is exact in both directions with
+zero additional textures or passes, and Paredros's S0 camera already builds
+the raster matrices and the trace rays from identical parameters.
+
+**Ownership, per the R1a ruling.** The camera-neutral half — a
+`clip_from_world` uniform, an `fs_depth` entry point, a lazily created
+depth-pipeline variant, and `encode_with_depth` — landed in
+`mesocosm_lens::BrickTracer`, leaving every existing pipeline and receipt
+untouched. Composition policy — draw order, which geometry renderling
+owns, the receipt scene — stays here, behind an opt-in `d1-proof` feature
+and a `d1_depth` bin. `conatus-brick` did not change; its pinned revision
+stands.
+
+**Done when:** a headless tracer test proves the depth join without
+renderling by pre-filling a depth texture and asserting the occlusion
+split; the headed RTX 4060 run replays the fixed trace to its recorded
+hash discipline; the capture shows the witness geometry present where
+raster is nearer and absent where raymarched rock covers it, with a
+positive control in the same frame; frame spans and tracer diagnostics are
+recorded beside the existing receipts at
+`Code/testing/paredros/d1_depth.{json,png}`; and no existing S0, R1, or V1
+receipt changes behaviour.
+
+**Receipt, 2026-08-26.** All hold. The headless test
+`the_depth_join_settles_pixels_between_tracer_and_raster_depth` refuses a
+frame without the matrix, hands the whole frame to either side with
+constant-depth matrices, and splits it on a world-z ramp against a
+mid-plane raster stand-in; all 33 mesocosm-lens tests are green. The
+headed run `cargo run -p paredros-room --features d1-proof --bin d1_depth`
+draws the body and three cyan witness pillars through renderling — one
+standing before the wall, one with its base a voxel under the floor, one
+wholly sunken beneath the surface — and the raymarched room over the
+stage's stored depth. Judgment is by named world points on witness faces,
+projected through the frame's own matrix (a projected box's screen AABB
+necessarily overlaps the visible span under this close a camera, so
+regions were abandoned for point probes). The bin selects the first trace
+tick whose camera frames every probe with clear sightlines — the carved
+chamber is convex, so probe rays cross no rock except the floor meant to
+cover sub-floor targets — and tick 1 qualified. On the RTX 4060 Laptop
+GPU at 1280×720: standing-pillar probe 9/9 cyan, buried open span 9/9
+(the positive control), buried base 0/9, sunken pillar 0/9; 64 frames,
+17.767/20.856/70.527 ms min/median/max (the maximum is the judged frame's
+readback stall; netrender's own final-frame total was 2.19 ms), steady
+brick upload 0 bytes, zero steady resource creations, position-log hash
+`0x27a905731c6bfc61` unchanged. Receipt and inspected capture at
+`Code/testing/paredros/d1_depth.{json,png}`.
+
+Two findings worth keeping. Renderling's stage *replaces* its depth
+texture on size or multisample changes, so the depth view must be fetched
+after the raster draw each frame — a held view silently tests the join
+against zeroed memory and loses every pixel. And the trace uniform grew
+64 bytes (3,280 to 3,344) for the matrix, so refreshed R1/V1 receipts
+will record the new `uniform_upload_bytes` without any behaviour change;
+the lens tests prove the plain `encode` path renders identically.
 
 ### S1 — The refusal scene (landed 2026-08-08, headed judgment open)
 
@@ -843,6 +912,17 @@ the player should receive. S0's close camera is evidence, not a ruling.
 
 ## 7. Progress
 
+- **2026-08-26 (later):** D1 landed — brick raymarch and the renderling
+  raster tenant now occlude each other per pixel on one shared depth
+  surface. `mesocosm_lens::BrickTracer` gained the opt-in
+  `encode_with_depth` join; the headed witness-pillar receipt passed on
+  the RTX 4060 with the replay hash unchanged, judged by projected point
+  probes on a self-selected trace frame. Mechanism, receipt, and the
+  depth-view staleness finding recorded in the D1 section above. Noticed
+  in passing, not D1's doing: two `paredros-sortie` sim-content tests
+  fail against current upstream mesocosm ("the pact never fired", "the
+  played body was never wounded"), and `mesocosm-genet` no longer
+  compiles at mesocosm `main` against current genet.
 - **2026-08-26:** V1a closed equal-sized travel-page cache coherence, then the
   proven traversal organ moved into Mere's `conatus-brick` at `28c07fab`.
   Paredros now owns its Ground binding and compiles the shared ABI/DDA by
