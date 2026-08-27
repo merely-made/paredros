@@ -188,12 +188,36 @@ closing receipt deliberately uses the equal-extent one-brick move.
 frustum fits the budget and band changes were not the dominant hitch in this
 run. Do not generalize that into an LOD refusal. Larger planning views and
 larger travel footprints remain unproved. Traversal ownership is now closed in
-`conatus-brick`, and raymarch depth composed with Renderling closed as D1 on
-2026-08-26. The separate residency gate remains a stable `ResidentChunk`-backed
-brick cache with per-brick publication and measured allocator bytes. Clipmaps
-or mips become required when a real camera footprint exceeds that exact cache,
-not before. Neither gate promotes product projection identity, frame cadence,
-or lease scheduling into a cross-product contract.
+`conatus-brick`, raymarch depth composed with Renderling closed as D1, and the
+stable `ResidentChunk`-backed brick cache closed as V1b, all 2026-08-26.
+Clipmaps or mips become required when a real camera footprint exceeds that
+exact cache, not before. Neither gate promotes product projection identity,
+frame cadence, or lease scheduling into a cross-product contract.
+
+**V1b stable-cache receipt, 2026-08-26.** The opt-in command
+`cargo run -p paredros-room --features v1b-proof --bin v1b_residency`
+holds the exact V1 zoom-and-travel trace over one capacity-fixed cache
+(`StableResidency` over `conatus_brick::BrickMap::with_capacity` at
+`bd8f0044`): 1,791 slots, 931,376 fixed bytes under the unchanged 1 MiB
+budget, pointer box `[34, 3, 34]`, atlas `[128, 56, 128]`, extents never
+moving. Retained bricks keep their atlas slots across retargets, so each
+of the six transitions uploaded exactly the 13,872-byte pointer volume
+plus its loaded slots' 512-byte bricks: the mid band +497 for 268,336
+bytes, the far band +793 for 419,888, the rapid close snap pointers alone,
+the rapid far reload +1,290 for 674,352, and the travel frame +66 −33 for
+47,664 against V1's 795,144-byte full republish. Every frame after the
+first asserted zero texture and bind-group creation, `wgpu`'s allocator
+report was byte-identical after the first and last frames, both rapid
+zooms recovered in one frame, and the RTX 4060 Laptop GPU run's 96 frames
+produced a 62-colour capture at
+`Code/testing/paredros/v1b_residency.{json,png}`. The V1 bin and receipt
+stand unchanged as the pre-stable baseline.
+
+One instrument finding: naively publishing 1,290 loaded slots as
+individual `write_texture` calls cost 485 ms of per-call overhead; the
+tracer now batches consecutive slots into contiguous strided box writes
+from the map's own atlas slice — the same bytes reached the same texels
+in 13.5 ms.
 
 The room: `Places::grown(4242, 4, 64)` and `Ground::grow`, then one
 `carve` at `[35, 6, -35]` into the first hillside a deterministic outward
@@ -912,6 +936,13 @@ the player should receive. S0's close camera is evidence, not a ruling.
 
 ## 7. Progress
 
+- **2026-08-26 (latest):** V1b landed — the stable resident brick cache.
+  One capacity-fixed `conatus-brick` map (new platform commits at
+  `bd8f0044`, consumers repinned) retargets in place with retained slots;
+  the headed run held the V1 trace with zero recreation, per-brick
+  transition uploads, one-frame recoveries, and zero allocator growth.
+  Receipt in the V1b entry above; the shared-engine consolidation chain
+  in the mesocosm engine review is now closed.
 - **2026-08-26 (later):** D1 landed — brick raymarch and the renderling
   raster tenant now occlude each other per pixel on one shared depth
   surface. `mesocosm_lens::BrickTracer` gained the opt-in

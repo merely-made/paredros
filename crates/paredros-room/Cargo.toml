@@ -19,13 +19,16 @@ v1-proof = ["r1-proof"]
 # D1 joins the brick raymarch and the renderling raster tenant on one depth
 # surface, so each occludes the other per pixel.
 d1-proof = ["r1-proof"]
+# V1b holds the V1 travel trace over one capacity-fixed brick cache with
+# per-brick publication and allocator-observed bytes.
+v1b-proof = ["v1-proof"]
 
 # Path deps rather than git, because the probe's whole point is to consume the
 # sibling crates as they stand on this machine: mesocosm's near-tier
 # kinematics, netrender's frame, and the local renderling fork (which has no
 # published home). Revisit when the probe grows into a shipped target.
 [dependencies]
-conatus-brick = { git = "https://github.com/merely-made/mere.git", rev = "28c07fab5baea0b780972f088b43bf853ee856d5", optional = true }
+conatus-brick = { git = "https://github.com/merely-made/mere.git", rev = "bd8f0044bb463bbf552e3070a7d9f6340b216bd4", optional = true }
 mesocosm-core = { version = "0.0.1", path = "../../../mesocosm/crates/mesocosm-core" }
 mesocosm-lens = { version = "0.0.1", path = "../../../mesocosm/crates/mesocosm-lens", optional = true }
 mesocosm-mesh = { version = "0.0.1", path = "../../../mesocosm/crates/mesocosm-mesh" }
@@ -53,3 +56,8 @@ required-features = ["v1-proof"]
 name = "d1_depth"
 path = "src/bin/d1_depth.rs"
 required-features = ["d1-proof"]
+
+[[bin]]
+name = "v1b_residency"
+path = "src/bin/v1b_residency.rs"
+required-features = ["v1b-proof"]

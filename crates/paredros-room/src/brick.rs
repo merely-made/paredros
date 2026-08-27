@@ -21,3 +21,16 @@ pub(crate) fn from_ground_keys(
         ground.brick_materials(key).map(|(brick, _)| brick.raw())
     })
 }
+
+/// Retargets a capacity-fixed map's selection from Ground; retained
+/// bricks keep their slots and are never refetched.
+pub(crate) fn retarget_from_ground(
+    map: &mut BrickMap,
+    ground: &Ground,
+    projection_revision: BrickProjectionRevision,
+    keys: impl IntoIterator<Item = [i16; 3]>,
+) -> Result<conatus_brick::RetargetDelta, BrickMapError> {
+    map.retarget(projection_revision, keys, |key| {
+        ground.brick_materials(key).map(|(brick, _)| brick.raw())
+    })
+}

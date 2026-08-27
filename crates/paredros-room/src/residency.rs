@@ -270,6 +270,128 @@ impl ResidencyPolicy {
     }
 }
 
+/// V1b: the stable residency policy over one capacity-fixed brick cache.
+///
+/// Where [`ResidencyPolicy`] builds a fresh map per selection,
+/// this owns one [`BrickMap`] whose pointer and atlas extents never change:
+/// band transitions and same-band travel retarget it in place, retained
+/// bricks keep their atlas slots, and the outcome names exactly the loaded
+/// slots a consumer must publish. The fixed allocation is sized under
+/// [`RESIDENT_BUDGET_BYTES`] at construction, so the budget bounds the
+/// cache rather than each page.
+pub struct StableResidency {
+    map: BrickMap,
+    current_range: Option<i32>,
+    current_keys: BTreeSet<[i16; 3]>,
+    projection_revision: BrickProjectionRevision,
+    pointer_bytes: u64,
+    atlas_bytes: u64,
+}
+
+pub struct StableOutcome {
+    pub delta: conatus_brick::RetargetDelta,
+    pub metrics: ResidencyMetrics,
+}
+
+impl StableResidency {
+    pub fn new(scene: &ResidencyScene) -> Result<Self, ResidencyError> {
+        // The fixed pointer box: the widest band's horizontal reach,
+        // clamped by the world, with the world's whole vertical brick span
+        // (selection never filters by height).
+        let mut low = [i16::MAX; 3];
+        let mut high = [i16::MIN; 3];
+        for key in scene.ground.keys() {
+            for axis in 0..3 {
+                low[axis] = low[axis].min(key[axis]);
+                high[axis] = high[axis].max(key[axis]);
+            }
+        }
+        let world =
+            [0, 1, 2].map(|axis| (i32::from(high[axis]) - i32::from(low[axis]) + 1) as u32);
+        let widest = *PAGE_RANGES.last().expect("V1 has residency bands");
+        let reach = (2 * widest / BRICK + 2) as u32;
+        let pointer_extent = [world[0].min(reach), world[1], world[2].min(reach)];
+        let pointer_bytes =
+            u64::from(pointer_extent[0]) * u64::from(pointer_extent[1]) * u64::from(pointer_extent[2]) * 4;
+        // Whole atlas slot rows under what the budget leaves: one row is
+        // 16 x 16 slots of 512 bytes.
+        let row_bytes = 16 * 16 * 512;
+        let rows = ((RESIDENT_BUDGET_BYTES.saturating_sub(pointer_bytes)) / row_bytes) as u32;
+        let map = BrickMap::with_capacity(BrickProjectionRevision(0), rows, pointer_extent)?;
+        let atlas_bytes = map.atlas().len() as u64;
+        debug_assert!(pointer_bytes + atlas_bytes <= RESIDENT_BUDGET_BYTES);
+        Ok(Self {
+            map,
+            current_range: None,
+            current_keys: BTreeSet::new(),
+            projection_revision: BrickProjectionRevision(0),
+            pointer_bytes,
+            atlas_bytes,
+        })
+    }
+
+    pub fn map(&self) -> &BrickMap {
+        &self.map
+    }
+
+    pub fn capacity(&self) -> usize {
+        self.map.capacity()
+    }
+
+    /// The fixed allocation the budget bounds: pointer volume plus atlas.
+    pub const fn resident_bytes(&self) -> u64 {
+        self.pointer_bytes + self.atlas_bytes
+    }
+
+    /// Selects the band for the visible range and retargets the stable
+    /// cache when the selection changed. `None` means the resident page
+    /// already covers this frame.
+    pub fn prepare(
+        &mut self,
+        scene: &ResidencyScene,
+        visible_range: i32,
+    ) -> Result<Option<StableOutcome>, ResidencyError> {
+        let resident_range = PAGE_RANGES
+            .into_iter()
+            .find(|range| *range >= visible_range)
+            .ok_or(ResidencyError::VisibleRange {
+                actual: visible_range,
+                maximum: *PAGE_RANGES.last().expect("V1 has residency bands"),
+            })?;
+        let keys = selected_keys(&scene.ground, scene.focus, resident_range);
+        if self.current_range == Some(resident_range) && self.current_keys == keys {
+            return Ok(None);
+        }
+        let projection_revision = BrickProjectionRevision(
+            self.projection_revision
+                .0
+                .checked_add(1)
+                .ok_or(ResidencyError::ProjectionRevisionOverflow)?,
+        );
+        let delta = crate::brick::retarget_from_ground(
+            &mut self.map,
+            &scene.ground,
+            projection_revision,
+            keys.iter().copied(),
+        )?;
+        let metrics = ResidencyMetrics {
+            projection_revision,
+            visible_range,
+            resident_range,
+            loaded_bricks: delta.loaded_slots.len(),
+            evicted_bricks: delta.evicted,
+            resident_bricks: keys.len(),
+            pointer_bytes: self.pointer_bytes,
+            atlas_bytes: self.atlas_bytes,
+            resident_bytes: self.resident_bytes(),
+        };
+        self.current_range = Some(resident_range);
+        self.current_keys = keys;
+        self.projection_revision = projection_revision;
+        Ok(Some(StableOutcome { delta, metrics }))
+    }
+}
+
 fn selected_keys(ground: &Ground, focus: [i32; 3], range: i32) -> BTreeSet<[i16; 3]> {
     ground
         .keys()
@@ -330,6 +452,54 @@ mod tests {
         let ground_at = [scene.focus[0], scene.focus[1] - 1, scene.focus[2]];
         assert!(scene.ground.solid(ground_at));
         assert_ne!(recovered.map.material_at(ground_at), 0);
+    }
+
+    #[test]
+    fn the_stable_cache_retargets_without_changing_its_extents() {
+        let mut scene = ResidencyScene::grow();
+        let mut stable = StableResidency::new(&scene).expect("stable cache under budget");
+        assert!(stable.resident_bytes() <= RESIDENT_BUDGET_BYTES);
+        let extents = (stable.map().pointer_extent(), stable.map().atlas_extent());
+
+        let first = stable
+            .prepare(&scene, PAGE_RANGES[0])
+            .unwrap()
+            .expect("initial page");
+        assert_eq!(
+            first.delta.loaded_slots.len(),
+            first.metrics.resident_bricks,
+            "an empty cache loads its whole first page"
+        );
+        assert!(stable.prepare(&scene, PAGE_RANGES[0]).unwrap().is_none());
+
+        let far = stable
+            .prepare(&scene, PAGE_RANGES[2])
+            .unwrap()
+            .expect("far page");
+        assert!(far.metrics.resident_bricks <= stable.capacity());
+        assert_eq!(far.delta.evicted, 0, "zooming out keeps the close page");
+        assert!(far.delta.retained > 0);
+        assert_eq!(
+            (stable.map().pointer_extent(), stable.map().atlas_extent()),
+            extents,
+            "a band change must not move the fixed extents"
+        );
+
+        assert!(scene.move_focus_x(BRICK));
+        let travelled = stable
+            .prepare(&scene, PAGE_RANGES[2])
+            .unwrap()
+            .expect("same-band travel");
+        assert!(!travelled.delta.loaded_slots.is_empty());
+        assert!(travelled.delta.evicted > 0);
+        assert_eq!(
+            (stable.map().pointer_extent(), stable.map().atlas_extent()),
+            extents,
+            "travel must not move the fixed extents"
+        );
+        let ground_at = [scene.focus[0], scene.focus[1] - 1, scene.focus[2]];
+        assert!(scene.ground.solid(ground_at));
+        assert_ne!(stable.map().material_at(ground_at), 0);
     }
 
     #[test]
