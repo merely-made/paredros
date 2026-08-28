@@ -11,7 +11,7 @@
 
 use std::{collections::BTreeSet, fmt};
 
-use conatus_brick::{BrickMap, BrickMapError, BrickProjectionRevision};
+use modulus::{BrickMap, BrickMapError, BrickProjectionRevision};
 use mesocosm_core::places::{BRICK, Ground, Places, WALKER_HEIGHT};
 use mesocosm_lens::TraceCamera;
 use renderling::glam::Vec3;
@@ -289,7 +289,7 @@ pub struct StableResidency {
 }
 
 pub struct StableOutcome {
-    pub delta: conatus_brick::RetargetDelta,
+    pub delta: modulus::RetargetDelta,
     pub metrics: ResidencyMetrics,
 }
 

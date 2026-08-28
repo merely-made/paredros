@@ -354,7 +354,7 @@ fn report(
             gate: "R1",
             vessel: "paredros",
             camera_profile: "close-perspective-room",
-            traversal_implementation: "conatus_brick::BRICK_DDA_WGSL via mesocosm_lens::BrickTracer",
+            traversal_implementation: "modulus::BRICK_DDA_WGSL via mesocosm_lens::BrickTracer",
             adapter: evidence.adapter,
             size: SIZE,
             frames: spans.len(),

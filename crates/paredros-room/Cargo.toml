@@ -12,7 +12,7 @@ publish = false
 # selects it at runtime for the historical R1 receipt; ordinary room rendering
 # can still select the Renderling tenant.
 default = ["r1-proof"]
-r1-proof = ["dep:conatus-brick", "dep:mesocosm-lens", "dep:serde_json"]
+r1-proof = ["dep:modulus", "dep:mesocosm-lens", "dep:serde_json"]
 # V1 keeps the R1 traversal receipt and adds Paredros-owned camera and
 # residency policy over a larger exact Ground working set.
 v1-proof = ["r1-proof"]
@@ -28,7 +28,7 @@ v1b-proof = ["v1-proof"]
 # kinematics, netrender's frame, and the local renderling fork (which has no
 # published home). Revisit when the probe grows into a shipped target.
 [dependencies]
-conatus-brick = { git = "https://github.com/merely-made/mere.git", rev = "bd8f0044bb463bbf552e3070a7d9f6340b216bd4", optional = true }
+modulus = { git = "https://github.com/merely-made/mere.git", rev = "33f9b6b65530ee1cda4636c4077d88d91b4ba9f1", optional = true }
 mesocosm-core = { version = "0.0.1", path = "../../../mesocosm/crates/mesocosm-core" }
 mesocosm-lens = { version = "0.0.1", path = "../../../mesocosm/crates/mesocosm-lens", optional = true }
 mesocosm-mesh = { version = "0.0.1", path = "../../../mesocosm/crates/mesocosm-mesh" }

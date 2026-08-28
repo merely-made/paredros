@@ -537,7 +537,7 @@ fn report(
         gate: "D1",
         vessel: "paredros",
         mechanism: "renderling raster first with stored Depth32Float; \
-                    conatus_brick::BRICK_DDA_WGSL via mesocosm_lens::BrickTracer::encode_with_depth \
+                    modulus::BRICK_DDA_WGSL via mesocosm_lens::BrickTracer::encode_with_depth \
                     writes frag_depth from the shared clip_from_world under LessEqual",
         adapter: &live.adapter,
         size: SIZE,

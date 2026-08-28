@@ -451,7 +451,7 @@ fn report(
         gate: "V1",
         vessel: "paredros",
         camera_profile: "third-person continuous zoom: near acts, mid leads, far plans",
-        traversal_implementation: "conatus_brick::BRICK_DDA_WGSL via mesocosm_lens::BrickTracer",
+        traversal_implementation: "modulus::BRICK_DDA_WGSL via mesocosm_lens::BrickTracer",
         resident_measure: "logical pointer plus atlas payload; excludes driver rounding and transition overlap",
         publication_mode: "retained equal-sized textures; full CPU republish when projection revision changes",
         adapter,

@@ -15,7 +15,7 @@
 
 use std::{path::Path, sync::Arc, time::Instant};
 
-use conatus_brick::{BrickMap, BrickProjectionRevision};
+use modulus::{BrickMap, BrickProjectionRevision};
 use mesocosm_core::places::BRICK;
 use netrender::WgpuHandles;
 use mesocosm_lens::{
@@ -530,7 +530,7 @@ fn report(
         gate: "V1b",
         vessel: "paredros",
         camera_profile: "third-person continuous zoom: near acts, mid leads, far plans",
-        traversal_implementation: "conatus_brick::BRICK_DDA_WGSL via mesocosm_lens::BrickTracer",
+        traversal_implementation: "modulus::BRICK_DDA_WGSL via mesocosm_lens::BrickTracer",
         resident_measure: "fixed pointer plus atlas allocation, with wgpu allocator-report bytes",
         publication_mode: "one capacity-fixed cache; retargets publish the pointer volume plus \
                            loaded slots only, retained slots never re-upload",

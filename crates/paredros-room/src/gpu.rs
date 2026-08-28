@@ -12,7 +12,7 @@
 //! whole point of the cohesion contract this gate is proving.
 
 #[cfg(feature = "r1-proof")]
-use conatus_brick::BrickMap;
+use modulus::BrickMap;
 #[cfg(feature = "r1-proof")]
 use mesocosm_core::places::Ground;
 #[cfg(feature = "r1-proof")]

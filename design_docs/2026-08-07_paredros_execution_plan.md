@@ -936,6 +936,12 @@ the player should receive. S0's close camera is evidence, not a ruling.
 
 ## 7. Progress
 
+- **2026-08-27:** the shared brick ABI crate was renamed `conatus-brick` →
+  `modulus` (ruled by Mark; the architect's base unit of measure, and the
+  layout math is modular arithmetic) and published to crates.io; this repo
+  repinned to `33f9b6b6`. Dated receipts above keep the name they were
+  taken under.
+
 - **2026-08-26 (latest):** V1b landed — the stable resident brick cache.
   One capacity-fixed `conatus-brick` map (new platform commits at
   `bd8f0044`, consumers repinned) retargets in place with retained slots;

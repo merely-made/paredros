@@ -5,7 +5,7 @@
 
 //! Paredros's Ground source binding for the shared brick ABI.
 
-use conatus_brick::{BrickMap, BrickMapError, BrickProjectionRevision};
+use modulus::{BrickMap, BrickMapError, BrickProjectionRevision};
 use mesocosm_core::places::Ground;
 
 pub(crate) fn from_ground(ground: &Ground) -> Result<BrickMap, BrickMapError> {
@@ -29,7 +29,7 @@ pub(crate) fn retarget_from_ground(
     ground: &Ground,
     projection_revision: BrickProjectionRevision,
     keys: impl IntoIterator<Item = [i16; 3]>,
-) -> Result<conatus_brick::RetargetDelta, BrickMapError> {
+) -> Result<modulus::RetargetDelta, BrickMapError> {
     map.retarget(projection_revision, keys, |key| {
         ground.brick_materials(key).map(|(brick, _)| brick.raw())
     })
