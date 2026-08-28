@@ -28,9 +28,14 @@ design docs, and five crates. `crates/paredros-room` is the S0 room probe
 landed 2026-08-08: one room carved into a grown mesocosm hillside, one body
 under near-tier kinematics, a fixed input trace with save/reload/replay, and
 a headed run presenting netrender's composed master with a renderling room
-in it. Its opt-in `r1-proof` profile also runs the real room and perspective
-camera through Mesocosm's existing brick DDA; that is second-consumer proof,
-not permanent cross-vessel ownership. `crates/paredros-social` is the S1
+in it. Its default `r1-proof` profile runs the real room and perspective
+camera through the shared brick DDA, now owned by Mere's `conatus-brick`
+(pinned by rev); Paredros constructs the shared `BrickMap` from its own
+Ground binding. Three further gates landed as opt-in bins: `v1_residency`
+(continuous-zoom residency, V1/V1a), `d1_depth` (raymarch depth composed
+with renderling, D1), and `v1b_residency` (the stable capacity-fixed
+resident brick cache, V1b), behind the `v1-proof`, `d1-proof`, and
+`v1b-proof` features. `crates/paredros-social` is the S1
 willingness owner landed the same
 day: deeds, standing, confidence, refusal, standing agreements, and the
 premises behind every answer, with the refusal scene as an executable
@@ -55,7 +60,8 @@ no observer or selected-subject input. Navigation remains derived advice.
 Traversal and named-life scenarios belong to receipts, not production
 vocabulary. Its direct Mesocosm core dependency is current shared-organ
 evidence, not settled permanent ownership. F0-F2 are closed; F3 memory,
-belief, and standing is next. The executable plan is
+belief, and standing is active, with F3a (pointable memory and belief)
+landed 2026-08-26. The executable plan is
 `design_docs/2026-08-07_paredros_execution_plan.md`; S0-S3 are retained as
 foundation receipts, while the 2026-08-13 fundamental-layer ledger now owns
 future ordering. The founding plan remains the charter with its phase section
