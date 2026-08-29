@@ -265,7 +265,12 @@ the proof pair, not before.
   per-vessel by rule; see
   `mesocosm/design_docs/2026-07-30_engine_and_render_lane_landscape.md` §5.
   A heavier engine (Fyrox ships the only Rust scene editor) is a live option
-  here precisely because it need not be shared.
+  here precisely because it need not be shared. *(Superseded 2026-08-2x:
+  Paredros landed on the shared hybrid stack — brick raymarch through
+  `modulus`, Renderling tenancy, Netrender composition; R1/D1/V1b receipts
+  in the execution plan. A vessel-private third engine is no longer live;
+  see the mesocosm engine review §2.3 and the consolidation map in mere's
+  conatus engine plan.)*
 
 **Vocabulary guard:** *second person* describes agency — peers you address
 rather than units you command. It does not describe the camera, which may sit
