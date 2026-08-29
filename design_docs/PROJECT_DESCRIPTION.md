@@ -48,8 +48,9 @@ magistrate. A colleague, not a servant. Colleagues also succeed to office.
 ## Where it sits
 
 Vessel 2 of a three-game wing that shares a world substrate, a lineage model,
-and a trust plane, but no engine, genre, or schedule: Mesocosm (first person),
-Paredros (second person), Isometry (third person).
+and a trust plane — engine organs are shared where they stay verb-neutral —
+but no genre, schedule, or verbs: Mesocosm (first person), Paredros (second
+person), Isometry (third person).
 
 See `mesocosm/design_docs/2026-07-30_games_wing_founding.md`.
 
