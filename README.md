@@ -62,15 +62,15 @@ ROOM_TRACE=1 cargo run -p paredros-room --bin room   # headed room probe
 
 ## License
 
-Three-part boundary (see [LICENSES.md](LICENSES.md)):
+Two-part boundary (see [LICENSES.md](LICENSES.md)):
 
-- game code and repository documentation: MPL-2.0
-- `paredros-identity` and other identified reusable libraries: MIT OR
-  Apache-2.0
+- game code, repository documentation, and `paredros-identity`: MPL-2.0
 - original game assets: CC BY-SA 4.0
 
 The published `0.0.1` name reservation remains MIT OR Apache-2.0; the split
-begins with `0.0.2`.
+begins with `0.0.2`. A promoted reusable library no longer takes a separate
+permissive grant, per Mark's 2026-09-03 ruling retiring the 2026-07-31
+clause.
 
 ---
 
