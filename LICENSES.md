@@ -40,3 +40,20 @@ notice says otherwise. See `LICENSE-CC-BY-SA-4.0` and
 Imported or third-party assets retain their own licenses. Add their creator,
 source, license, and modification history to `assets/ATTRIBUTION.md`; never
 silently relicense them as project originals.
+
+## Retained licenses
+
+The paths below are **not** covered by this repository's MPL-2.0 grant. They
+are the machine-readable form of the boundaries stated above, and the house
+header tool (`mere/scripts/relicense_headers.py`) reads this table's first
+column as its skip list, so no file under these paths receives the MPL
+Exhibit A header. Nothing here is third-party code: both scopes are Mark's own
+work held under a different grant by a recorded ruling.
+
+| Path | License | Upstream / origin | Notice file |
+|---|---|---|---|
+| `crates/paredros-identity` | MIT OR Apache-2.0 | own work; promoted to the wing identity crate by the R4 extraction review, 2026-08-10 (`design_docs/2026-08-10_r4_extraction_review.md`) | `LICENSE-MIT`, `LICENSE-APACHE` |
+| `assets` | CC BY-SA 4.0 | own work; the games-wing asset grant of 2026-07-31 | `LICENSE-CC-BY-SA-4.0`, `assets/ATTRIBUTION.md` |
+
+`assets/` tracks only Markdown today, which the tool cannot reach in any case;
+the row is listed so a shader or script placed there later is still skipped.
