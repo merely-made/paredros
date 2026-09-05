@@ -13,9 +13,11 @@
 //! after the trace ends so a human can look at the room.
 
 use std::path::PathBuf;
-use std::sync::Arc;
+use std::sync::{Arc, Mutex};
 use std::time::Instant;
+use std::{future::Future, pin::Pin};
 
+use paredros_room::frame_health::{FrameDecision, FrameHealth, PresentationPolicy};
 use paredros_room::gpu::{self, Composer, SIZE, Tenant};
 #[cfg(feature = "r1-proof")]
 use paredros_room::gpu::{BrickAbi, DdaTenant};
@@ -66,6 +68,7 @@ fn main() {
         frame_us: Vec::new(),
         #[cfg(feature = "r1-proof")]
         last_trace: None,
+        policy: PresentationPolicy::from_env(),
     };
     event_loop.run_app(&mut app).expect("winit run");
 }
@@ -86,6 +89,15 @@ struct Live {
     room: Vec<mesocosm_render::geometry::Vertex>,
     #[cfg(feature = "r1-proof")]
     adapter: String,
+    health: Arc<Mutex<FrameHealth>>,
+    pending_validation: Option<PendingValidation>,
+}
+
+struct PendingValidation {
+    future: Pin<Box<dyn Future<Output = Option<wgpu::Error>>>>,
+    tenant_name: String,
+    producer_path: String,
+    frame: u64,
 }
 
 struct RoomApp {
@@ -99,6 +111,7 @@ struct RoomApp {
     frame_us: Vec<u64>,
     #[cfg(feature = "r1-proof")]
     last_trace: Option<mesocosm_lens::BrickDiagnostics>,
+    policy: PresentationPolicy,
 }
 
 impl ApplicationHandler for RoomApp {
@@ -120,6 +133,23 @@ impl ApplicationHandler for RoomApp {
         // actually got, so the picture and the presentation cannot end up on
         // different adapters.
         let handles = gpu::boot(&self.instance, Some(&surface));
+        let health = Arc::new(Mutex::new(FrameHealth::new(self.policy)));
+        let uncaptured_health = Arc::clone(&health);
+        handles.device.on_uncaptured_error(Arc::new(move |error| {
+            uncaptured_health
+                .lock()
+                .expect("frame health lock")
+                .latch_uncaptured_error(format!("{error:?}"));
+        }));
+        let lost_health = Arc::clone(&health);
+        handles
+            .device
+            .set_device_lost_callback(move |reason, message| {
+                lost_health
+                    .lock()
+                    .expect("frame health lock")
+                    .latch_device_lost(format!("{reason:?}"), message);
+            });
         let device = handles.device.clone();
         let queue = handles.queue.clone();
         let capabilities = surface.get_capabilities(&handles.adapter);
@@ -158,6 +188,8 @@ impl ApplicationHandler for RoomApp {
             room,
             #[cfg(feature = "r1-proof")]
             adapter,
+            health,
+            pending_validation: None,
         };
         configure(&mut live);
         live.window.request_redraw();
@@ -183,6 +215,36 @@ impl RoomApp {
         let Some(live) = self.live.as_mut() else {
             return;
         };
+        let frame_number = self.frames + 1;
+        if let Some(mut pending) = live.pending_validation.take() {
+            let validation = pollster::block_on(pending.future.as_mut());
+            live.health
+                .lock()
+                .expect("frame health lock")
+                .finish_validation(
+                    pending.tenant_name,
+                    pending.producer_path,
+                    pending.frame,
+                    validation.map(|error| format!("{error:?}")),
+                );
+        }
+        match live
+            .health
+            .lock()
+            .expect("frame health lock")
+            .begin_frame(frame_number)
+        {
+            FrameDecision::Proceed => {},
+            FrameDecision::Suppress => {
+                live.window.request_redraw();
+                return;
+            },
+            FrameDecision::RebuildAll(fault) => {
+                eprintln!("shared GPU fault requires rebuild-all: {fault:?}");
+                event_loop.exit();
+                return;
+            },
+        }
         let began = Instant::now();
 
         // One tick of the fixed trace per frame. The trace is the input;
@@ -197,41 +259,94 @@ impl RoomApp {
             self.probe.heading(),
             aspect,
         );
-        #[cfg(feature = "r1-proof")]
-        let (master, opaque_receipt) = if let Some(dda) = live.dda.as_mut() {
-            let pose = scene::body_pose(self.probe.at());
-            let diagnostics = dda
-                .draw(camera.trace(aspect), &pose)
-                .expect("Paredros R1 DDA frame");
-            self.last_trace = Some(diagnostics);
-            (
-                live.composer.compose(
-                    &scene::chrome(SIZE, self.probe.tick_count(), TICKS),
-                    &dda.view,
-                ),
-                None,
-            )
+        let validation_scope = live.device.push_error_scope(wgpu::ErrorFilter::Validation);
+        let (master, opaque_receipt, scope_tenant, scope_path) = {
+            #[cfg(feature = "r1-proof")]
+            if let Some(dda) = live.dda.as_mut() {
+                let pose = scene::body_pose(self.probe.at());
+                let diagnostics = dda
+                    .draw(camera.trace(aspect), &pose)
+                    .expect("Paredros R1 DDA frame");
+                self.last_trace = Some(diagnostics);
+                (
+                    live.composer.compose(
+                        &scene::chrome(SIZE, self.probe.tick_count(), TICKS),
+                        &dda.view,
+                    ),
+                    None,
+                    "paredros-room",
+                    "paredros::DdaTenant::draw",
+                )
+            } else {
+                live.tenant.look(camera.projection, camera.view);
+                live.tenant.set_room(&live.room, camera.eye);
+                live.tenant
+                    .set_body(&scene::body_vertices(self.probe.at()), camera.eye);
+                live.tenant.draw();
+                let chrome = scene::chrome(SIZE, self.probe.tick_count(), TICKS);
+                let (master, receipt) = live.composer.compose_opaque_tenant(&chrome, &live.tenant);
+                (
+                    master,
+                    Some(receipt),
+                    "paredros-room",
+                    "renderling::Stage::render (opaque)",
+                )
+            }
+            #[cfg(not(feature = "r1-proof"))]
+            {
+                live.tenant.look(camera.projection, camera.view);
+                live.tenant.set_room(&live.room, camera.eye);
+                live.tenant
+                    .set_body(&scene::body_vertices(self.probe.at()), camera.eye);
+                live.tenant.draw();
+                let chrome = scene::chrome(SIZE, self.probe.tick_count(), TICKS);
+                let (master, receipt) = live.composer.compose_opaque_tenant(&chrome, &live.tenant);
+                (
+                    master,
+                    Some(receipt),
+                    "paredros-room",
+                    "renderling::Stage::render (opaque)",
+                )
+            }
+        };
+        let validation_future = Box::pin(validation_scope.pop());
+        if live.health.lock().expect("frame health lock").policy()
+            == PresentationPolicy::AwaitedDiagnostic
+        {
+            let validation = pollster::block_on(validation_future);
+            let decision = live
+                .health
+                .lock()
+                .expect("frame health lock")
+                .finish_validation(
+                    scope_tenant,
+                    scope_path,
+                    frame_number,
+                    validation.map(|error| format!("{error:?}")),
+                );
+            match decision {
+                FrameDecision::Proceed => {},
+                FrameDecision::Suppress => {
+                    // Netrender's internal master bookkeeping has already
+                    // run; this gate promises only native surface
+                    // suppression, not a transactional rollback of it.
+                    live.window.request_redraw();
+                    return;
+                },
+                FrameDecision::RebuildAll(fault) => {
+                    eprintln!("shared GPU fault requires rebuild-all: {fault:?}");
+                    event_loop.exit();
+                    return;
+                },
+            }
         } else {
-            live.tenant.look(camera.projection, camera.view);
-            live.tenant.set_room(&live.room, camera.eye);
-            live.tenant
-                .set_body(&scene::body_vertices(self.probe.at()), camera.eye);
-            live.tenant.draw();
-            let chrome = scene::chrome(SIZE, self.probe.tick_count(), TICKS);
-            let (master, receipt) = live.composer.compose_opaque_tenant(&chrome, &live.tenant);
-            (master, Some(receipt))
-        };
-        #[cfg(not(feature = "r1-proof"))]
-        let (master, opaque_receipt) = {
-            live.tenant.look(camera.projection, camera.view);
-            live.tenant.set_room(&live.room, camera.eye);
-            live.tenant
-                .set_body(&scene::body_vertices(self.probe.at()), camera.eye);
-            live.tenant.draw();
-            let chrome = scene::chrome(SIZE, self.probe.tick_count(), TICKS);
-            let (master, receipt) = live.composer.compose_opaque_tenant(&chrome, &live.tenant);
-            (master, Some(receipt))
-        };
+            live.pending_validation = Some(PendingValidation {
+                future: validation_future,
+                tenant_name: scope_tenant.to_owned(),
+                producer_path: scope_path.to_owned(),
+                frame: frame_number,
+            });
+        }
 
         use wgpu::CurrentSurfaceTexture as Acquired;
         match live.surface.get_current_texture() {
