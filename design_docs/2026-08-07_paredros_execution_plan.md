@@ -936,6 +936,18 @@ the player should receive. S0's close camera is evidence, not a ruling.
 
 ## 7. Progress
 
+- **2026-09-05:** the RG3b headed frame-health gate closed for the room's real
+  winit surface. `PAREDROS_RG3_HEADED_PROBE=awaited` injected one invalid
+  buffer copy into the existing tenant validation scope: attempt 1 was
+  attributed to `paredros-room` / `renderling::Stage::render (opaque)` and
+  suppressed before `surface.get_current_texture`; attempt 2 acquired and
+  presented. The `optimistic` run acquired and presented attempt 1, observed
+  its validation result without blocking, suppressed attempt 2 before surface
+  acquisition, then acquired and presented attempt 3. The machine-readable
+  receipts are `Code/testing/paredros/rg3b_awaited_headed.json` and
+  `rg3b_optimistic_headed.json`. This proves native acquisition/presentation
+  suppression and recovery on the shared device. It does not promise rollback
+  of renderer-internal bookkeeping already performed before the host gate.
 - **2026-08-28:** the shared brick ABI crate was renamed `conatus-brick` →
   `modulus` (ruled by Mark; the architect's base unit of measure, and the
   layout math is modular arithmetic) and published to crates.io; this repo

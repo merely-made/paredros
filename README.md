@@ -17,7 +17,7 @@ the world.
 Vessel 2 of a three-game wing (Mesocosm, Paredros, Isometry); the wing-level
 architecture lives in the sibling mesocosm repo and is cited, not copied.
 
-## Status (2026-08-12)
+## Status (2026-09-05)
 
 Early implementation. Four proof scenes landed 2026-08-08; nothing here is a
 shipped game yet.
@@ -39,6 +39,10 @@ shipped game yet.
 - The 2026-08-10 extraction review promoted `paredros-identity` to the
   wing-wide identity crate (relicensed MIT OR Apache-2.0) and pushed the GPU
   tenancy seam up into netrender.
+- The headed room now proves both frame-validation policies against its real
+  swapchain calls. Awaited validation suppressed attempt 1 before acquisition
+  and presented attempt 2. Optimistic validation presented attempt 1,
+  suppressed attempt 2 after the result resolved, then presented attempt 3.
 
 Current plans live in [design_docs/](design_docs/DOC_README.md); the
 executable plan retains S0-S3 as foundation receipts and orders future work
@@ -58,6 +62,8 @@ cargo run -p paredros-social --bin refusal   # three companions answer one offer
 cargo run -p paredros-social --bin home      # the negotiated home
 cargo run -p paredros-sortie --bin sortie    # one sortie and return
 ROOM_TRACE=1 cargo run -p paredros-room --bin room   # headed room probe
+PAREDROS_RG3_HEADED_PROBE=awaited cargo run -p paredros-room --bin room
+PAREDROS_RG3_HEADED_PROBE=optimistic cargo run -p paredros-room --bin room
 ```
 
 ## License

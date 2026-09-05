@@ -11,6 +11,8 @@
 //! drives itself from the fixed trace, writes the screenshot receipt, prints
 //! the hashes and the frame spans, and exits. Without it the window stays up
 //! after the trace ends so a human can look at the room.
+//! `PAREDROS_RG3_HEADED_PROBE=awaited|optimistic` injects one scoped validation
+//! failure and records actual surface acquisition and presentation calls.
 
 use std::collections::VecDeque;
 use std::path::PathBuf;
@@ -34,6 +36,9 @@ use winit::window::{Window, WindowId};
 /// Where the receipt lands. The screenshots layout is per-repo under
 /// `Code/testing/<repo>/`.
 const CAPTURE: &str = r"C:\Users\mark_\Code\testing\paredros\s0_room.png";
+const RG3B_AWAITED_RECEIPT: &str = r"C:\Users\mark_\Code\testing\paredros\rg3b_awaited_headed.json";
+const RG3B_OPTIMISTIC_RECEIPT: &str =
+    r"C:\Users\mark_\Code\testing\paredros\rg3b_optimistic_headed.json";
 #[cfg(feature = "r1-proof")]
 const RG3_RECEIPT: &str = r"C:\Users\mark_\Code\testing\paredros\rg3c_room.json";
 #[cfg(feature = "r1-proof")]
@@ -46,7 +51,12 @@ fn main() {
     let r1_mode = std::env::var("ROOM_R1").is_ok_and(|v| v != "0");
     #[cfg(not(feature = "r1-proof"))]
     let r1_mode = false;
+    let headed_validation_probe = HeadedValidationProbe::from_env();
     let trace_mode = r1_mode || std::env::var("ROOM_TRACE").is_ok_and(|v| v != "0");
+    let policy = headed_validation_probe
+        .as_ref()
+        .map(|probe| probe.policy)
+        .unwrap_or_else(PresentationPolicy::from_env);
     let probe = Probe::new(SEED).expect("the room probe grows its world");
     println!(
         "room at {:?}, stance {:?}, ground hash {:#018x}",
@@ -66,11 +76,13 @@ fn main() {
         r1_mode,
         live: None,
         frames: 0,
+        frame_attempts: 0,
         captured: false,
         frame_us: Vec::new(),
         #[cfg(feature = "r1-proof")]
         last_trace: None,
-        policy: PresentationPolicy::from_env(),
+        policy,
+        headed_validation_probe,
     };
     event_loop.run_app(&mut app).expect("winit run");
 }
@@ -102,6 +114,140 @@ struct PendingValidation {
     frame: u64,
 }
 
+struct HeadedValidationProbe {
+    policy: PresentationPolicy,
+    injected_attempt: Option<u64>,
+    surface_acquire_attempts: Vec<u64>,
+    surface_present_attempts: Vec<u64>,
+    suppressed_attempts: Vec<u64>,
+}
+
+impl HeadedValidationProbe {
+    fn from_env() -> Option<Self> {
+        let value = std::env::var("PAREDROS_RG3_HEADED_PROBE").ok()?;
+        let policy = match value.to_ascii_lowercase().as_str() {
+            "awaited" | "awaited-diagnostic" => PresentationPolicy::AwaitedDiagnostic,
+            "optimistic" => PresentationPolicy::Optimistic,
+            _ => panic!("PAREDROS_RG3_HEADED_PROBE must be awaited or optimistic, got {value:?}"),
+        };
+        Some(Self {
+            policy,
+            injected_attempt: None,
+            surface_acquire_attempts: Vec::new(),
+            surface_present_attempts: Vec::new(),
+            suppressed_attempts: Vec::new(),
+        })
+    }
+
+    fn inject_once(&mut self, device: &wgpu::Device, attempt: u64) {
+        if self.injected_attempt.is_some() {
+            return;
+        }
+        self.injected_attempt = Some(attempt);
+        let source = device.create_buffer(&wgpu::BufferDescriptor {
+            label: Some("RG3b headed validation source"),
+            size: 4,
+            usage: wgpu::BufferUsages::COPY_SRC,
+            mapped_at_creation: false,
+        });
+        let target = device.create_buffer(&wgpu::BufferDescriptor {
+            label: Some("RG3b headed validation target"),
+            size: 4,
+            usage: wgpu::BufferUsages::COPY_DST,
+            mapped_at_creation: false,
+        });
+        let mut encoder = device.create_command_encoder(&wgpu::CommandEncoderDescriptor {
+            label: Some("RG3b disposable invalid tenant encoder"),
+        });
+        encoder.copy_buffer_to_buffer(&source, 0, &target, 0, 8);
+        drop(encoder.finish());
+    }
+
+    fn record_suppressed(&mut self, attempt: u64) {
+        self.suppressed_attempts.push(attempt);
+    }
+
+    fn completed_record<'a>(
+        &self,
+        health: &'a FrameHealth,
+    ) -> Option<&'a paredros_room::frame_health::ValidationRecord> {
+        let injected = self.injected_attempt?;
+        let validation = health
+            .validations()
+            .iter()
+            .find(|record| record.frame == injected)?;
+        let suppressed = self.suppressed_attempts.first().copied()?;
+        let healthy_presented = self
+            .surface_present_attempts
+            .iter()
+            .any(|attempt| *attempt > suppressed);
+        let policy_contract = match self.policy {
+            PresentationPolicy::AwaitedDiagnostic => suppressed == injected,
+            PresentationPolicy::Optimistic => {
+                self.surface_present_attempts.contains(&injected) && suppressed > injected
+            },
+        };
+        let suppressed_never_acquired = self
+            .suppressed_attempts
+            .iter()
+            .all(|attempt| !self.surface_acquire_attempts.contains(attempt));
+        let suppressed_never_presented = self
+            .suppressed_attempts
+            .iter()
+            .all(|attempt| !self.surface_present_attempts.contains(attempt));
+        (healthy_presented
+            && policy_contract
+            && suppressed_never_acquired
+            && suppressed_never_presented)
+            .then_some(validation)
+    }
+
+    fn write_receipt(&self, validation: &paredros_room::frame_health::ValidationRecord) {
+        let (policy, path) = match self.policy {
+            PresentationPolicy::AwaitedDiagnostic => ("awaited", RG3B_AWAITED_RECEIPT),
+            PresentationPolicy::Optimistic => ("optimistic", RG3B_OPTIMISTIC_RECEIPT),
+        };
+        let injected = self.injected_attempt.expect("headed fault was injected");
+        let receipt = format!(
+            concat!(
+                "{{\n",
+                "  \"gate\": \"RG3b headed surface suppression\",\n",
+                "  \"policy\": \"{}\",\n",
+                "  \"injected_attempt\": {},\n",
+                "  \"validation\": {{\n",
+                "    \"tenant_name\": \"{}\",\n",
+                "    \"producer_path\": \"{}\",\n",
+                "    \"attempt\": {},\n",
+                "    \"captured\": true\n",
+                "  }},\n",
+                "  \"surface_acquire_attempts\": {:?},\n",
+                "  \"surface_present_attempts\": {:?},\n",
+                "  \"suppressed_attempts\": {:?},\n",
+                "  \"suppressed_attempts_never_acquired\": true,\n",
+                "  \"suppressed_attempts_never_presented\": true,\n",
+                "  \"healthy_frame_presented_after_suppression\": true,\n",
+                "  \"shared_device\": true,\n",
+                "  \"actual_surface_calls_observed\": true,\n",
+                "  \"scope_limit\": \"native surface acquisition and presentation; no transactional rollback of renderer-internal bookkeeping\"\n",
+                "}}\n"
+            ),
+            policy,
+            injected,
+            validation.tenant_name,
+            validation.producer_path,
+            validation.frame,
+            self.surface_acquire_attempts,
+            self.surface_present_attempts,
+            self.suppressed_attempts,
+        );
+        let path = PathBuf::from(path);
+        std::fs::create_dir_all(path.parent().expect("headed receipt directory"))
+            .expect("create headed receipt directory");
+        std::fs::write(&path, receipt).expect("write headed validation receipt");
+        println!("RG3b headed {policy} receipt: {}", path.display());
+    }
+}
+
 struct RoomApp {
     instance: wgpu::Instance,
     probe: Probe,
@@ -109,11 +255,13 @@ struct RoomApp {
     r1_mode: bool,
     live: Option<Live>,
     frames: u64,
+    frame_attempts: u64,
     captured: bool,
     frame_us: Vec<u64>,
     #[cfg(feature = "r1-proof")]
     last_trace: Option<mesocosm_lens::BrickDiagnostics>,
     policy: PresentationPolicy,
+    headed_validation_probe: Option<HeadedValidationProbe>,
 }
 
 impl ApplicationHandler for RoomApp {
@@ -217,7 +365,8 @@ impl RoomApp {
         let Some(live) = self.live.as_mut() else {
             return;
         };
-        let frame_number = self.frames + 1;
+        self.frame_attempts += 1;
+        let frame_number = self.frame_attempts;
         if let Err(error) = live.device.poll(wgpu::PollType::Poll) {
             live.health
                 .lock()
@@ -253,6 +402,9 @@ impl RoomApp {
         {
             FrameDecision::Proceed => {},
             FrameDecision::Suppress => {
+                if let Some(probe) = self.headed_validation_probe.as_mut() {
+                    probe.record_suppressed(frame_number);
+                }
                 live.window.request_redraw();
                 return;
             },
@@ -277,6 +429,9 @@ impl RoomApp {
             aspect,
         );
         let validation_scope = live.device.push_error_scope(wgpu::ErrorFilter::Validation);
+        if let Some(probe) = self.headed_validation_probe.as_mut() {
+            probe.inject_once(&live.device, frame_number);
+        }
         let (master, opaque_receipt, scope_tenant, scope_path) = {
             #[cfg(feature = "r1-proof")]
             if let Some(dda) = live.dda.as_mut() {
@@ -347,6 +502,9 @@ impl RoomApp {
                     // Netrender's internal master bookkeeping has already
                     // run; this gate promises only native surface
                     // suppression, not a transactional rollback of it.
+                    if let Some(probe) = self.headed_validation_probe.as_mut() {
+                        probe.record_suppressed(frame_number);
+                    }
                     live.window.request_redraw();
                     return;
                 },
@@ -366,6 +524,9 @@ impl RoomApp {
         }
 
         use wgpu::CurrentSurfaceTexture as Acquired;
+        if let Some(probe) = self.headed_validation_probe.as_mut() {
+            probe.surface_acquire_attempts.push(frame_number);
+        }
         match live.surface.get_current_texture() {
             Acquired::Success(frame) | Acquired::Suboptimal(frame) => {
                 let target = frame.texture.create_view(&Default::default());
@@ -377,6 +538,9 @@ impl RoomApp {
                 );
                 live.window.pre_present_notify();
                 live.queue.present(frame);
+                if let Some(probe) = self.headed_validation_probe.as_mut() {
+                    probe.surface_present_attempts.push(frame_number);
+                }
             },
             Acquired::Outdated | Acquired::Lost => configure(live),
             Acquired::Timeout | Acquired::Occluded => {},
@@ -386,6 +550,19 @@ impl RoomApp {
         let span = began.elapsed();
         self.frame_us.push(span.as_micros() as u64);
         self.frames += 1;
+
+        if let Some(probe) = self.headed_validation_probe.as_ref() {
+            let health = live.health.lock().expect("frame health lock");
+            if let Some(validation) = probe.completed_record(&health) {
+                probe.write_receipt(validation);
+                event_loop.exit();
+                return;
+            }
+            assert!(
+                frame_number < 240,
+                "RG3b headed probe did not complete after {frame_number} attempts"
+            );
+        }
 
         if self.trace_mode && !self.probe.running() && !self.captured {
             self.captured = true;
