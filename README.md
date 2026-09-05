@@ -43,6 +43,10 @@ shipped game yet.
   swapchain calls. Awaited validation suppressed attempt 1 before acquisition
   and presented attempt 2. Optimistic validation presented attempt 1,
   suppressed attempt 2 after the result resolved, then presented attempt 3.
+- Shared faults now rebuild the complete GPU client set through the same path
+  as initial boot while preserving the host window and surface. A headed
+  synthetic-fault receipt suppresses generation 1 before acquisition and
+  presents successfully from generation 2.
 
 Current plans live in [design_docs/](design_docs/DOC_README.md); the
 executable plan retains S0-S3 as foundation receipts and orders future work
@@ -64,6 +68,7 @@ cargo run -p paredros-sortie --bin sortie    # one sortie and return
 ROOM_TRACE=1 cargo run -p paredros-room --bin room   # headed room probe
 PAREDROS_RG3_HEADED_PROBE=awaited cargo run -p paredros-room --bin room
 PAREDROS_RG3_HEADED_PROBE=optimistic cargo run -p paredros-room --bin room
+PAREDROS_RG3_REBUILD_PROBE=1 cargo run -p paredros-room --bin room
 ```
 
 ## License

@@ -13,6 +13,8 @@
 //! after the trace ends so a human can look at the room.
 //! `PAREDROS_RG3_HEADED_PROBE=awaited|optimistic` injects one scoped validation
 //! failure and records actual surface acquisition and presentation calls.
+//! `PAREDROS_RG3_REBUILD_PROBE=1` latches a synthetic shared fault and proves
+//! that every device client rebuilds before the preserved surface presents.
 
 use std::collections::VecDeque;
 use std::path::PathBuf;
@@ -21,7 +23,7 @@ use std::task::{Context, Poll, Waker};
 use std::time::Instant;
 use std::{future::Future, pin::Pin};
 
-use paredros_room::frame_health::{FrameDecision, FrameHealth, PresentationPolicy};
+use paredros_room::frame_health::{FrameDecision, FrameHealth, PresentationPolicy, SharedFault};
 use paredros_room::gpu::{self, Composer, SIZE, Tenant};
 #[cfg(feature = "r1-proof")]
 use paredros_room::gpu::{BrickAbi, DdaTenant};
@@ -39,6 +41,8 @@ const CAPTURE: &str = r"C:\Users\mark_\Code\testing\paredros\s0_room.png";
 const RG3B_AWAITED_RECEIPT: &str = r"C:\Users\mark_\Code\testing\paredros\rg3b_awaited_headed.json";
 const RG3B_OPTIMISTIC_RECEIPT: &str =
     r"C:\Users\mark_\Code\testing\paredros\rg3b_optimistic_headed.json";
+const RG3D_REBUILD_RECEIPT: &str =
+    r"C:\Users\mark_\Code\testing\paredros\rg3d_rebuild_all_headed.json";
 #[cfg(feature = "r1-proof")]
 const RG3_RECEIPT: &str = r"C:\Users\mark_\Code\testing\paredros\rg3c_room.json";
 #[cfg(feature = "r1-proof")]
@@ -52,6 +56,11 @@ fn main() {
     #[cfg(not(feature = "r1-proof"))]
     let r1_mode = false;
     let headed_validation_probe = HeadedValidationProbe::from_env();
+    let rebuild_probe = RebuildProbe::from_env();
+    assert!(
+        headed_validation_probe.is_none() || rebuild_probe.is_none(),
+        "PAREDROS_RG3_HEADED_PROBE and PAREDROS_RG3_REBUILD_PROBE are mutually exclusive"
+    );
     let trace_mode = r1_mode || std::env::var("ROOM_TRACE").is_ok_and(|v| v != "0");
     let policy = headed_validation_probe
         .as_ref()
@@ -83,6 +92,9 @@ fn main() {
         last_trace: None,
         policy,
         headed_validation_probe,
+        rebuild_probe,
+        device_generation: 0,
+        rebuild_requested: None,
     };
     event_loop.run_app(&mut app).expect("winit run");
 }
@@ -105,6 +117,16 @@ struct Live {
     adapter: String,
     health: Arc<Mutex<FrameHealth>>,
     pending_validation: VecDeque<PendingValidation>,
+    device_generation: u64,
+}
+
+impl Live {
+    fn into_host_surface(self) -> (Arc<Window>, wgpu::Surface<'static>) {
+        let Self {
+            window, surface, ..
+        } = self;
+        (window, surface)
+    }
 }
 
 struct PendingValidation {
@@ -248,6 +270,108 @@ impl HeadedValidationProbe {
     }
 }
 
+struct RebuildProbe {
+    injected_attempt: Option<u64>,
+    fault_generation: Option<u64>,
+    rebuilt_generation: Option<u64>,
+    surface_acquire_attempts: Vec<u64>,
+    surface_present_attempts: Vec<u64>,
+    suppressed_attempts: Vec<u64>,
+}
+
+impl RebuildProbe {
+    fn from_env() -> Option<Self> {
+        let value = std::env::var("PAREDROS_RG3_REBUILD_PROBE").ok()?;
+        match value.to_ascii_lowercase().as_str() {
+            "" | "0" | "false" => return None,
+            "1" | "true" => {},
+            _ => panic!("PAREDROS_RG3_REBUILD_PROBE must be 0/false or 1/true, got {value:?}"),
+        }
+        Some(Self {
+            injected_attempt: None,
+            fault_generation: None,
+            rebuilt_generation: None,
+            surface_acquire_attempts: Vec::new(),
+            surface_present_attempts: Vec::new(),
+            suppressed_attempts: Vec::new(),
+        })
+    }
+
+    fn inject_once(&mut self, live: &Live, attempt: u64) {
+        if self.injected_attempt.is_some() {
+            return;
+        }
+        self.injected_attempt = Some(attempt);
+        self.fault_generation = Some(live.device_generation);
+        live.health
+            .lock()
+            .expect("frame health lock")
+            .latch_uncaptured_error("synthetic RG3d shared-device fault");
+    }
+
+    fn record_rebuild(&mut self, fault_attempt: u64, rebuilt_generation: u64) {
+        self.suppressed_attempts.push(fault_attempt);
+        self.rebuilt_generation = Some(rebuilt_generation);
+    }
+
+    fn complete(&self, current_generation: u64) -> bool {
+        let Some(injected) = self.injected_attempt else {
+            return false;
+        };
+        let Some(fault_generation) = self.fault_generation else {
+            return false;
+        };
+        let Some(rebuilt_generation) = self.rebuilt_generation else {
+            return false;
+        };
+        rebuilt_generation > fault_generation
+            && current_generation == rebuilt_generation
+            && self.suppressed_attempts == [injected]
+            && !self.surface_acquire_attempts.contains(&injected)
+            && !self.surface_present_attempts.contains(&injected)
+            && self
+                .surface_present_attempts
+                .iter()
+                .any(|attempt| *attempt > injected)
+    }
+
+    fn write_receipt(&self) {
+        let receipt = format!(
+            concat!(
+                "{{\n",
+                "  \"gate\": \"RG3d shared-device rebuild-all\",\n",
+                "  \"fault_injection\": \"synthetic host-latched uncaptured error\",\n",
+                "  \"fault_attempt\": {},\n",
+                "  \"fault_generation\": {},\n",
+                "  \"rebuilt_generation\": {},\n",
+                "  \"surface_acquire_attempts\": {:?},\n",
+                "  \"surface_present_attempts\": {:?},\n",
+                "  \"suppressed_attempts\": {:?},\n",
+                "  \"fault_attempt_never_acquired\": true,\n",
+                "  \"fault_attempt_never_presented\": true,\n",
+                "  \"healthy_frame_presented_after_rebuild\": true,\n",
+                "  \"preserved_host_resources\": [\"window\", \"surface\"],\n",
+                "  \"recreated_shared_device_clients\": [\"adapter/device/queue\", \"renderling tenant\", \"optional DDA tenant\", \"netrender composer\", \"frame health and callbacks\"],\n",
+                "  \"scope_limit\": \"proves the rebuild lifecycle after a synthetic shared fault; does not manufacture physical device loss\"\n",
+                "}}\n"
+            ),
+            self.injected_attempt.expect("shared fault was injected"),
+            self.fault_generation
+                .expect("fault generation was recorded"),
+            self.rebuilt_generation
+                .expect("rebuilt generation was recorded"),
+            self.surface_acquire_attempts,
+            self.surface_present_attempts,
+            self.suppressed_attempts,
+        );
+        let path = PathBuf::from(RG3D_REBUILD_RECEIPT);
+        std::fs::create_dir_all(path.parent().expect("rebuild receipt directory"))
+            .expect("create rebuild receipt directory");
+        std::fs::write(&path, receipt).expect("write rebuild receipt");
+        println!("RG3d headed rebuild-all receipt: {}", path.display());
+    }
+}
+
 struct RoomApp {
     instance: wgpu::Instance,
     probe: Probe,
@@ -262,6 +386,9 @@ struct RoomApp {
     last_trace: Option<mesocosm_lens::BrickDiagnostics>,
     policy: PresentationPolicy,
     headed_validation_probe: Option<HeadedValidationProbe>,
+    rebuild_probe: Option<RebuildProbe>,
+    device_generation: u64,
+    rebuild_requested: Option<(u64, SharedFault)>,
 }
 
 impl ApplicationHandler for RoomApp {
@@ -278,11 +405,37 @@ impl ApplicationHandler for RoomApp {
             .instance
             .create_surface(window.clone())
             .expect("surface");
+        let mut live = self.build_live(window, surface);
+        configure(&mut live);
+        live.window.request_redraw();
+        self.live = Some(live);
+    }
 
+    fn window_event(&mut self, event_loop: &ActiveEventLoop, id: WindowId, event: WindowEvent) {
+        if self.live.as_ref().is_none_or(|live| live.window.id() != id) {
+            return;
+        }
+        match event {
+            WindowEvent::CloseRequested => event_loop.exit(),
+            WindowEvent::Resized(_) => {
+                if let Some(live) = self.live.as_mut() {
+                    configure(live);
+                }
+            },
+            WindowEvent::RedrawRequested => self.frame(event_loop),
+            _ => {},
+        }
+    }
+}
+
+impl RoomApp {
+    fn build_live(&mut self, window: Arc<Window>, surface: wgpu::Surface<'static>) -> Live {
         // One device for both tenants, chosen against the surface the window
         // actually got, so the picture and the presentation cannot end up on
-        // different adapters.
+        // different adapters. Initial boot and rebuild share this exact path.
         let handles = gpu::boot(&self.instance, Some(&surface));
+        self.device_generation += 1;
+        let device_generation = self.device_generation;
         let health = Arc::new(Mutex::new(FrameHealth::new(self.policy)));
         let uncaptured_health = Arc::clone(&health);
         handles.device.on_uncaptured_error(Arc::new(move |error| {
@@ -320,12 +473,15 @@ impl ApplicationHandler for RoomApp {
             .transpose()
             .expect("R1 brick map and tracer");
         let room = scene::room_vertices(self.probe.room());
-        println!("room mesh: {} triangles", room.len() / 3);
+        println!(
+            "room mesh: {} triangles (device generation {device_generation})",
+            room.len() / 3
+        );
         #[cfg(feature = "r1-proof")]
         let adapter = handles.adapter.get_info().name;
         let composer = Composer::new(handles, SIZE);
 
-        let mut live = Live {
+        Live {
             window,
             surface,
             format,
@@ -340,28 +496,29 @@ impl ApplicationHandler for RoomApp {
             adapter,
             health,
             pending_validation: VecDeque::new(),
-        };
+            device_generation,
+        }
+    }
+
+    fn rebuild_live(&mut self, fault_attempt: u64, fault: SharedFault) {
+        let prior = self.live.take().expect("rebuild requires a live GPU stack");
+        let old_generation = prior.device_generation;
+        let (window, surface) = prior.into_host_surface();
+        eprintln!("rebuilding shared GPU stack after generation {old_generation} fault: {fault:?}");
+        let mut live = self.build_live(window, surface);
+        assert!(live.device_generation > old_generation);
         configure(&mut live);
+        if let Some(probe) = self.rebuild_probe.as_mut() {
+            probe.record_rebuild(fault_attempt, live.device_generation);
+        }
         live.window.request_redraw();
         self.live = Some(live);
     }
 
-    fn window_event(&mut self, event_loop: &ActiveEventLoop, _id: WindowId, event: WindowEvent) {
-        match event {
-            WindowEvent::CloseRequested => event_loop.exit(),
-            WindowEvent::Resized(_) => {
-                if let Some(live) = self.live.as_mut() {
-                    configure(live);
-                }
-            },
-            WindowEvent::RedrawRequested => self.frame(event_loop),
-            _ => {},
-        }
-    }
-}
-
-impl RoomApp {
     fn frame(&mut self, event_loop: &ActiveEventLoop) {
+        if let Some((fault_attempt, fault)) = self.rebuild_requested.take() {
+            self.rebuild_live(fault_attempt, fault);
+        }
         let Some(live) = self.live.as_mut() else {
             return;
         };
@@ -394,6 +551,9 @@ impl RoomApp {
             }
         }
         live.pending_validation = retained;
+        if let Some(probe) = self.rebuild_probe.as_mut() {
+            probe.inject_once(live, frame_number);
+        }
         match live
             .health
             .lock()
@@ -410,7 +570,8 @@ impl RoomApp {
             },
             FrameDecision::RebuildAll(fault) => {
                 eprintln!("shared GPU fault requires rebuild-all: {fault:?}");
-                event_loop.exit();
+                self.rebuild_requested = Some((frame_number, fault));
+                live.window.request_redraw();
                 return;
             },
         }
@@ -510,7 +671,8 @@ impl RoomApp {
                 },
                 FrameDecision::RebuildAll(fault) => {
                     eprintln!("shared GPU fault requires rebuild-all: {fault:?}");
-                    event_loop.exit();
+                    self.rebuild_requested = Some((frame_number, fault));
+                    live.window.request_redraw();
                     return;
                 },
             }
@@ -527,6 +689,9 @@ impl RoomApp {
         if let Some(probe) = self.headed_validation_probe.as_mut() {
             probe.surface_acquire_attempts.push(frame_number);
         }
+        if let Some(probe) = self.rebuild_probe.as_mut() {
+            probe.surface_acquire_attempts.push(frame_number);
+        }
         match live.surface.get_current_texture() {
             Acquired::Success(frame) | Acquired::Suboptimal(frame) => {
                 let target = frame.texture.create_view(&Default::default());
@@ -539,6 +704,9 @@ impl RoomApp {
                 live.window.pre_present_notify();
                 live.queue.present(frame);
                 if let Some(probe) = self.headed_validation_probe.as_mut() {
+                    probe.surface_present_attempts.push(frame_number);
+                }
+                if let Some(probe) = self.rebuild_probe.as_mut() {
                     probe.surface_present_attempts.push(frame_number);
                 }
             },
@@ -561,6 +729,17 @@ impl RoomApp {
             assert!(
                 frame_number < 240,
                 "RG3b headed probe did not complete after {frame_number} attempts"
+            );
+        }
+        if let Some(probe) = self.rebuild_probe.as_ref() {
+            if probe.complete(live.device_generation) {
+                probe.write_receipt();
+                event_loop.exit();
+                return;
+            }
+            assert!(
+                frame_number < 240,
+                "RG3d headed rebuild probe did not complete after {frame_number} attempts"
             );
         }
 

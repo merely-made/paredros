@@ -936,6 +936,19 @@ the player should receive. S0's close camera is evidence, not a ruling.
 
 ## 7. Progress
 
+- **2026-09-05 (later):** the RG3d shared-device recovery lifecycle landed.
+  Initial boot and recovery now use one constructor for the compatible adapter,
+  device, queue, Renderling tenant, optional DDA tenant, Netrender composer,
+  frame-health state, and host callbacks. `RebuildAll` suppresses the faulting
+  attempt, drops that complete GPU-owned set, preserves the winit window and
+  surface, boots a later device generation, reconfigures the surface, and
+  resumes drawing. The headed `PAREDROS_RG3_REBUILD_PROBE=1` receipt latched a
+  synthetic uncaptured-error disposition in generation 1: attempt 1 made no
+  surface acquisition or presentation call; generation 2 acquired and
+  presented attempt 2. The machine-readable receipt is
+  `Code/testing/paredros/rg3d_rebuild_all_headed.json`. This exercises the real
+  rebuild and surface paths after a synthetic shared fault. It does not claim
+  to manufacture or measure physical device loss.
 - **2026-09-05:** the RG3b headed frame-health gate closed for the room's real
   winit surface. `PAREDROS_RG3_HEADED_PROBE=awaited` injected one invalid
   buffer copy into the existing tenant validation scope: attempt 1 was
