@@ -12,8 +12,10 @@
 //! the hashes and the frame spans, and exits. Without it the window stays up
 //! after the trace ends so a human can look at the room.
 
+use std::collections::VecDeque;
 use std::path::PathBuf;
 use std::sync::{Arc, Mutex};
+use std::task::{Context, Poll, Waker};
 use std::time::Instant;
 use std::{future::Future, pin::Pin};
 
@@ -90,7 +92,7 @@ struct Live {
     #[cfg(feature = "r1-proof")]
     adapter: String,
     health: Arc<Mutex<FrameHealth>>,
-    pending_validation: Option<PendingValidation>,
+    pending_validation: VecDeque<PendingValidation>,
 }
 
 struct PendingValidation {
@@ -189,7 +191,7 @@ impl ApplicationHandler for RoomApp {
             #[cfg(feature = "r1-proof")]
             adapter,
             health,
-            pending_validation: None,
+            pending_validation: VecDeque::new(),
         };
         configure(&mut live);
         live.window.request_redraw();
@@ -216,18 +218,33 @@ impl RoomApp {
             return;
         };
         let frame_number = self.frames + 1;
-        if let Some(mut pending) = live.pending_validation.take() {
-            let validation = pollster::block_on(pending.future.as_mut());
+        if let Err(error) = live.device.poll(wgpu::PollType::Poll) {
             live.health
                 .lock()
                 .expect("frame health lock")
-                .finish_validation(
-                    pending.tenant_name,
-                    pending.producer_path,
-                    pending.frame,
-                    validation.map(|error| format!("{error:?}")),
-                );
+                .latch_poll_failure(error.to_string());
         }
+        let mut pending = std::mem::take(&mut live.pending_validation);
+        let waker = Waker::noop();
+        let mut context = Context::from_waker(waker);
+        let mut retained = VecDeque::with_capacity(pending.len());
+        while let Some(mut pending_validation) = pending.pop_front() {
+            match pending_validation.future.as_mut().poll(&mut context) {
+                Poll::Ready(validation) => {
+                    live.health
+                        .lock()
+                        .expect("frame health lock")
+                        .finish_validation(
+                            pending_validation.tenant_name,
+                            pending_validation.producer_path,
+                            pending_validation.frame,
+                            validation.map(|error| format!("{error:?}")),
+                        );
+                },
+                Poll::Pending => retained.push_back(pending_validation),
+            }
+        }
+        live.pending_validation = retained;
         match live
             .health
             .lock()
@@ -340,7 +357,7 @@ impl RoomApp {
                 },
             }
         } else {
-            live.pending_validation = Some(PendingValidation {
+            live.pending_validation.push_back(PendingValidation {
                 future: validation_future,
                 tenant_name: scope_tenant.to_owned(),
                 producer_path: scope_path.to_owned(),

@@ -50,6 +50,7 @@ pub struct ValidationRecord {
 pub enum SharedFault {
     UncapturedError { error: String },
     DeviceLost { reason: String, message: String },
+    PollFailure { error: String },
 }
 
 /// Host-owned state machine. It deliberately does not attempt tenant-local
@@ -130,6 +131,13 @@ impl FrameHealth {
         self.shared_fault = Some(SharedFault::DeviceLost {
             reason: reason.into(),
             message: message.into(),
+        });
+    }
+
+    /// Latch a failed nonblocking device poll as a shared rebuild-all fault.
+    pub fn latch_poll_failure(&mut self, error: impl Into<String>) {
+        self.shared_fault = Some(SharedFault::PollFailure {
+            error: error.into(),
         });
     }
 
@@ -225,6 +233,16 @@ mod tests {
         assert!(matches!(
             health.shared_fault(),
             Some(SharedFault::DeviceLost { .. })
+        ));
+    }
+
+    #[test]
+    fn poll_failure_is_a_shared_rebuild_all_fault() {
+        let mut health = FrameHealth::new(PresentationPolicy::Optimistic);
+        health.latch_poll_failure("poll failed");
+        assert!(matches!(
+            health.begin_frame(1),
+            FrameDecision::RebuildAll(SharedFault::PollFailure { .. })
         ));
     }
 }
