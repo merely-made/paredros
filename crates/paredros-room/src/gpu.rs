@@ -13,14 +13,14 @@
 //! whole point of the cohesion contract this gate is proving.
 
 #[cfg(feature = "r1-proof")]
-use modulus::BrickMap;
-#[cfg(feature = "r1-proof")]
 use mesocosm_core::places::Ground;
 #[cfg(feature = "r1-proof")]
 use mesocosm_lens::{
     BrickDiagnostics, BrickFrameInput, BrickRevision, BrickTracer, CritterPose, Grade, TraceCamera,
 };
 use mesocosm_render::geometry::Vertex as MeshVertex;
+#[cfg(feature = "r1-proof")]
+use modulus::BrickMap;
 use netrender::{
     Compositor, ExternalTextureComposite, ExternalTexturePlacement, NetrenderOptions,
     PresentedFrame, Renderer, Scene, SurfaceKey, WgpuHandles, create_netrender_instance,
@@ -83,6 +83,7 @@ pub fn boot(instance: &wgpu::Instance, compatible: Option<&wgpu::Surface<'_>>) -
 /// will composite.
 pub struct Tenant {
     pub view: wgpu::TextureView,
+    target: wgpu::Texture,
     size: [u32; 2],
     ctx: Context,
     stage: Stage,
@@ -112,7 +113,7 @@ impl Tenant {
         let view = target.create_view(&Default::default());
 
         let ctx = Context::new(
-            RenderTarget::from(target),
+            RenderTarget::from(target.clone()),
             handles.adapter.clone(),
             handles.device.clone(),
             handles.queue.clone(),
@@ -129,6 +130,7 @@ impl Tenant {
 
         Self {
             view,
+            target,
             size,
             ctx,
             stage,
@@ -151,6 +153,13 @@ impl Tenant {
 
     pub fn size(&self) -> [u32; 2] {
         self.size
+    }
+
+    /// Borrow the physical color target that Renderling owns. Netrender
+    /// clones the same-device handle when importing it into its opaque
+    /// tenant frame; the view remains available for the legacy path.
+    pub fn target_texture(&self) -> &wgpu::Texture {
+        &self.target
     }
 
     pub fn set_room(&self, vertices: &[MeshVertex], eye: Vec3) {
@@ -479,6 +488,36 @@ impl Composer {
             &external,
         );
         grab.master.expect("netrender presented no master")
+    }
+
+    /// Compose the normal Renderling room through Netrender's RG3a opaque
+    /// tenant graph task. The room is placed at scene-op boundary zero, so
+    /// the chrome paints over it; the tenant's internal render remains closed
+    /// behind this borrowed target descriptor.
+    pub fn compose_opaque_tenant(
+        &self,
+        chrome: &Scene,
+        tenant: &Tenant,
+    ) -> (wgpu::Texture, netrender::OpaqueTenantReceipt) {
+        let input = netrender::OpaqueTenantInput::new(
+            tenant.target_texture(),
+            netrender::OpaqueTenantMetadata::new(
+                "paredros-room",
+                "renderling::Stage::render (opaque)",
+                0,
+                0,
+                ExternalTexturePlacement::new([0.0, 0.0, self.size[0] as f32, self.size[1] as f32]),
+            ),
+        );
+        let mut grab = MasterGrab { master: None };
+        let receipt = self.net.render_with_opaque_tenant(
+            chrome,
+            MASTER_FORMAT,
+            &mut grab,
+            netrender::peniko::Color::new([0.0, 0.0, 0.0, 0.0]),
+            &input,
+        );
+        (grab.master.expect("netrender presented no master"), receipt)
     }
 
     /// Blits the composed master onto a surface texture, filling it. The

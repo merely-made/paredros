@@ -31,6 +31,8 @@ use winit::window::{Window, WindowId};
 /// `Code/testing/<repo>/`.
 const CAPTURE: &str = r"C:\Users\mark_\Code\testing\paredros\s0_room.png";
 #[cfg(feature = "r1-proof")]
+const RG3_RECEIPT: &str = r"C:\Users\mark_\Code\testing\paredros\rg3c_room.json";
+#[cfg(feature = "r1-proof")]
 const R1_CAPTURE: &str = r"C:\Users\mark_\Code\testing\paredros\r1_perspective.png";
 #[cfg(feature = "r1-proof")]
 const R1_RECEIPT: &str = r"C:\Users\mark_\Code\testing\paredros\r1_perspective.json";
@@ -169,9 +171,9 @@ impl ApplicationHandler for RoomApp {
                 if let Some(live) = self.live.as_mut() {
                     configure(live);
                 }
-            }
+            },
             WindowEvent::RedrawRequested => self.frame(event_loop),
-            _ => {}
+            _ => {},
         }
     }
 }
@@ -196,33 +198,40 @@ impl RoomApp {
             aspect,
         );
         #[cfg(feature = "r1-proof")]
-        let picture = if let Some(dda) = live.dda.as_mut() {
+        let (master, opaque_receipt) = if let Some(dda) = live.dda.as_mut() {
             let pose = scene::body_pose(self.probe.at());
             let diagnostics = dda
                 .draw(camera.trace(aspect), &pose)
                 .expect("Paredros R1 DDA frame");
             self.last_trace = Some(diagnostics);
-            &dda.view
+            (
+                live.composer.compose(
+                    &scene::chrome(SIZE, self.probe.tick_count(), TICKS),
+                    &dda.view,
+                ),
+                None,
+            )
         } else {
             live.tenant.look(camera.projection, camera.view);
             live.tenant.set_room(&live.room, camera.eye);
             live.tenant
                 .set_body(&scene::body_vertices(self.probe.at()), camera.eye);
             live.tenant.draw();
-            &live.tenant.view
+            let chrome = scene::chrome(SIZE, self.probe.tick_count(), TICKS);
+            let (master, receipt) = live.composer.compose_opaque_tenant(&chrome, &live.tenant);
+            (master, Some(receipt))
         };
         #[cfg(not(feature = "r1-proof"))]
-        let picture = {
+        let (master, opaque_receipt) = {
             live.tenant.look(camera.projection, camera.view);
             live.tenant.set_room(&live.room, camera.eye);
             live.tenant
                 .set_body(&scene::body_vertices(self.probe.at()), camera.eye);
             live.tenant.draw();
-            &live.tenant.view
+            let chrome = scene::chrome(SIZE, self.probe.tick_count(), TICKS);
+            let (master, receipt) = live.composer.compose_opaque_tenant(&chrome, &live.tenant);
+            (master, Some(receipt))
         };
-
-        let chrome = scene::chrome(SIZE, self.probe.tick_count(), TICKS);
-        let master = live.composer.compose(&chrome, picture);
 
         use wgpu::CurrentSurfaceTexture as Acquired;
         match live.surface.get_current_texture() {
@@ -236,9 +245,9 @@ impl RoomApp {
                 );
                 live.window.pre_present_notify();
                 live.queue.present(frame);
-            }
+            },
             Acquired::Outdated | Acquired::Lost => configure(live),
-            Acquired::Timeout | Acquired::Occluded => {}
+            Acquired::Timeout | Acquired::Occluded => {},
             Acquired::Validation => panic!("surface acquisition failed validation"),
         }
 
@@ -263,6 +272,7 @@ impl RoomApp {
                     abi: live.dda.as_ref().map(DdaTenant::abi),
                     #[cfg(feature = "r1-proof")]
                     adapter: &live.adapter,
+                    opaque_receipt: opaque_receipt.as_ref(),
                 },
             );
             event_loop.exit();
@@ -305,6 +315,7 @@ struct ReportEvidence<'a> {
     abi: Option<BrickAbi>,
     #[cfg(feature = "r1-proof")]
     adapter: &'a str,
+    opaque_receipt: Option<&'a netrender::OpaqueTenantReceipt>,
 }
 
 fn report(
@@ -316,7 +327,7 @@ fn report(
     evidence: ReportEvidence<'_>,
 ) {
     #[cfg(not(feature = "r1-proof"))]
-    let _ = (evidence.r1_mode, evidence.frame_us);
+    let _ = (evidence.r1_mode, evidence.frame_us, evidence.opaque_receipt);
     let capture = composer.capture(master);
     #[cfg(feature = "r1-proof")]
     let path = PathBuf::from(if evidence.r1_mode {
@@ -346,6 +357,32 @@ fn report(
         capture.distinct
     );
     report_spans(composer, span);
+    #[cfg(feature = "r1-proof")]
+    if let Some(receipt) = evidence.opaque_receipt {
+        let rg3 = Rg3cReceipt {
+            gate: "RG3c",
+            tenant_name: &receipt.tenant_name,
+            producer_path: &receipt.producer_path,
+            fallback_count: receipt.fallback_count,
+            scene_op_boundary: receipt.scene_op_boundary,
+            shared_device: true,
+            tenant_format: "Rgba8UnormSrgb",
+            master_format: "Rgba8Unorm",
+            logical_opaque_producer_boundaries: receipt.logical_opaque_producer_boundaries,
+            graph_encoder_batches: receipt.graph_encoder_batches,
+            graph_submission_boundaries: receipt.graph_submission_boundaries,
+            caller_reported_physical_submission_count: receipt
+                .caller_reported_physical_submission_count,
+            capture_size: capture.size,
+            capture_distinct_colours: capture.distinct,
+            capture: path.display().to_string(),
+            dependency_provenance: "paredros-room -> netrender RG3a d08f713d8",
+            plan_dump: &receipt.logical_plan_dump,
+        };
+        let json = serde_json::to_string_pretty(&rg3).expect("RG3c receipt JSON");
+        std::fs::write(RG3_RECEIPT, &json).expect("write RG3c receipt");
+        println!("{json}");
+    }
     #[cfg(feature = "r1-proof")]
     if evidence.r1_mode {
         let mut spans = evidence.frame_us.to_vec();
@@ -400,6 +437,28 @@ struct R1Receipt<'a> {
     position_log_hash: String,
 }
 
+#[cfg(feature = "r1-proof")]
+#[derive(serde::Serialize)]
+struct Rg3cReceipt<'a> {
+    gate: &'static str,
+    tenant_name: &'a str,
+    producer_path: &'a str,
+    fallback_count: u64,
+    scene_op_boundary: usize,
+    shared_device: bool,
+    tenant_format: &'static str,
+    master_format: &'static str,
+    logical_opaque_producer_boundaries: usize,
+    graph_encoder_batches: usize,
+    graph_submission_boundaries: usize,
+    caller_reported_physical_submission_count: Option<u64>,
+    capture_size: [u32; 2],
+    capture_distinct_colours: usize,
+    capture: String,
+    dependency_provenance: &'static str,
+    plan_dump: &'a str,
+}
+
 fn report_spans(composer: &Composer, span: std::time::Duration) {
     print!("frame span: probe_frame {:?}", span);
     match composer.net.last_frame_timings() {
@@ -408,7 +467,7 @@ fn report_spans(composer: &Composer, span: std::time::Duration) {
             for named in &timings.spans {
                 print!(" | {} {:?}", named.name, named.duration);
             }
-        }
+        },
         None => print!(" | netrender reported no timings"),
     }
     println!();
